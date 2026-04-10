@@ -1,4 +1,4 @@
-# ☁️ Cloud App - [Nama Proyek Tim Anda]
+# ☁️ Cloud App - SIKASI (Sistem Informasi Keuangan dan Administrasi HMSI)
 
 Deskripsi singkat aplikasi (1-2 paragraf): apa yang dilakukan, 
 untuk siapa, masalah apa yang diselesaikan.
