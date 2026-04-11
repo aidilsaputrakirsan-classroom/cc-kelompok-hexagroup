@@ -14,14 +14,14 @@ untuk siapa, masalah apa yang diselesaikan.
 
 ## 🛠️ Tech Stack
 
-| Teknologi | Fungsi |
-|-----------|--------|
-| FastAPI   | Backend REST API |
-| React     | Frontend SPA |
-| PostgreSQL | Database |
-| Docker    | Containerization |
-| GitHub Actions | CI/CD |
-| Railway/Render | Cloud Deployment |
+| Teknologi | Fungsi | Keterangan |
+|-----------|--------|------------|
+| FastAPI   | Backend REST API | Membangun dan menyediakan endpoint API yang menangani proses bisnis, validasi data, dan komunikasi dengan database |
+| React     | Frontend SPA | Membangun tampilan antarmuka pengguna yang interaktif dan mengonsumsi data dari backend API |
+| PostgreSQL | Database | Menyimpan, mengelola, dan mengambil data aplikasi secara terstruktur |
+| Docker    | Containerization | Menjalankan aplikasi dalam container agar environment development dan production tetap konsisten |
+| GitHub Actions | CI/CD | Melakukan otomatisasi proses pembangunan aplikasi, pengujian, serta penerapan sistem setiap kali terjadi perubahan pada kode |
+| Railway/Render | Cloud Deployment | Layanan cloud untuk mendistribusikan dan menjalankan aplikasi pada server secara online |
 
 ## 🏗️ Architecture
 
@@ -46,23 +46,46 @@ flowchart TD
 ## 🚀 Getting Started
 
 ### Prasyarat
-- Python 3.10+
-- Node.js 18+
-- Git
+* Python 3.10+
+* Node.js 18+ & npm
+* Git
+* PostgreSQL 14+
 
-### Backend
+### Setup Backend
 ```bash
+
+# Masuk ke Folder Backend
 cd backend
+
+# Install Dependencies
 pip install -r requirements.txt
+
+# Menjalankan Server Backend 
 uvicorn main:app --reload --port 8000
+
+# Backend Berjalan Di : http://localhost:8000
+
+# Menjalankan Swagger UI Di : http://localhost:8000/docs
 ```
 
-### Frontend
+Backend berhasil menampilkan pesan {"message":"Hello from Sikasi App API!","status":"running","version":"0.1.0"} di browser  http://localhost:8000 dan backend juga berhasil menampilkan dokumentasi API otomatis di http://localhost:8000/docs (Swagger UI)
+
+### Setup Frontend
 ```bash
+
+# Masuk ke Folder Frondend
 cd frontend
+
+# Install Node Modules (Dependencies)
 npm install
+
+# Menjalankan Aplikasi Frontend (Development Mode)
 npm run dev
+
+# Frontend Berjalan Di : http://localhost:5173
 ```
+
+Frontend berhasil menampilkan data dari backend API → koneksi full-stack
 
 ## 📅 Roadmap
 
