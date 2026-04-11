@@ -1,198 +1,216 @@
 import { useNavigate } from "react-router-dom";
 
 const styles = {
+  // --- CONTAINER UTAMA ---
   container: {
-    maxWidth: "1000px",
-    margin: "0 auto",
-    padding: "40px 20px",
+    minHeight: "100vh",
+    width: "100%",
+    background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)", 
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center", 
+    alignItems: "center",
+    padding: "5vh 5vw",
+    boxSizing: "border-box",
   },
+  
   header: {
-    marginBottom: "40px",
     textAlign: "center",
+    marginBottom: "5vh",
+    width: "100%",
   },
-  title: {
-    fontSize: "32px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: "16px",
-    color: "#666",
-    marginBottom: "20px",
-  },
-  roleInfo: {
-    backgroundColor: "#e3f2fd",
-    padding: "12px 16px",
-    borderRadius: "4px",
+
+  roleBadge: {
     display: "inline-block",
-    color: "#1976d2",
-    fontWeight: "bold",
-    marginBottom: "30px",
+    padding: "0.5rem 1.5rem",
+    borderRadius: "12px",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    color: "#38bdf8",
+    fontSize: "0.9rem",
+    fontWeight: "800",
+    textTransform: "uppercase",
+    border: "1px solid rgba(56, 189, 248, 0.3)",
+    marginBottom: "1.5rem",
   },
+
+  title: {
+    fontSize: "clamp(2rem, 5vw, 4rem)", 
+    fontWeight: "900",
+    color: "#ffffff",
+    margin: "0 0 1rem 0",
+    letterSpacing: "-0.05em",
+  },
+
+  subtitle: {
+    fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+    color: "#94a3b8",
+    margin: 0,
+  },
+
+  // --- GRID FLEXIBLE (DENGAN CLASS KHUSUS) ---
   menuGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "20px",
-    marginTop: "30px",
+    gap: "2rem",
+    width: "100%",
+    maxWidth: "1400px",
+    // Default 1 kolom untuk mobile
+    gridTemplateColumns: "1fr", 
   },
+
+  // --- CARD PREMIUM ---
   menuCard: {
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    padding: "30px",
-    textAlign: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: "32px",
+    padding: "3rem 2rem",
     cursor: "pointer",
-    transition: "all 0.3s ease",
+    transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    height: "100%",
+    boxSizing: "border-box",
   },
-  menuCardHover: {
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    transform: "translateY(-2px)",
+
+  iconBox: {
+    width: "80px",
+    height: "80px",
+    borderRadius: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "36px",
+    marginBottom: "2rem",
   },
-  icon: {
-    fontSize: "40px",
-    marginBottom: "15px",
-    display: "block",
-  },
+
   cardTitle: {
-    fontSize: "18px",
-    fontWeight: "bold",
-    marginBottom: "8px",
-    color: "#333",
+    fontSize: "1.5rem",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "1rem",
   },
+
   cardDescription: {
-    fontSize: "14px",
-    color: "#666",
+    fontSize: "1rem",
+    lineHeight: "1.6",
+    color: "#64748b",
+    marginBottom: "2rem",
   },
-  disabledCard: {
-    opacity: 0.5,
+
+  btnAction: {
+    marginTop: "auto",
+    padding: "0.8rem 1.5rem",
+    borderRadius: "14px",
+    backgroundColor: "#f1f5f9",
+    color: "#4f46e5",
+    fontWeight: "700",
+    fontSize: "0.9rem",
+    transition: "all 0.3s ease",
+    border: "none",
+    width: "100%",
+  },
+
+  disabled: {
+    opacity: 0.4,
+    filter: "grayscale(100%)",
     cursor: "not-allowed",
-  },
+  }
 };
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
-  const handleCardClick = (path) => {
-    navigate(path);
-  };
-
   const canAccessFinance = user.role === "bendahara" || user.role === "ketua";
   const canAccessLetters = user.role === "sekretaris" || user.role === "ketua";
   const canAccessAdmin = user.role === "ketua";
 
+  const onHover = (e, accessible) => {
+    if (accessible) {
+      e.currentTarget.style.transform = "translateY(-15px) scale(1.03)";
+      e.currentTarget.style.boxShadow = "0 40px 60px rgba(56, 189, 248, 0.2)";
+      const btn = e.currentTarget.querySelector(".action-btn");
+      if (btn) {
+        btn.style.backgroundColor = "#4f46e5";
+        btn.style.color = "#ffffff";
+      }
+    }
+  };
+
+  const onLeave = (e, accessible) => {
+    if (accessible) {
+      e.currentTarget.style.transform = "translateY(0) scale(1)";
+      e.currentTarget.style.boxShadow = styles.menuCard.boxShadow;
+      const btn = e.currentTarget.querySelector(".action-btn");
+      if (btn) {
+        btn.style.backgroundColor = "#f1f5f9";
+        btn.style.color = "#4f46e5";
+      }
+    }
+  };
+
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Organization Management System</h1>
-        <p style={styles.subtitle}>Welcome back, {user.full_name}!</p>
-        <div style={styles.roleInfo}>Role: {user.role.toUpperCase()}</div>
-      </div>
+      {/* CSS KHUSUS UNTUK MEMAKSA 3 KOLOM DI LAYAR BESAR */}
+      <style>
+        {`
+          @media (min-width: 900px) {
+            .workspace-grid {
+              grid-template-columns: repeat(3, 1fr) !important;
+            }
+          }
+        `}
+      </style>
 
-      <div style={styles.menuGrid}>
-        {/* Finance Card */}
+      <header style={styles.header}>
+        <div style={styles.roleBadge}>👑 {user.role} Access</div>
+        <h1 style={styles.title}>Workspace Dashboard</h1>
+        <p style={styles.subtitle}>Selamat datang kembali, <b>{user.full_name}</b></p>
+      </header>
+
+      <div className="workspace-grid" style={styles.menuGrid}>
+        {/* Modul Finance */}
         <div
-          style={{
-            ...styles.menuCard,
-            ...(canAccessFinance ? styles.menuCardHover : styles.disabledCard),
-            opacity: 1,
-          }}
-          onClick={() => canAccessFinance && handleCardClick("/finance")}
-          onMouseEnter={(e) =>
-            canAccessFinance &&
-            Object.assign(e.currentTarget.style, styles.menuCardHover)
-          }
-          onMouseLeave={(e) =>
-            Object.assign(e.currentTarget.style, {
-              boxShadow: "none",
-              transform: "none",
-            })
-          }
+          style={{ ...styles.menuCard, ...(!canAccessFinance && styles.disabled) }}
+          onMouseEnter={(e) => onHover(e, canAccessFinance)}
+          onMouseLeave={(e) => onLeave(e, canAccessFinance)}
+          onClick={() => canAccessFinance && navigate("/finance")}
         >
-          <span style={styles.icon}>💰</span>
-          <div style={styles.cardTitle}>Finance Management</div>
-          <div style={styles.cardDescription}>
-            {user.role === "bendahara"
-              ? "Manage transactions"
-              : user.role === "ketua"
-                ? "View & manage transactions"
-                : "View transactions"}
-          </div>
+          <div style={{ ...styles.iconBox, backgroundColor: "#dcfce7" }}>💰</div>
+          <div style={styles.cardTitle}>Finance</div>
+          <div style={styles.cardDescription}>Manajemen anggaran, pemasukan, dan laporan keuangan organisasi.</div>
+          {canAccessFinance && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
         </div>
 
-        {/* Letters Card */}
+        {/* Modul Letters */}
         <div
-          style={{
-            ...styles.menuCard,
-            ...(canAccessLetters ? styles.menuCardHover : styles.disabledCard),
-            opacity: 1,
-          }}
-          onClick={() => canAccessLetters && handleCardClick("/letters")}
-          onMouseEnter={(e) =>
-            canAccessLetters &&
-            Object.assign(e.currentTarget.style, styles.menuCardHover)
-          }
-          onMouseLeave={(e) =>
-            Object.assign(e.currentTarget.style, {
-              boxShadow: "none",
-              transform: "none",
-            })
-          }
+          style={{ ...styles.menuCard, ...(!canAccessLetters && styles.disabled) }}
+          onMouseEnter={(e) => onHover(e, canAccessLetters)}
+          onMouseLeave={(e) => onLeave(e, canAccessLetters)}
+          onClick={() => canAccessLetters && navigate("/letters")}
         >
-          <span style={styles.icon}>📝</span>
-          <div style={styles.cardTitle}>Letters Management</div>
-          <div style={styles.cardDescription}>
-            {user.role === "sekretaris"
-              ? "Manage letters"
-              : user.role === "ketua"
-                ? "View & manage letters"
-                : "View letters"}
-          </div>
+          <div style={{ ...styles.iconBox, backgroundColor: "#e0e7ff" }}>📝</div>
+          <div style={styles.cardTitle}>Letters</div>
+          <div style={styles.cardDescription}>Pengelolaan surat menyurat, nomor surat, dan arsip digital.</div>
+          {canAccessLetters && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
         </div>
 
-        {/* Admin Panel Card (Ketua only) */}
+        {/* Modul Admin */}
         {canAccessAdmin && (
           <div
-            style={{
-              ...styles.menuCard,
-              ...styles.menuCardHover,
-            }}
-            onClick={() => handleCardClick("/admin")}
-            onMouseEnter={(e) =>
-              Object.assign(e.currentTarget.style, styles.menuCardHover)
-            }
-            onMouseLeave={(e) =>
-              Object.assign(e.currentTarget.style, {
-                boxShadow: "none",
-                transform: "none",
-              })
-            }
+            className="admin-card"
+            style={styles.menuCard}
+            onMouseEnter={(e) => onHover(e, true)}
+            onMouseLeave={(e) => onLeave(e, true)}
+            onClick={() => navigate("/admin")}
           >
-            <span style={styles.icon}>👥</span>
+            <div style={{ ...styles.iconBox, backgroundColor: "#fffbeb" }}>👥</div>
             <div style={styles.cardTitle}>Admin Panel</div>
-            <div style={styles.cardDescription}>Manage users & roles</div>
+            <div style={styles.cardDescription}>Kontrol hak akses anggota, tambah user, dan konfigurasi sistem.</div>
+            <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>
           </div>
         )}
-
-        {/* Info Card */}
-        <div
-          style={{
-            ...styles.menuCard,
-            backgroundColor: "#f5f5f5",
-          }}
-        >
-          <span style={styles.icon}>ℹ️</span>
-          <div style={styles.cardTitle}>System Info</div>
-          <div style={styles.cardDescription}>
-            {user.role === "ketua"
-              ? "Full system access"
-              : user.role === "bendahara"
-                ? "Finance management access"
-                : user.role === "sekretaris"
-                  ? "Letter management access"
-                  : "Read-only access"}
-          </div>
-        </div>
       </div>
     </div>
   );
