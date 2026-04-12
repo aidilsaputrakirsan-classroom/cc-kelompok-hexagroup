@@ -33,33 +33,99 @@ const styles = {
     padding: "20px",
     borderRadius: "8px",
     marginBottom: "30px",
+    display: "none",
+  },
+  formActive: {
+    display: "block",
   },
   formGroup: {
     marginBottom: "15px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+    color: "#333",
   },
   input: {
     width: "100%",
     padding: "10px",
     border: "1px solid #ddd",
     borderRadius: "4px",
+    fontSize: "14px",
+    boxSizing: "border-box",
+  },
+  select: {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "14px",
+    boxSizing: "border-box",
+  },
+  submitButton: {
+    backgroundColor: "#4CAF50",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    marginRight: "10px",
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontWeight: "bold",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
     backgroundColor: "white",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   },
   th: {
     backgroundColor: "#f5f5f5",
     padding: "12px",
+    textAlign: "left",
+    fontWeight: "bold",
     borderBottom: "2px solid #ddd",
   },
   td: {
     padding: "12px",
     borderBottom: "1px solid #ddd",
   },
+  actionButton: {
+    padding: "6px 12px",
+    margin: "0 5px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#f44336",
+    color: "white",
+  },
+  toast: {
+    position: "fixed",
+    top: "20px",
+    right: "20px",
+    padding: "12px 20px",
+    borderRadius: "6px",
+    color: "white",
+    fontWeight: "bold",
+    zIndex: 9999,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+  },
 };
 
-function FinancePage({ user, showToast }) {
+function FinancePage({ user }) {
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({
     total_income: 0,
@@ -67,8 +133,10 @@ function FinancePage({ user, showToast }) {
     balance: 0,
   });
   const [loading, setLoading] = useState(true);
+
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     type: "income",
     category: "",
@@ -76,7 +144,15 @@ function FinancePage({ user, showToast }) {
     description: "",
   });
 
-  const canCreate = user.role === "bendahara" || user.role === "ketua";
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type) => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const canCreate =
+    user && (user.role === "bendahara" || user.role === "ketua");
 
   useEffect(() => {
     loadTransactions();
@@ -96,21 +172,32 @@ function FinancePage({ user, showToast }) {
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       if (!formData.category || !formData.amount || !formData.description) {
-        showToast("Semua field harus diisi", "error");
+        showToast("All fields are required", "error");
         return;
       }
 
       if (editingId) {
         await financeAPI.updateTransaction(editingId, {
-          ...formData,
+          type: formData.type,
+          category: formData.category,
           amount: parseFloat(formData.amount),
+          description: formData.description,
         });
-        showToast("Berhasil update transaksi", "success");
+
+        showToast("Transaction updated successfully", "success");
       } else {
         await financeAPI.createTransaction(
           formData.type,
@@ -118,7 +205,8 @@ function FinancePage({ user, showToast }) {
           parseFloat(formData.amount),
           formData.description
         );
-        showToast("Berhasil tambah transaksi", "success");
+
+        showToast("Transaction added successfully", "success");
       }
 
       setFormData({
@@ -136,22 +224,22 @@ function FinancePage({ user, showToast }) {
     }
   };
 
-  const handleEditTransaction = (t) => {
-    setEditingId(t.id);
+  const handleEditTransaction = (transaction) => {
+    setEditingId(transaction.id);
     setFormData({
-      type: t.type,
-      category: t.category,
-      amount: t.amount,
-      description: t.description,
+      type: transaction.type,
+      category: transaction.category,
+      amount: transaction.amount.toString(),
+      description: transaction.description,
     });
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Yakin hapus data?")) {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
       try {
         await financeAPI.deleteTransaction(id);
-        showToast("Berhasil hapus transaksi", "success");
+        showToast("Transaction deleted successfully", "success");
         loadTransactions();
       } catch (err) {
         showToast(err.message, "error");
@@ -161,6 +249,18 @@ function FinancePage({ user, showToast }) {
 
   return (
     <div style={styles.container}>
+      {toast && (
+        <div
+          style={{
+            ...styles.toast,
+            backgroundColor:
+              toast.type === "success" ? "#4CAF50" : "#f44336",
+          }}
+        >
+          {toast.message}
+        </div>
+      )}
+
       <div style={styles.header}>
         <h2 style={styles.title}>Finance Management</h2>
         {canCreate && (
@@ -170,96 +270,34 @@ function FinancePage({ user, showToast }) {
         )}
       </div>
 
-      {/* SUMMARY */}
       <div style={{ marginBottom: "20px" }}>
-        <p>Total Income: ${summary.total_income}</p>
-        <p>Total Expense: ${summary.total_expense}</p>
-        <p>Balance: ${summary.balance}</p>
+        Balance: ${(summary.balance || 0).toFixed(2)}
       </div>
 
-      {/* FORM */}
-      {showForm && (
-        <form style={styles.form} onSubmit={handleSubmit}>
-          <div style={styles.formGroup}>
-            <select
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-            >
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-          </div>
-
-          <div style={styles.formGroup}>
-            <input
-              placeholder="Category"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              style={styles.input}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <input
-              type="number"
-              placeholder="Amount"
-              value={formData.amount}
-              onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
-              }
-              style={styles.input}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <input
-              placeholder="Description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              style={styles.input}
-            />
-          </div>
-
-          <button type="submit">
-            {editingId ? "Update" : "Add"}
-          </button>
+      {canCreate && showForm && (
+        <form
+          style={{ ...styles.form, ...styles.formActive }}
+          onSubmit={handleSubmit}
+        >
+          <input name="category" onChange={handleChange} placeholder="Category" />
+          <input name="amount" onChange={handleChange} placeholder="Amount" />
+          <input name="description" onChange={handleChange} placeholder="Description" />
+          <button type="submit">Submit</button>
         </form>
       )}
 
-      {/* TABLE */}
       {loading ? (
         <p>Loading...</p>
       ) : (
         <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Type</th>
-              <th style={styles.th}>Category</th>
-              <th style={styles.th}>Amount</th>
-              <th style={styles.th}>Description</th>
-              <th style={styles.th}>Action</th>
-            </tr>
-          </thead>
           <tbody>
             {transactions.map((t) => (
               <tr key={t.id}>
-                <td style={styles.td}>{t.type}</td>
                 <td style={styles.td}>{t.category}</td>
                 <td style={styles.td}>${t.amount}</td>
-                <td style={styles.td}>{t.description}</td>
-                <td style={styles.td}>
-                  <button onClick={() => handleEditTransaction(t)}>
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(t.id)}>
-                    Delete
-                  </button>
+                <td>
+                  <button onClick={() => handleEditTransaction(t)}>Edit</button>
+                  <button onClick={() => handleDelete(t.id)}>Delete</button>
                 </td>
               </tr>
             ))}
