@@ -47,14 +47,15 @@ const styles = {
     margin: 0,
   },
 
-  // --- GRID FLEXIBLE (DENGAN CLASS KHUSUS) ---
+  // --- GRID FLEXIBLE: OTOMATIS RATA TENGAH ---
   menuGrid: {
-    display: "grid",
-    gap: "2rem",
+    display: "flex",           // Flexbox adalah kunci rata tengah
+    flexWrap: "wrap",          
+    justifyContent: "center",  // Kartu akan selalu di tengah layar
+    gap: "2.5rem",
     width: "100%",
     maxWidth: "1400px",
-    // Default 1 kolom untuk mobile
-    gridTemplateColumns: "1fr", 
+    margin: "0 auto",
   },
 
   // --- CARD PREMIUM ---
@@ -70,7 +71,8 @@ const styles = {
     textAlign: "center",
     boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
     border: "1px solid rgba(255, 255, 255, 0.1)",
-    height: "100%",
+    width: "350px",            // Lebar kartu konsisten
+    minHeight: "450px",
     boxSizing: "border-box",
   },
 
@@ -86,14 +88,14 @@ const styles = {
   },
 
   cardTitle: {
-    fontSize: "1.5rem",
+    fontSize: "1.7rem",
     fontWeight: "800",
     color: "#0f172a",
     marginBottom: "1rem",
   },
 
   cardDescription: {
-    fontSize: "1rem",
+    fontSize: "1.05rem",
     lineHeight: "1.6",
     color: "#64748b",
     marginBottom: "2rem",
@@ -101,15 +103,16 @@ const styles = {
 
   btnAction: {
     marginTop: "auto",
-    padding: "0.8rem 1.5rem",
+    padding: "0.9rem 1.5rem",
     borderRadius: "14px",
     backgroundColor: "#f1f5f9",
     color: "#4f46e5",
     fontWeight: "700",
-    fontSize: "0.9rem",
+    fontSize: "0.95rem",
     transition: "all 0.3s ease",
     border: "none",
     width: "100%",
+    cursor: "pointer",
   },
 
   disabled: {
@@ -122,13 +125,16 @@ const styles = {
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
-  const canAccessFinance = user.role === "bendahara" || user.role === "ketua";
-  const canAccessLetters = user.role === "sekretaris" || user.role === "ketua";
+  // Logika Akses Baru: Anggota, Sekre, Bendahara, Ketua semua bisa masuk ke Finance & Letters
+  const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
+  
+  const canAccessFinance = allowedRoles.includes(user.role);
+  const canAccessLetters = allowedRoles.includes(user.role);
   const canAccessAdmin = user.role === "ketua";
 
   const onHover = (e, accessible) => {
     if (accessible) {
-      e.currentTarget.style.transform = "translateY(-15px) scale(1.03)";
+      e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
       e.currentTarget.style.boxShadow = "0 40px 60px rgba(56, 189, 248, 0.2)";
       const btn = e.currentTarget.querySelector(".action-btn");
       if (btn) {
@@ -152,24 +158,13 @@ function Dashboard({ user }) {
 
   return (
     <div style={styles.container}>
-      {/* CSS KHUSUS UNTUK MEMAKSA 3 KOLOM DI LAYAR BESAR */}
-      <style>
-        {`
-          @media (min-width: 900px) {
-            .workspace-grid {
-              grid-template-columns: repeat(3, 1fr) !important;
-            }
-          }
-        `}
-      </style>
-
       <header style={styles.header}>
-        <div style={styles.roleBadge}>👑 {user.role} Access</div>
+        <div style={styles.roleBadge}>👑 {user.role.toUpperCase()} Access</div>
         <h1 style={styles.title}>Workspace Dashboard</h1>
         <p style={styles.subtitle}>Selamat datang kembali, <b>{user.full_name}</b></p>
       </header>
 
-      <div className="workspace-grid" style={styles.menuGrid}>
+      <div style={styles.menuGrid}>
         {/* Modul Finance */}
         <div
           style={{ ...styles.menuCard, ...(!canAccessFinance && styles.disabled) }}
@@ -196,7 +191,7 @@ function Dashboard({ user }) {
           {canAccessLetters && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
         </div>
 
-        {/* Modul Admin */}
+        {/* Modul Admin (Hanya muncul untuk Ketua) */}
         {canAccessAdmin && (
           <div
             className="admin-card"
