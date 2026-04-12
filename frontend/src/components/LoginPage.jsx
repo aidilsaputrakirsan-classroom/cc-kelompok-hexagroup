@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
 
-export default function LoginPage({ setUser }) {
+export default function LoginPage({ setUser, showToast }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -30,9 +30,21 @@ export default function LoginPage({ setUser }) {
       localStorage.setItem("user", JSON.stringify(response.user));
 
       setUser(response.user);
+
+      // ✅ TOAST SUCCESS
+      showToast(
+        isRegister ? "Register berhasil!" : "Login berhasil!",
+        "success"
+      );
+
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "An error occurred");
+      const errorMsg = err.message || "Terjadi kesalahan";
+
+      setError(errorMsg);
+
+      // ❌ TOAST ERROR
+      showToast(errorMsg, "error");
     } finally {
       setLoading(false);
     }

@@ -17,6 +17,11 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [toast, setToast] = useState({
+  message: "",
+  type: "", // success / error
+});
+
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem("access_token");
@@ -26,6 +31,14 @@ function App() {
     }
     setLoading(false);
   }, []);
+
+  const showToast = (message, type = "success") => {
+  setToast({ message, type });
+
+  setTimeout(() => {
+    setToast({ message: "", type: "" });
+  }, 3000);
+};
 
   if (loading) {
     return (
@@ -37,12 +50,30 @@ function App() {
     <Router>
       <div className="App">
         {user && <Header user={user} setUser={setUser} />}
+
+        {toast.message && (
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              right: "20px",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              color: "white",
+              backgroundColor: toast.type === "success" ? "#4CAF50" : "#f44336",
+              zIndex: 9999,
+            }}
+          >
+            {toast.message}
+          </div>
+        )}
+
         <Routes>
           <Route
             path="/login"
             element={
               !user ? (
-                <LoginPage setUser={setUser} />
+                <LoginPage setUser={setUser} showToast={showToast} />
               ) : (
                 <Navigate to="/dashboard" />
               )
@@ -51,26 +82,26 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              user ? <Dashboard user={user} /> : <Navigate to="/login" />
+              user ? <Dashboard user={user} showToast={showToast} /> : <Navigate to="/login" />
             }
           />
           <Route
             path="/finance"
             element={
-              user ? <FinancePage user={user} /> : <Navigate to="/login" />
+              user ? <FinancePage user={user} showToast={showToast} /> : <Navigate to="/login" />
             }
           />
           <Route
             path="/letters"
             element={
-              user ? <LettersPage user={user} /> : <Navigate to="/login" />
+              user ? <LettersPage user={user} showToast={showToast} /> : <Navigate to="/login" />
             }
           />
           <Route
             path="/admin"
             element={
               user && user.role === "ketua" ? (
-                <AdminPanel user={user} />
+                <AdminPanel user={user} showToast={showToast} />
               ) : (
                 <Navigate to="/dashboard" />
               )
