@@ -147,3 +147,34 @@ cc-kelompok-6/
 - .gitignore: Menentukan file-file yang tidak perlu dipantau oleh Git, seperti file konfigurasi lokal atau file build.
 
 Ini adalah gambaran umum dari struktur proyek yang dapat membantu dalam memahami pengorganisasian dan alur kerja proyek SIKASI.
+
+## Deployment
+
+Aplikasi SIKASI (Sistem Informasi Keuangan dan Administrasi) ini akan dideploy menggunakan platform cloud seperti Railway atau Render agar dapat diakses secara online oleh seluruh pengurus HMSI.
+
+Deployment akan dilakukan secara otomatis menggunakan CI/CD pipeline dengan GitHub Actions.
+
+### Alur Deployment
+Setiap perubahan kode yang di push ke repository akan melalui proses berikut:
+1. Code di-push ke GitHub
+2. GitHub Actions menjalankan proses build dan testing
+3. Jika berhasil, aplikasi akan otomatis dideploy ke cloud
+4. Aplikasi dapat diakses secara online
+
+### Tujuan Deployment
+1. Memastikan sistem dapat diakses kapan saja oleh pengurus HMSI
+2. Mendukung transparansi data keuangan dan administrasi secara real-time
+3. Mengurangi penggunaan sistem manual
+
+### Status
+Sekarang ini deployment masih dalam tahap perencanaan (akan diimplementasikan pada minggu 9–11 sesuai roadmap mata kuliah).
+
+### Catatan
+Backend (FastAPI) disini akan menjadi pusat pengolahan data keuangan dan administrasi, sedangkan frontend nya(React) akan menjadi antarmuka pengguna.
+
+Database akan digunakan untuk menyimpan:
+- Data pemasukan dan pengeluaran
+- Data surat masuk dan keluar
+- Data pengurus HMSI
+
+Semua layanan ini nantinya akan dideploy secara terintegrasi di cloud.
