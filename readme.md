@@ -1,16 +1,18 @@
 # ☁️ Cloud App - SIKASI (Sistem Informasi Keuangan dan Administrasi HMSI)
 
-Deskripsi singkat aplikasi (1-2 paragraf): apa yang dilakukan, 
-untuk siapa, masalah apa yang diselesaikan.
+Sistem ini adalah sistem yang dirancang untuk membantu para pengurus Himpunan Mahasiswa Sistem Informasi (HMSI) dalam mengelola keuangan dan administrasi organisasi secara terintegrasi dalam satu platform. Melalui sistem ini, bendahara dapat mencatat dana masuk dan dana keluar sehingga arus kas (cash flow) dapat terpantau dan terupdate secara otomatis. Selain itu, sistem juga menyediakan fitur pengelolaan surat masuk dan surat keluar, termasuk penomoran surat serta pengelolaan tanda tangan dari Ketua Himpunan Sistem Informasi (HMSI) secara digital. Dengan demikian, seluruh data keuangan dan administrasi dapat tersimpan dengan rapi dan terstruktur.
+
+Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, ketertiban, dan efisiensi dalam pengelolaan organisasi. Sistem ini hadir sebagai solusi atas permasalahan pencatatan manual yang sering tidak terorganisir, sulit direkap, dan kurang transparan. Dengan adanya sistem yang terintegrasi, proses pelaporan dan administrasi menjadi lebih akurat, praktis, dan mudah diakses ketika dibutuhkan.
 
 ## 👥 Tim
 
 | Nama | NIM | Peran |
 |------|-----|-------|
-| ...  | ... | Lead Backend |
-| ...  | ... | Lead Frontend |
-| ...  | ... | Lead DevOps |
-| ...  | ... | Lead QA & Docs |
+| Achmad Bayhaqi | 10231001 | Lead Backend |
+| Indah Nur Fortuna | 10231044 | Lead Frontend |
+| Alfiani Dwiyuniarti | 10231010 | Lead DevOps |
+| Zahwa Hanna Dwi Putri | 10231092 | Lead CI/CD & Deploy |
+| Nilam Ayu NandaStari Romdoni | 10231070 | Lead QA & Docs |
 
 ## 🛠️ Tech Stack
 
@@ -105,7 +107,7 @@ Berikut adalah roadmap untuk menunjukkan progres dan milestone proyek kami:
 
 ## Struktur Proyek 
 
-Berikut adalah struktur proyek untuk aplikasi Sistem Informasi Keuangan dan Administrasi HMSI (SIKASI). Proyek ini memiliki dua komponen utama, yaitu frontend dan backend yang bekerja secara terpisah namun saling terhubung melalui API. Semua file yang terkait dengan pengembangan aplikasi ini terorganisir dengan rapi di dalam folder-folder yang sesuai. Struktur berikut mencerminkan pembagian tanggung jawab antar tim dalam proyek, serta memudahkan pengelolaan, pengembangan, dan deployment aplikasi.
+Berikut adalah struktur proyek untuk aplikasi Sistem Informasi Keuangan dan Administrasi HMSI (SIKASI).
 
 ```
 cc-kelompok-6/
@@ -139,14 +141,6 @@ cc-kelompok-6/
 ├── .gitignore                   # File untuk mengabaikan file tertentu dalam Git
 ├── README.md                    # Dokumentasi utama proyek
 ```
-
-### Penjelasan Struktur Proyek:
-- Backend: Folder ini berisi kode sumber untuk backend yang menggunakan FastAPI. Terdapat berbagai file seperti main.py yang menjadi entry point, requirements.txt untuk mengelola dependencies, dan folder models serta services untuk logika dan pengolahan data.
-- Frontend: Folder ini berisi kode untuk tampilan aplikasi yang dibangun menggunakan React. Semua komponen, styling, dan logika tampilan berada di dalam folder src. package.json digunakan untuk mengelola dependensi frontend, dan vite.config.js adalah konfigurasi untuk build aplikasi.
-- Docs: Folder ini berisi dokumentasi anggota tim dan deskripsi tentang proyek, termasuk README.md yang menjelaskan keseluruhan aplikasi serta langkah-langkah pengembangan dan penggunaan.
-- .gitignore: Menentukan file-file yang tidak perlu dipantau oleh Git, seperti file konfigurasi lokal atau file build.
-
-Ini adalah gambaran umum dari struktur proyek yang dapat membantu dalam memahami pengorganisasian dan alur kerja proyek SIKASI.
 
 ## Deployment
 
