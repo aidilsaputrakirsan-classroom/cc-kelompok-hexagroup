@@ -1,60 +1,173 @@
-import { useState, useEffect } from "react"
+import { checkAPIConnection } from "./services/api";
+import { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Header from "./components/Header";
+import LoginPage from "./components/LoginPage";
+import Dashboard from "./components/Dashboard";
+import FinancePage from "./components/FinancePage";
+import LettersPage from "./components/LettersPage";
+import AdminPanel from "./components/AdminPanel";
+import "./App.css";
 
 function App() {
-  const [data, setData] = useState(null)
-  const [team, setTeam] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [apiStatus, setApiStatus] = useState(null);
+
+  const [toast, setToast] = useState({
+    message: "",
+    type: "", // success / error
+  });
 
   useEffect(() => {
-    // Fetch API root
-    fetch("http://localhost:8000/")
-      .then(res => res.json())
-      .then(json => {
-        setData(json)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error("Error:", err)
-        setLoading(false)
-      })
+    const token = localStorage.getItem("access_token");
+    const userData = localStorage.getItem("user");
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
 
-    // Fetch team info
-    fetch("http://localhost:8000/team")
-      .then(res => res.json())
-      .then(json => setTeam(json))
-      .catch(err => console.error("Error:", err))
-  }, [])
+    // Check API connection
+    checkAPIConnection().then(setApiStatus);
+  }, []);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem("access_token");
+    const userData = localStorage.getItem("user");
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
+  }, []);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast({ message: "", type: "" });
+    }, 3000);
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "20px", textAlign: "center" }}>Loading...</div>
+    );
+  }
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h1>☁️ Cloud App</h1>
-      <h2>SIKASI (SISTEM INFORMASI KEUANGAN DAN ADMINISTRASI HMSI)</h2>
+    <Router>
+      <div className="App">
+        {apiStatus === false && (
+          <div
+            style={{
+              backgroundColor: "#f8d7da",
+              color: "#721c24",
+              padding: "10px",
+              textAlign: "center",
+              fontSize: "14px",
+            }}
+          >
+            ⚠️ Backend API is offline — cannot connect to{" "}
+            {import.meta.env.VITE_API_URL || "http://localhost:8000"}
+          </div>
+        )}
+        {apiStatus === true && (
+          <div
+            style={{
+              backgroundColor: "#d4edda",
+              color: "#155724",
+              padding: "10px",
+              textAlign: "center",
+              fontSize: "14px",
+            }}
+          >
+            ✅ Backend API connected
+          </div>
+        )}
+        {user && <Header user={user} setUser={setUser} />}
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : data ? (
-        <div>
-          <h3>API Response:</h3>
-          <p>Message: {data.message}</p>
-          <p>Status: {data.status}</p>
-          <p>Version: {data.version}</p>
-        </div>
-      ) : (
-        <p style={{ color: "red" }}>Error connecting to backend</p>
-      )}
+        {toast.message && (
+          <div
+            style={{
+              position: "fixed",
+              top: "20px",
+              right: "20px",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              color: "white",
+              backgroundColor: toast.type === "success" ? "#4CAF50" : "#f44336",
+              zIndex: 9999,
+            }}
+          >
+            {toast.message}
+          </div>
+        )}
 
-      {team && (
-        <div>
-          <h3>Tim: {team.team}</h3>
-          <ul>
-            {team.members.map((m, i) => (
-              <li key={i}>{m.name} ({m.nim}) - {m.role}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  )
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              !user ? (
+                <LoginPage setUser={setUser} showToast={showToast} />
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              user ? (
+                <Dashboard user={user} showToast={showToast} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/finance"
+            element={
+              user ? (
+                <FinancePage user={user} showToast={showToast} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/letters"
+            element={
+              user ? (
+                <LettersPage user={user} showToast={showToast} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              user && user.role === "ketua" ? (
+                <AdminPanel user={user} showToast={showToast} />
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route
+            path="/"
+            element={<Navigate to={user ? "/dashboard" : "/login"} />}
+          />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;

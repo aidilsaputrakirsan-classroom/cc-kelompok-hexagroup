@@ -1,27 +1,29 @@
 # ☁️ Cloud App - SIKASI (Sistem Informasi Keuangan dan Administrasi HMSI)
 
-Deskripsi singkat aplikasi (1-2 paragraf): apa yang dilakukan, 
-untuk siapa, masalah apa yang diselesaikan.
+Sistem ini adalah sistem yang dirancang untuk membantu para pengurus Himpunan Mahasiswa Sistem Informasi (HMSI) dalam mengelola keuangan dan administrasi organisasi secara terintegrasi dalam satu platform. Melalui sistem ini, bendahara dapat mencatat dana masuk dan dana keluar sehingga arus kas (cash flow) dapat terpantau dan terupdate secara otomatis. Selain itu, sistem juga menyediakan fitur pengelolaan surat masuk dan surat keluar, termasuk penomoran surat serta pengelolaan tanda tangan dari Ketua Himpunan Sistem Informasi (HMSI) secara digital. Dengan demikian, seluruh data keuangan dan administrasi dapat tersimpan dengan rapi dan terstruktur.
+
+Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, ketertiban, dan efisiensi dalam pengelolaan organisasi. Sistem ini hadir sebagai solusi atas permasalahan pencatatan manual yang sering tidak terorganisir, sulit direkap, dan kurang transparan. Dengan adanya sistem yang terintegrasi, proses pelaporan dan administrasi menjadi lebih akurat, praktis, dan mudah diakses ketika dibutuhkan.
 
 ## 👥 Tim
 
 | Nama | NIM | Peran |
 |------|-----|-------|
-| ...  | ... | Lead Backend |
-| ...  | ... | Lead Frontend |
-| ...  | ... | Lead DevOps |
-| ...  | ... | Lead QA & Docs |
+| Achmad Bayhaqi | 10231001 | Lead Backend |
+| Indah Nur Fortuna | 10231044 | Lead Frontend |
+| Alfiani Dwiyuniarti | 10231010 | Lead DevOps |
+| Zahwa Hanna Dwi Putri | 10231092 | Lead CI/CD & Deploy |
+| Nilam Ayu NandaStari Romdoni | 10231070 | Lead QA & Docs |
 
 ## 🛠️ Tech Stack
 
-| Teknologi | Fungsi |
-|-----------|--------|
-| FastAPI   | Backend REST API |
-| React     | Frontend SPA |
-| PostgreSQL | Database |
-| Docker    | Containerization |
-| GitHub Actions | CI/CD |
-| Railway/Render | Cloud Deployment |
+| Teknologi | Fungsi | Keterangan |
+|-----------|--------|------------|
+| FastAPI   | Backend REST API | Membangun dan menyediakan endpoint API yang menangani proses bisnis, validasi data, dan komunikasi dengan database |
+| React     | Frontend SPA | Membangun tampilan antarmuka pengguna yang interaktif dan mengonsumsi data dari backend API |
+| PostgreSQL | Database | Menyimpan, mengelola, dan mengambil data aplikasi secara terstruktur |
+| Docker    | Containerization | Menjalankan aplikasi dalam container agar environment development dan production tetap konsisten |
+| GitHub Actions | CI/CD | Melakukan otomatisasi proses pembangunan aplikasi, pengujian, serta penerapan sistem setiap kali terjadi perubahan pada kode |
+| Railway/Render | Cloud Deployment | Layanan cloud untuk mendistribusikan dan menjalankan aplikasi pada server secara online |
 
 ## 🏗️ Architecture
 
@@ -46,34 +48,393 @@ flowchart TD
 ## 🚀 Getting Started
 
 ### Prasyarat
-- Python 3.10+
-- Node.js 18+
-- Git
+* Python 3.10+
+* Node.js 18+ & npm
+* Git
+* PostgreSQL 14+
 
-### Backend
+### Setup Backend
 ```bash
+
+# Masuk ke Folder Backend
 cd backend
+
+# Install Dependencies
 pip install -r requirements.txt
+
+# Menjalankan Server Backend 
 uvicorn main:app --reload --port 8000
+
+# Backend Berjalan Di : http://localhost:8000
+
+# Menjalankan Swagger UI Di : http://localhost:8000/docs
 ```
 
-### Frontend
+Backend berhasil menampilkan pesan {"message":"Hello from Sikasi App API!","status":"running","version":"0.1.0"} di browser  http://localhost:8000 dan backend juga berhasil menampilkan dokumentasi API otomatis di http://localhost:8000/docs (Swagger UI)
+
+### Setup Frontend
 ```bash
+
+# Masuk ke Folder Frondend
 cd frontend
+
+# Install Node Modules (Dependencies)
 npm install
+
+# Menjalankan Aplikasi Frontend (Development Mode)
 npm run dev
+
+# Frontend Berjalan Di : http://localhost:5173
 ```
+
+Frontend berhasil menampilkan data dari backend API → koneksi full-stack
 
 ## 📅 Roadmap
 
+Berikut adalah roadmap untuk menunjukkan progres dan milestone proyek kami:
+
 | Minggu | Target | Status |
 |--------|--------|--------|
-| 1 | Setup & Hello World | ✅ |
-| 2 | REST API + Database | ⬜ |
-| 3 | React Frontend | ⬜ |
-| 4 | Full-Stack Integration | ⬜ |
-| 5-7 | Docker & Compose | ⬜ |
-| 8 | UTS Demo | ⬜ |
-| 9-11 | CI/CD Pipeline | ⬜ |
-| 12-14 | Microservices | ⬜ |
-| 15-16 | Final & UAS | ⬜ |
+| 1 | Setup Proyek: Menyiapkan struktur proyek, repositori GitHub, dan lingkungan pengembangan (backend dan frontend). | ✅ Completed |
+| 2 | CRUD API & Database: Implementasi REST API untuk transaksi keuangan (masuk/keluar) dan surat (masuk/keluar), serta setup database PostgreSQL. | 🔄 In Progress |
+| 3 | Frontend React Setup: Membuat tampilan antarmuka pengguna (frontend) dengan React, termasuk halaman login dan dashboard. | ⬜ Pending |
+| 4 | Full-Stack Integration: Menghubungkan frontend dan backend, memastikan komunikasi antara API dan frontend berjalan dengan baik. | ⬜ Pending |
+| 5-7 | Docker & Docker Compose: Containerisasi aplikasi dengan Docker dan setup Docker Compose untuk mengelola backend, frontend, dan database secara terpisah. | ⬜ Pending |
+| 8 | UTS: Persiapan dan presentasi demo untuk UTS, menampilkan implementasi awal sistem.| ⬜ Pending |
+| 9-11 | CI/CD Pipeline: Pengaturan CI/CD pipeline untuk otomatisasi testing, build, dan deployment menggunakan GitHub Actions. | ⬜ Pending |
+| 12-14 | Microservices Architecture: Mengimplementasikan arsitektur microservices untuk meningkatkan skalabilitas dan modularitas aplikasi. | ⬜ Pending |
+| 15-16 | Final Deployment & UAS Demo: Finalisasi aplikasi, deployment ke cloud, dan persiapan untuk presentasi demo UAS. | ⬜ Pending |
+
+## Struktur Proyek 
+
+Berikut adalah struktur proyek untuk aplikasi Sistem Informasi Keuangan dan Administrasi HMSI (SIKASI).
+
+```
+cc-kelompok-6/
+├── backend/
+│   ├── main.py                  # Main entry untuk aplikasi FastAPI (backend)
+│   ├── requirements.txt         # Daftar dependencies untuk backend
+│   ├── models/                  # Model database
+│   ├── services/                # Layanan untuk logika bisnis dan API
+│   └── config/                  # Konfigurasi aplikasi (misalnya, pengaturan database)
+│
+├── frontend/
+│   ├── public/                  # File statis seperti gambar dan favicon
+│   ├── src/                     # Kode sumber aplikasi React
+│   │   ├── components/          # Komponen UI aplikasi
+│   │   ├── assets/              # Gambar dan file lainnya untuk frontend
+│   │   ├── App.css              # Styling global untuk aplikasi
+│   │   ├── App.jsx              # Komponen utama untuk aplikasi React
+│   │   ├── index.css            # Styling CSS tambahan
+│   │   └── main.jsx             # Entry point untuk aplikasi React
+│   ├── package.json             # Dependencies dan pengaturan untuk frontend
+│   └── vite.config.js           # Konfigurasi untuk build dan development frontend
+│
+├── docs/                        # Dokumentasi tim dan proyek
+│   ├── member-Achmad-Bayhaqi.md
+│   ├── member-Alfiani-Dwiyuniarti.md
+│   ├── member-Indah-Nur-Fortuna.md
+│   ├── member-Nilam-Ayu-NandaStari-Romdoni.md
+│   ├── member-Zahwa-Hanna-Dwi-Putri.md
+│   └── README.md                # Dokumentasi utama proyek, roadmap, dll.
+│
+├── .gitignore                   # File untuk mengabaikan file tertentu dalam Git
+├── README.md                    # Dokumentasi utama proyek
+```
+
+## Deployment
+
+Aplikasi SIKASI (Sistem Informasi Keuangan dan Administrasi) ini akan dideploy menggunakan platform cloud seperti Railway atau Render agar dapat diakses secara online oleh seluruh pengurus HMSI.
+
+Deployment akan dilakukan secara otomatis menggunakan CI/CD pipeline dengan GitHub Actions.
+
+### Alur Deployment
+Setiap perubahan kode yang di push ke repository akan melalui proses berikut:
+1. Code di-push ke GitHub
+2. GitHub Actions menjalankan proses build dan testing
+3. Jika berhasil, aplikasi akan otomatis dideploy ke cloud
+4. Aplikasi dapat diakses secara online
+
+### Tujuan Deployment
+1. Memastikan sistem dapat diakses kapan saja oleh pengurus HMSI
+2. Mendukung transparansi data keuangan dan administrasi secara real-time
+3. Mengurangi penggunaan sistem manual
+
+### Status
+Sekarang ini deployment masih dalam tahap perencanaan (akan diimplementasikan pada minggu 9–11 sesuai roadmap mata kuliah).
+
+### Catatan
+Backend (FastAPI) disini akan menjadi pusat pengolahan data keuangan dan administrasi, sedangkan frontend nya(React) akan menjadi antarmuka pengguna.
+
+Database akan digunakan untuk menyimpan:
+- Data pemasukan dan pengeluaran
+- Data surat masuk dan keluar
+- Data pengurus HMSI
+
+Semua layanan ini nantinya akan dideploy secara terintegrasi di cloud.
+
+
+---
+
+## 📡 API Documentation
+
+### 1️⃣ POST /letters
+Endpoint ini digunakan untuk menambahkan item baru ke dalam sistem inventory.<p>
+**Method** <br>
+```
+POST
+```
+**URL**
+```
+http://localhost:8000/letters
+```
+**Request Body** <p>
+Item 1 : 
+```
+{
+    "title": "keluar",
+    "letter_type": "Leave Request",
+    "content": gapapa"
+}
+```
+Item 2 : 
+```
+{
+    "title": "gak sesuai",
+    "letter_type": "Complaint",
+    "content": berbeda aja"
+}
+```
+Item 3 : 
+```
+{
+    "title": "surat izin",
+    "letter_type": "Other",
+    "content": ada acara"
+}
+```
+
+**Response Body** <p>
+Item 1 :
+```
+{
+    "content": "gapapa"
+    "id": 4,
+    "created_at": "2026-04-11T13:58:01.703590",
+    "letter_type": "Leave Request",
+    "status": "draft",
+    "title": "keluar",
+    "update_at": "2026-04-11T13:58:01.703590"
+}
+```
+
+Item 2 :
+```
+{
+    "content": "berbeda aja"
+    "id": 5,
+    "created_at": "2026-04-11T14:58:01.818530",
+    "letter_type": "Complaint",
+    "status": "draft",
+    "title": "ga sesuai",
+    "update_at": "2026-04-11T14:58:01.818530"
+}
+```
+
+Item 3 :
+```
+{
+    "content": "ada acara"
+    "id": 6,
+    "created_at": "2026-04-11T14:01:30.467232",
+    "letter_type": "Other",
+    "status": "draft",
+    "title": "surat izin",
+    "update_at": "2026-04-11T14:01:30.467232"
+}
+```
+
+
+### 2️⃣ GET /letters
+Endpoint ini digunakan untuk mengambil seluruh daftar item yang tersimpan di dalam sistem inventory. Biasanya digunakan ketika pengguna ingin melihat semua item yang tersedia di database.<p>
+
+**Method** <br>
+```
+GET
+```
+**URL**
+```
+http://localhost:8000/letters?skip=0&limit=3
+```
+**Request Body** <p>
+Endpoint ini tidak memerlukan request body karena hanya digunakan untuk mengambil daftar item.
+
+**Response Body** <p>
+```
+[
+    {
+        "content": "gapapa"
+        "id": 4,
+        "created_at": "2026-04-11T13:58:01.703590",
+        "letter_type": "Leave Request",
+        "status": "draft",
+        "title": "keluar",
+        "update_at": "2026-04-11T13:58:01.703590"
+    },
+    {
+        "content": "berbeda aja"
+        "id": 5,
+        "created_at": "2026-04-11T14:58:01.818530",
+        "letter_type": "Complaint",
+        "status": "draft",
+        "title": "ga sesuai",
+        "update_at": "2026-04-11T14:58:01.818530"
+    },
+    {
+        "content": "ada acara"
+        "id": 6,
+        "created_at": "2026-04-11T14:01:30.467232",
+        "letter_type": "Other",
+        "status": "draft",
+        "title": "surat izin",
+        "update_at": "2026-04-11T14:01:30.467232"
+    }
+]
+```
+
+### 3️⃣ GET /letters/{letter_id}
+Endpoint ini digunakan untuk mengambil data satu item tertentu berdasarkan ID dan biasanya digunakan ketika pengguna ingin melihat detail dari satu item secara spesifik.
+
+**Method** <br>
+```
+GET 
+```
+**URL**
+```
+http://localhost:8000/letters/6
+```
+**Request Body** <p>
+Endpoint ini tidak memerlukan request body karena hanya digunakan untuk mengambil daftar item.
+
+**Response Body** <p>
+```
+{
+    "content": "ada acara"
+    "id": 6,
+    "created_at": "2026-04-11T14:01:30.467232",
+    "letter_type": "Other",
+    "status": "draft",
+    "title": "surat izin",
+    "update_at": "2026-04-11T14:01:30.467232"
+}
+```
+
+### 4️⃣ PUT /letter/{letter_id}
+Endpoint ini digunakan untuk memperbarui data item yang sudah ada di dalam sistem inventory berdasarkan ID item. <p>
+
+**Method** <br>
+```
+PUT 
+```
+**URL**
+```
+http://localhost:8000/letters/6
+```
+**Request Body** <p>
+```
+{
+    "title": "surat izin",
+    "letter_type": "Other",
+    "content": ada acara di luar kota"
+}
+```
+
+**Response Body** <p>
+```
+{
+    "content": "ada acara di luar kota"
+    "id": 6,
+    "created_at": "2026-04-11T14:01:30.467232",
+    "letter_type": "Other",
+    "status": "draft",
+    "title": "surat izin",
+    "update_at": "2026-04-11T14:16:18.743361"
+}
+```
+
+### 5️⃣ GET /letters/{letter_id}
+Endpoint ini kembali dijalankan untuk mengambil data satu item tertentu berdasarkan ID dan melihat perubahan data yang telah diubah.
+
+**Method** <br>
+```
+GET 
+```
+**URL**
+```
+http://localhost:8000/letters/6
+```
+**Request Body** <p>
+```
+{
+    "content": "ada acara di luar kota"
+    "id": 6,
+    "created_at": "2026-04-11T14:01:30.467232",
+    "letter_type": "Other",
+    "status": "draft",
+    "title": "surat izin",
+    "update_at": "2026-04-11T14:16:18.743361"
+}
+```
+
+### 6️⃣ DELETE /letters/{letter_id}
+Endpoint ini digunakan untuk menghapus item tertentu dari sistem inventory berdasarkan ID.
+Ketika endpoint ini dipanggil, sistem akan mencari item yang memiliki ID sesuai dan kemudian menghapusnya dari database.
+
+**Method** <br>
+```
+DELETE 
+```
+**URL**
+```
+http://localhost:8000/letters/6
+```
+**Request Body** <p>
+Endpoint ini tidak memerlukan request body karena hanya membutuhkan ID item pada URL.
+
+**Response Body** <p>
+```
+{
+    "detail": "Letter deleted"
+}
+```
+
+### 7️⃣ GET /letters/{letter_id}
+Endpoint ini kembali dijalankan untuk mengambil data satu item tertentu berdasarkan ID dan melihat response data yang telah dihapus dengan menampilkan 404 Not Found.
+
+**Method** <br>
+```
+GET 
+```
+**URL**
+```
+http://localhost:8000/letters/6
+```
+**Request Body** <p>
+```
+{
+    "content": "ada acara di luar kota"
+    "id": 6,
+    "created_at": "2026-04-11T14:01:30.467232",
+    "letter_type": "Other",
+    "status": "draft",
+    "title": "surat izin",
+    "update_at": "2026-04-11T14:16:18.743361"
+}
+```
+
+**Response Body** <p>
+```
+{
+    "detail": "Letter not found"
+}
+```
