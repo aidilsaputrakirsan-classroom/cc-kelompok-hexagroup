@@ -132,7 +132,7 @@ function AdminPanel() {
 
   // --- FUNGSI DELETE ---
   const handleDelete = async (userId, name) => {
-    if (window.confirm(`Hapus akses untuk ${name}? Tindakan ini tidak bisa dibatalkan.`)) {
+    if (window.confirm(`Hapus akses untuk ${name}? Tindakan ini  tidak bisa dibatalkan.`)) {
       try {
         await userAPI.deleteUser(userId); // Memanggil API Hapus
         alert("User berhasil dihapus.");
