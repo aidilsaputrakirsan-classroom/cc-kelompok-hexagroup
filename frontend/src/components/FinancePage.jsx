@@ -5,7 +5,7 @@ const styles = {
   container: {
     minHeight: "100vh",
     background: "#f0f4f8",
-    padding: "40px 20px",
+    padding: "clamp(20px, 3vw, 40px)",
     fontFamily: "'Plus Jakarta Sans', sans-serif",
   },
   content: {
@@ -17,38 +17,41 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "30px",
+    flexWrap: "wrap",
+    gap: "15px"
   },
   title: {
-    fontSize: "28px",
+    fontSize: "clamp(22px, 5vw, 28px)",
     fontWeight: "800",
     color: "#1e293b",
     margin: 0,
   },
   summaryGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "20px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "clamp(15px, 2vw, 20px)",
     marginBottom: "30px",
   },
   card: {
     background: "white",
-    padding: "24px",
+    padding: "clamp(15px, 2vw, 24px)",
     borderRadius: "20px",
     boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
     border: "1px solid rgba(255,255,255,0.8)",
   },
   filterSection: {
     background: "white",
-    padding: "20px",
+    padding: "clamp(12px, 2vw, 20px)",
     borderRadius: "20px",
     marginBottom: "20px",
     display: "flex",
-    gap: "15px",
+    gap: "clamp(10px, 2vw, 15px)",
     alignItems: "center",
     boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+    flexWrap: "wrap"
   },
   select: {
-    padding: "10px 16px",
+    padding: "clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px)",
     borderRadius: "12px",
     border: "1px solid #e2e8f0",
     backgroundColor: "#f8fafc",
@@ -56,9 +59,11 @@ const styles = {
     color: "#475569",
     outline: "none",
     cursor: "pointer",
+    flex: "1 1 auto",
+    minWidth: "100px"
   },
   input: {
-    padding: "12px",
+    padding: "clamp(10px, 1.5vw, 12px)",
     borderRadius: "12px",
     border: "1px solid #e2e8f0",
     marginBottom: "10px",
@@ -67,7 +72,7 @@ const styles = {
     fontSize: "14px",
   },
   btnPrimary: {
-    padding: "12px 24px",
+    padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)",
     borderRadius: "12px",
     border: "none",
     backgroundColor: "#4f46e5",
@@ -75,28 +80,32 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     transition: "all 0.3s ease",
+    fontSize: "14px",
+    whiteSpace: "nowrap"
   },
   tableCard: {
     background: "white",
     borderRadius: "24px",
-    overflow: "hidden",
+    overflow: "auto",
     boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
+    minWidth: "500px"
   },
   th: {
-    padding: "18px",
+    padding: "clamp(12px, 1.5vw, 18px)",
     background: "#f8fafc",
     color: "#64748b",
     textAlign: "left",
     fontSize: "12px",
     fontWeight: "800",
     textTransform: "uppercase",
+    whiteSpace: "nowrap"
   },
   td: {
-    padding: "20px 18px",
+    padding: "clamp(12px, 1.5vw, 20px) clamp(12px, 1.5vw, 18px)",
     borderBottom: "1px solid #f1f5f9",
     fontSize: "15px",
   },

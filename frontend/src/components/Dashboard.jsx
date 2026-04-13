@@ -10,13 +10,13 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center", 
     alignItems: "center",
-    padding: "5vh 5vw",
+    padding: "clamp(3vh, 5vh, 10vh) clamp(3vw, 5vw, 10vw)",
     boxSizing: "border-box",
   },
   
   header: {
     textAlign: "center",
-    marginBottom: "5vh",
+    marginBottom: "clamp(3vh, 5vh, 8vh)",
     width: "100%",
   },
 
@@ -49,10 +49,10 @@ const styles = {
 
   // --- GRID FLEXIBLE: OTOMATIS RATA TENGAH ---
   menuGrid: {
-    display: "flex",           // Flexbox adalah kunci rata tengah
+    display: "flex",           
     flexWrap: "wrap",          
-    justifyContent: "center",  // Kartu akan selalu di tengah layar
-    gap: "2.5rem",
+    justifyContent: "center",  
+    gap: "clamp(1.5rem, 3vw, 2.5rem)",
     width: "100%",
     maxWidth: "1400px",
     margin: "0 auto",
@@ -62,7 +62,7 @@ const styles = {
   menuCard: {
     backgroundColor: "#ffffff",
     borderRadius: "32px",
-    padding: "3rem 2rem",
+    padding: "clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)",
     cursor: "pointer",
     transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     display: "flex",
@@ -71,7 +71,7 @@ const styles = {
     textAlign: "center",
     boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
     border: "1px solid rgba(255, 255, 255, 0.1)",
-    width: "350px",            // Lebar kartu konsisten
+    width: "clamp(280px, 90vw, 350px)",
     minHeight: "450px",
     boxSizing: "border-box",
   },

@@ -15,10 +15,16 @@ const styles = {
   container: {
     maxWidth: "1300px",
     margin: "0 auto",
-    padding: "0 30px",
+    padding: "0 clamp(15px, 5vw, 30px)",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    flexWrap: "wrap",
+    gap: "15px",
+    "@media (maxWidth: 768px)": {
+      flexDirection: "column",
+      gap: "10px",
+    }
   },
   leftSection: {
     display: "flex",

@@ -1,12 +1,12 @@
 .counter {
-  font-size: 16px;
-  padding: 5px 10px;
+  font-size: clamp(14px, 2vw, 16px);
+  padding: clamp(4px, 1vw, 5px) clamp(8px, 1.5vw, 10px);
   border-radius: 5px;
   color: var(--accent);
   background: var(--accent-bg);
   border: 2px solid transparent;
   transition: border-color 0.3s;
-  margin-bottom: 24px;
+  margin-bottom: clamp(16px, 3vw, 24px);
 
   &:hover {
     border-color: var(--accent-border);
@@ -28,7 +28,7 @@
   }
 
   .base {
-    width: 170px;
+    width: clamp(100px, 30vw, 170px);
     position: relative;
     z-index: 0;
   }
@@ -40,16 +40,16 @@
 
   .framework {
     z-index: 1;
-    top: 34px;
-    height: 28px;
+    top: clamp(20px, 5vw, 34px);
+    height: clamp(18px, 4vw, 28px);
     transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
       scale(1.4);
   }
 
   .vite {
     z-index: 0;
-    top: 107px;
-    height: 26px;
+    top: clamp(60px, 15vw, 107px);
+    height: clamp(16px, 4vw, 26px);
     width: auto;
     transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
       scale(0.8);
@@ -59,14 +59,14 @@
 #center {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: clamp(15px, 2vw, 25px);
   place-content: center;
   place-items: center;
   flex-grow: 1;
+  padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 20px) clamp(12px, 2vw, 24px);
 
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
+  @media (max-width: 768px) {
+    gap: clamp(12px, 2vw, 18px);
   }
 }
 
@@ -74,31 +74,33 @@
   display: flex;
   border-top: 1px solid var(--border);
   text-align: left;
+  width: 100%;
 
   & > div {
     flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
+    padding: clamp(16px, 2vw, 32px);
   }
 
   .icon {
-    margin-bottom: 16px;
+    margin-bottom: clamp(12px, 2vw, 16px);
     width: 22px;
     height: 22px;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 768px) {
     flex-direction: column;
     text-align: center;
+
+    & > div {
+      padding: clamp(12px, 2vw, 24px) clamp(12px, 2vw, 20px);
+    }
   }
 }
 
 #docs {
   border-right: 1px solid var(--border);
 
-  @media (max-width: 1024px) {
+  @media (max-width: 768px) {
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
@@ -108,22 +110,23 @@
   list-style: none;
   padding: 0;
   display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
+  gap: clamp(6px, 1vw, 8px);
+  margin: clamp(16px, 2vw, 32px) 0 0;
+  flex-wrap: wrap;
 
   .logo {
-    height: 18px;
+    height: clamp(14px, 2vw, 18px);
   }
 
   a {
     color: var(--text-h);
-    font-size: 16px;
+    font-size: clamp(13px, 2vw, 16px);
     border-radius: 6px;
     background: var(--social-bg);
     display: flex;
-    padding: 6px 12px;
+    padding: clamp(5px, 1vw, 6px) clamp(10px, 1.5vw, 12px);
     align-items: center;
-    gap: 8px;
+    gap: clamp(6px, 1vw, 8px);
     text-decoration: none;
     transition: box-shadow 0.3s;
 
@@ -131,33 +134,26 @@
       box-shadow: var(--shadow);
     }
     .button-icon {
-      height: 18px;
-      width: 18px;
+      height: clamp(14px, 2vw, 18px);
+      width: clamp(14px, 2vw, 18px);
     }
   }
 
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
+  @media (max-width: 768px) {
     justify-content: center;
 
     li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
+      flex: 0 1 auto;
     }
   }
 }
 
 #spacer {
-  height: 88px;
+  height: clamp(32px, 5vw, 88px);
   border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
+
+  @media (max-width: 768px) {
+    height: clamp(20px, 4vw, 48px);
   }
 }
 
@@ -170,7 +166,8 @@
     content: '';
     position: absolute;
     top: -4.5px;
-    border: 5px solid transparent;
+    border: clamp(3px, 1vw, 5px) solid transparent;
+    display: none;
   }
 
   &::before {
@@ -180,5 +177,12 @@
   &::after {
     right: 0;
     border-right-color: var(--border);
+  }
+
+  @media (min-width: 769px) {
+    &::before,
+    &::after {
+      display: block;
+    }
   }
 }

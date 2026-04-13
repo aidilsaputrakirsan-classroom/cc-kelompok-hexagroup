@@ -18,59 +18,73 @@ const styles = {
   container: { 
     minHeight: "100vh",
     background: "#0f172a", 
-    padding: "40px 20px",
+    padding: "clamp(20px, 3vw, 40px)",
     fontFamily: "'Inter', sans-serif",
   },
   content: { maxWidth: "1200px", margin: "0 auto" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px" },
-  title: { fontSize: "32px", fontWeight: "900", margin: 0, color: "#ffffff", letterSpacing: "-1px" },
-  statsGrid: { display: "flex", gap: "20px", marginBottom: "30px" },
+  header: { 
+    display: "flex", 
+    justifyContent: "space-between", 
+    alignItems: "flex-end", 
+    marginBottom: "40px",
+    flexWrap: "wrap",
+    gap: "15px"
+  },
+  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "#ffffff", letterSpacing: "-1px" },
+  statsGrid: { 
+    display: "grid", 
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "clamp(15px, 2vw, 20px)", 
+    marginBottom: "30px" 
+  },
   statCard: {
-    flex: 1,
     background: "#ffffff", 
-    padding: "25px",
+    padding: "clamp(15px, 2vw, 25px)",
     borderRadius: "20px",
     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
     textAlign: "center"
   },
   filterBar: { 
     display: "flex", 
-    gap: "15px", 
+    gap: "clamp(10px, 2vw, 15px)", 
     marginBottom: "30px", 
-    padding: "15px", 
+    padding: "clamp(12px, 2vw, 15px)", 
     background: "#ffffff", 
     borderRadius: "18px", 
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+    flexWrap: "wrap"
   },
   input: { 
     background: "#f8fafc", 
     border: "1px solid #e2e8f0", 
-    padding: "12px 20px", 
+    padding: "clamp(10px, 1.5vw, 12px) clamp(12px, 2vw, 20px)", 
     borderRadius: "12px", 
     color: "#1e293b", 
-    flex: 2,
+    flex: "1 1 auto",
+    minWidth: "150px",
     outline: "none",
     fontSize: "14px"
   },
   select: { 
     background: "#f8fafc", 
     border: "1px solid #e2e8f0", 
-    padding: "12px", 
+    padding: "clamp(10px, 1.5vw, 12px)", 
     borderRadius: "12px", 
     color: "#1e293b", 
-    flex: 1,
+    flex: "1 1 auto",
+    minWidth: "100px",
     cursor: "pointer",
     outline: "none"
   },
   tableWrapper: { 
     background: "#ffffff", 
     borderRadius: "24px", 
-    overflow: "hidden", 
+    overflow: "auto", 
     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
   },
-  table: { width: "100%", borderCollapse: "collapse" },
-  th: { padding: "20px", background: "#f8fafc", color: "#64748b", textAlign: "left", fontSize: "12px", fontWeight: "800", textTransform: "uppercase" },
-  td: { padding: "20px", borderBottom: "1px solid #f1f5f9", fontSize: "14px", color: "#1e293b" },
+  table: { width: "100%", borderCollapse: "collapse", minWidth: "500px" },
+  th: { padding: "clamp(12px, 2vw, 20px)", background: "#f8fafc", color: "#64748b", textAlign: "left", fontSize: "12px", fontWeight: "800", textTransform: "uppercase", whiteSpace: "nowrap" },
+  td: { padding: "clamp(12px, 2vw, 20px)", borderBottom: "1px solid #f1f5f9", fontSize: "14px", color: "#1e293b" },
   badge: (role) => {
     const configs = {
       ketua: { bg: "#eef2ff", color: "#4338ca" },
