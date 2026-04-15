@@ -364,7 +364,7 @@ Auth: Perlu
 
 ## NOTES
 
-* Endpoint tanpa autentikasi:
+* Endpoint tanpa adanya autentikasi:
 
   * /
   * /health
