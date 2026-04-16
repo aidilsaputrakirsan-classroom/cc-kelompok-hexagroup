@@ -60,10 +60,12 @@ def seed_transactions(db: Session):
     print("[3] Seeding transactions...")
 
     transactions_data = [
-        {"type": "income",  "category": "Iuran",     "amount": 5000000, "description": "Iuran bulanan anggota"},
-        {"type": "expense", "category": "Konsumsi",  "amount": 500000,  "description": "Konsumsi rapat"},
-        {"type": "expense", "category": "Transport", "amount": 200000,  "description": "Transport kegiatan"},
-        {"type": "income",  "category": "Donasi",    "amount": 1000000, "description": "Donasi sponsor"},
+        {"type": "income",  "category": "Iuran",      "amount": 5000000, "description": "Iuran bulanan anggota"},
+        {"type": "expense", "category": "Konsumsi",   "amount": 500000,  "description": "Konsumsi rapat"},
+        {"type": "expense", "category": "Transport",  "amount": 200000,  "description": "Transport kegiatan"},
+        {"type": "income",  "category": "Donasi",     "amount": 1000000, "description": "Donasi sponsor"},
+        {"type": "expense", "category": "Operasional","amount": 300000,  "description": "Biaya operasional kantor"},
+        {"type": "expense", "category": "Lainnya",    "amount": 150000,  "description": "Pengeluaran lain-lain"},
     ]
 
     for trans_data in transactions_data:
@@ -85,9 +87,10 @@ def seed_letters(db: Session):
     print("[4] Seeding letters...")
 
     letters_data = [
-        {"title": "Surat Undangan Rapat",  "letter_type": "other",     "content": "Mengundang seluruh anggota untuk hadir dalam rapat bulanan.", "status": "draft"},
-        {"title": "Surat Permohonan Dana", "letter_type": "other",     "content": "Permohonan dana kegiatan organisasi semester ini.",           "status": "submitted"},
-        {"title": "Surat Keputusan",       "letter_type": "promotion", "content": "Surat keputusan pengangkatan pengurus baru organisasi.",       "status": "approved"},
+        {"title": "Surat Undangan Rapat",    "letter_type": "Undangan",     "content": "Mengundang seluruh anggota untuk hadir dalam rapat bulanan.", "status": "draft"},
+        {"title": "Surat Permohonan Dana",   "letter_type": "Permohonan",   "content": "Permohonan dana kegiatan organisasi semester ini.",           "status": "submitted"},
+        {"title": "Surat Keputusan Pengurus","letter_type": "Pemberitahuan","content": "Pemberitahuan pengangkatan pengurus baru organisasi.",        "status": "approved"},
+        {"title": "Surat Izin Kegiatan",     "letter_type": "Izin",         "content": "Permohonan izin penggunaan aula untuk kegiatan organisasi.",  "status": "draft"},
     ]
 
     for letter_data in letters_data:
