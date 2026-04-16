@@ -31,3 +31,30 @@ Pada tahap ini pengguna memilih salah satu item yang ada pada daftar dan mengkli
 <img src="image/test5-klik-edit.png">
 Berdasarkan gambar tersebut, setelah saya mengklik tombol edit maka sistem menampilkan halaman edit berupa form edit dari item yang telah dipilih. Melalui halaman ini saya dapat mengubah data pada item Surat izin.
 
+6. **Form edit terisi data lama, ubah harga dan klik update** <br>
+Berdasarkan gambar pada test 5 menunjukkan bahwa sistem menampilkan halaman form edit yang berisikan data lama dari item yang telah dipilih sebelumnya.
+<img src="image/test6-ubah-harga-item.png">
+Selanjutnya saya ingin mengubah deskripsi pada Surat Izin yang awalnya berupa permohonan izin tidak dapat hadir karena ada acara keluarga menjadi permohonan izin tidak dapat hadir karena ada acara keluarga di luar kota. Setelah selesai mengubah, klik tombol simpan perubahan agar sistem dapat mengirimkan permintaan untuk mengubah data item surat tersebut.
+<img src="image/test6-item-ubah-muncul.png">
+Setelah sistem menerima permintaan pengubahan data item surat, maka item surat tersebut akan muncul pada daftar item manajemen surat.
+
+7. **Mencari item via SearchBar** <br>
+Pada tahap ini pengguna mencoba menggunakan fitur SearchBar untuk memudahkan dalam pencarian item tertentu dengan memasukkan kata kunci.
+<img src="image/test7-cari-item.png">
+Berdasarkan gambar tersebut, saya ingin mencari item Suart Izin menggunakan fitur SearchBar dengan memasukkan kata kunci berupa Surat Izin. Sistem akan menampilkan daftar item yang sesuai dengan kata kunci pencarian, disini saya mencari Surat Izin sehingga yang tampil pada daftar item hanya Surat Izin saja yang menandakan bahwa SearchBar berhasil dijalankan.
+
+8. **Hapus item, confirm dialog muncul** <br>
+Pada tahap ini pengguna menghapus item dengan mengklik tombol delete pada item yang ingin dihapus.
+<img src="image/test8-hapus-item.png">
+Berdasarkan gambar tersebut, saya memilih item Surat Izin untuk dihapus dengan mengklik tombol delete dan sistem akan menampilkan sebuah konfirmasi kepada saya untuk menyetujui penghapusan pada item tersebut.
+
+9. **Item hilang dari daftar** <br>
+<img src="image/test9-item-hilang.png">
+Setelah saya menyetujui konfirmasi penghapusan item laptop, sistem akan memproses permintaan penghapusan yang telah saya kirimkan. Selanjutnya jika proses tersebut berhasil maka sistem akan memperbarui daftar item,  dimana item yang telah dipilih untuk penghapusan sebelumnya akan hilang dari daftar item.
+
+10. **Hapus semua item, empty state muncul** <br>
+Pada tahap ini pengguna mencoba untuk menghapus semua item yang ada pada daftar item dalam sistem dengan mengklik tombol delete dan melakukan konfirmasi persetujuan penghapusan item. 
+<img src="image/test10-hapus-item.png">
+Disini saya mencoba untuk menghapus semua item yang tersisa sebelumnya berupa surat permohonan, pemberitahuan libur, undangan delegasi, dan surat izin dengan melakukan konfirmasi persetujuan penghapusan item-item. Kemudian sistem akan memproses permintaan tersebut.
+<img src="image/test10-empty-state.png">
+Setelah proses penghapusan yang dilakukan sistem berhasil, maka sistem tidak akan menampilkan daftar item kembali karena item yang ada sebelumnya telah dihapus dan saat ini sistem menampilkan sebuah empty state yang menunjukkan bahwa tidak ada item dalam sistem ini.
