@@ -439,3 +439,5 @@ http://localhost:8000/letters/6
 }
 ```
 ---
+
+## 🔐 Authentication
