@@ -17,7 +17,7 @@ const formatDate = (dateString) => {
 const styles = {
   container: { 
     minHeight: "100vh",
-    background: "#0f172a", 
+    background: "#f0f4f8", 
     padding: "clamp(20px, 3vw, 40px)",
     fontFamily: "'Inter', sans-serif",
   },
@@ -30,7 +30,7 @@ const styles = {
     flexWrap: "wrap",
     gap: "15px"
   },
-  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "#ffffff", letterSpacing: "-1px" },
+  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "#1e293b", letterSpacing: "-1px" },
   statsGrid: { 
     display: "grid", 
     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -165,9 +165,17 @@ function AdminPanel() {
       <div style={styles.content}>
         <div style={styles.header}>
           <div>
-            <h2 style={styles.title}>User Management</h2>
-            <p style={{ color: "#94a3b8", fontSize: "14px", marginTop: "8px" }}>Kelola kredensial dan hak akses anggota SIKASI.</p>
-          </div>
+  <h2 style={{ ...styles.title, margin: 0 }}>
+    User Management
+  </h2>
+  <p style={{ 
+    color: "#94a3b8", 
+    fontSize: "14px", 
+    margin: 0 
+  }}>
+    Kelola kredensial dan hak akses anggota SIKASI.
+  </p>
+</div>
           <button style={styles.createBtn} onClick={() => setShowModal(true)}>+ Add New User</button>
         </div>
 
