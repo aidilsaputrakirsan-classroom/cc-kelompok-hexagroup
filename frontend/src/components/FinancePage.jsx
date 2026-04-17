@@ -139,7 +139,117 @@ const styles = {
     color: type === "income" ? "#15803d" : "#b91c1c",
     display: "inline-block",
     textTransform: "uppercase",
-  })
+  }),
+  toastContainer: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10001,
+    pointerEvents: "none"
+  },
+  toast: {
+    backgroundColor: "#ffffff",
+    borderRadius: "24px",
+    padding: "clamp(30px, 4vw, 50px)",
+    maxWidth: "500px",
+    width: "90%",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+    textAlign: "center",
+    pointerEvents: "auto",
+    animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
+  },
+  toastIcon: {
+    fontSize: "48px",
+    marginBottom: "16px"
+  },
+  toastTitle: {
+    fontSize: "clamp(20px, 3vw, 24px)",
+    fontWeight: "900",
+    color: "#1e293b",
+    margin: "0 0 8px 0"
+  },
+  toastMessage: {
+    fontSize: "14px",
+    color: "#64748b",
+    margin: 0,
+    lineHeight: "1.5"
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10000
+  },
+  modalContent: {
+    backgroundColor: "#ffffff",
+    borderRadius: "24px",
+    padding: "clamp(20px, 3vw, 40px)",
+    maxWidth: "500px",
+    width: "90%",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+    textAlign: "center"
+  },
+  modalTitle: {
+    fontSize: "clamp(18px, 3vw, 22px)",
+    fontWeight: "900",
+    color: "#1e293b",
+    margin: "0 0 12px 0"
+  },
+  modalText: {
+    fontSize: "14px",
+    color: "#64748b",
+    margin: "0 0 24px 0",
+    lineHeight: "1.5"
+  },
+  modalButtons: {
+    display: "flex",
+    gap: "12px",
+    justifyContent: "center"
+  },
+  modalBtnCancel: {
+    backgroundColor: "#f1f5f9",
+    color: "#64748b",
+    border: "none",
+    padding: "10px 24px",
+    borderRadius: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease"
+  },
+  modalBtnConfirm: {
+    backgroundColor: "#10b981",
+    color: "#fff",
+    border: "none",
+    padding: "10px 24px",
+    borderRadius: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease"
+  },
+  modalBtnDelete: {
+    backgroundColor: "#ef4444",
+    color: "#fff",
+    border: "none",
+    padding: "10px 24px",
+    borderRadius: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease"
+  }
 };
 
 function FinancePage({ user }) {
@@ -151,11 +261,46 @@ function FinancePage({ user }) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ type: "", category: "", amount: "", description: "" });
+  const [alert, setAlert] = useState({ show: false, message: "", type: "success", title: "", icon: "" });
+  const [confirmModal, setConfirmModal] = useState({ show: false, title: "", message: "", action: null, actionId: null });
 
   const categories = ["Iuran", "Konsumsi", "Transport", "Donasi", "Operasional", "Lainnya"];
   
   // Logika: Hanya Ketua dan Bendahara yang bisa manipulasi data
   const canManage = user.role === "bendahara" || user.role === "ketua";
+
+  // Fungsi Alert yang otomatis hilang dalam 3 detik
+  const triggerAlert = (message, type = "success", title = "", icon = "") => {
+    setAlert({ show: true, message, type, title, icon });
+    setTimeout(() => {
+      setAlert(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
+
+  // Fungsi untuk membuka modal konfirmasi
+  const openConfirmModal = (title, message, action, actionId = null) => {
+    setConfirmModal({ show: true, title, message, action, actionId });
+  };
+
+  // Fungsi untuk menutup modal konfirmasi
+  const closeConfirmModal = () => {
+    setConfirmModal({ show: false, title: "", message: "", action: null, actionId: null });
+  };
+
+  // Fungsi untuk handle aksi konfirmasi
+  const handleConfirmAction = async () => {
+    if (confirmModal.action === "delete") {
+      try {
+        await financeAPI.deleteTransaction(confirmModal.actionId);
+        triggerAlert("Transaksi berhasil dihapus dari sistem", "success", "Terhapus!", "🗑️");
+        loadData();
+      } catch (e) { 
+        console.error("Error deleting transaction:", e);
+        triggerAlert(e.response?.data?.detail || "Gagal menghapus transaksi", "error", "Oops!", "⚠️"); 
+      }
+    }
+    closeConfirmModal();
+  };
 
   useEffect(() => {
     loadData();
@@ -183,7 +328,7 @@ function FinancePage({ user }) {
       ]);
       setTransactions(tData);
       setSummary(sData);
-    } catch (e) { console.error("Error loading finance data:", e); }
+    } catch (e) { triggerAlert("Gagal memuat data", "error", "Error!", "⚠️"); }
   };
 
   const handleSubmit = async (e) => {
@@ -191,27 +336,61 @@ function FinancePage({ user }) {
     try {
       if (editingId) {
         await financeAPI.updateTransaction(editingId, { ...formData, amount: parseFloat(formData.amount) });
+        triggerAlert("Transaksi berhasil diperbarui", "success", "Berhasil!", "✨");
       } else {
         await financeAPI.createTransaction(formData.type, formData.category, parseFloat(formData.amount), formData.description);
+        triggerAlert("Transaksi baru telah ditambahkan", "success", "Berhasil!", "✅");
       }
       setShowForm(false);
       setEditingId(null);
       setFormData({ type: "", category: "", amount: "", description: "" });
       loadData();
-    } catch (e) { alert("Gagal menyimpan transaksi"); }
+    } catch (e) { triggerAlert(e.response?.data?.detail || "Gagal menyimpan transaksi", "error", "Oops!", "⚠️"); }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Hapus transaksi ini?")) {
-      try {
-        await financeAPI.deleteTransaction(id);
-        loadData();
-      } catch (e) { alert("Gagal menghapus"); }
-    }
+    openConfirmModal(
+      "Hapus Transaksi?",
+      "Transaksi akan dihapus secara permanen dan tidak dapat dikembalikan.",
+      "delete",
+      id
+    );
   };
 
   return (
     <div style={styles.container}>
+      {/* AREA NOTIFIKASI TENGAH */}
+      <div style={{ ...styles.toastContainer, pointerEvents: alert.show ? "auto" : "none" }}>
+        {alert.show && (
+          <div style={styles.toast}>
+            <div style={styles.toastIcon}>{alert.icon}</div>
+            <h3 style={styles.toastTitle}>{alert.title}</h3>
+            <p style={styles.toastMessage}>{alert.message}</p>
+          </div>
+        )}
+      </div>
+
+      {/* MODAL KONFIRMASI */}
+      {confirmModal.show && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalTitle}>{confirmModal.title}</h2>
+            <p style={styles.modalText}>{confirmModal.message}</p>
+            <div style={styles.modalButtons}>
+              <button style={styles.modalBtnCancel} onClick={closeConfirmModal}>
+                ✕ Batal
+              </button>
+              <button 
+                style={confirmModal.action === "delete" ? styles.modalBtnDelete : styles.modalBtnConfirm} 
+                onClick={handleConfirmAction}
+              >
+                ✓ {confirmModal.action === "delete" ? "Hapus" : "Konfirmasi"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={styles.content}>
         <div style={styles.header}>
          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -265,7 +444,7 @@ function FinancePage({ user }) {
           </div>
           <div style={styles.card}>
             <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>SALDO AKHIR</p>
-            <h3 style={{ color: "#4ade80", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.balance.toLocaleString()}</h3>
+            <h3 style={{ color: "#1e3a8a", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.balance.toLocaleString()}</h3>
           </div>
         </div>
 
@@ -373,7 +552,7 @@ function FinancePage({ user }) {
         </div>
       </div>
       
-      {/* CSS internal untuk hover effect row tabel dan select styling */}
+      {/* CSS internal untuk hover effect row tabel, select styling, dan toast animation */}
       <style>
         {`
           .table-row:hover {
@@ -386,6 +565,14 @@ function FinancePage({ user }) {
           }
           select option:hover {
             background-color: #eef2ff;
+          }
+          @keyframes popDown {
+            from { opacity: 0; transform: translate(-50%, -50px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+          }
+          @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
           }
         `}
       </style>
