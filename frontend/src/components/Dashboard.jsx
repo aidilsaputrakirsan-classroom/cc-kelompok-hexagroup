@@ -34,17 +34,21 @@ const styles = {
   },
 
   title: {
-    fontSize: "clamp(2rem, 5vw, 4rem)", 
+    fontSize: "clamp(1.5rem, 4vw, 3rem)", 
     fontWeight: "900",
     color: "#ffffff",
-    margin: "0 0 1rem 0",
+    margin: "0 0 0.5rem 0",
     letterSpacing: "-0.05em",
+    lineHeight: "1.4",
+    maxWidth: "100%",
+    wordWrap: "break-word",
+    overflowWrap: "break-word",
   },
 
   subtitle: {
     fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
     color: "#94a3b8",
-    margin: 0,
+    margin: "0",
   },
 
   // --- GRID FLEXIBLE: OTOMATIS RATA TENGAH ---
@@ -160,8 +164,8 @@ function Dashboard({ user }) {
     <div style={styles.container}>
       <header style={styles.header}>
         <div style={styles.roleBadge}>👑 {user.role.toUpperCase()} Access</div>
-        <h1 style={styles.title}>Workspace Dashboard</h1>
-        <p style={styles.subtitle}>Selamat datang kembali, <b>{user.full_name}</b></p>
+        <h1 style={styles.title}>SISTEM INFORMASI KEUANGAN DAN ADMINISTRASI HMSI ITK</h1>
+        <p style={styles.subtitle}>Selamat Datang, <b>{user.full_name}</b></p>
       </header>
 
       <div style={styles.menuGrid}>
