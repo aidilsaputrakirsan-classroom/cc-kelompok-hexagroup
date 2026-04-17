@@ -87,7 +87,7 @@ export default function LoginPage({ setUser, showToast }) {
               <p style={styles.cardSubtitle}>
                 {isRegister 
                   ? "Buat akun untuk memulai" 
-                  : "Masukkan kredensial Anda"}
+                  : "Masukkan akun Anda"}
               </p>
             </div>
 
@@ -100,6 +100,16 @@ export default function LoginPage({ setUser, showToast }) {
             )}
 
             <form onSubmit={handleSubmit} style={styles.form}>
+              {/* Info Box (Register Only) */}
+              {isRegister && (
+                <div style={styles.infoBox}>
+                  <span style={styles.infoIcon}>ℹ️</span>
+                  <span style={styles.infoText}>
+                    Daftar sebagai anggota. Bendahara & Sekretaris hanya dapat dibuat oleh Ketua.
+                  </span>
+                </div>
+              )}
+              
               {/* Full Name Input (Register Only) */}
               {isRegister && (
                 <div style={styles.formGroup}>
@@ -118,15 +128,6 @@ export default function LoginPage({ setUser, showToast }) {
                 </div>
               )}
 
-              {/* Info Box (Register Only) */}
-              {isRegister && (
-                <div style={styles.infoBox}>
-                  <span style={styles.infoIcon}>ℹ️</span>
-                  <span style={styles.infoText}>
-                    Daftar sebagai anggota. Bendahara & Sekretaris hanya dapat dibuat oleh Ketua.
-                  </span>
-                </div>
-              )}
 
               {/* Email Input */}
               <div style={styles.formGroup}>
@@ -138,7 +139,7 @@ export default function LoginPage({ setUser, showToast }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    placeholder="nama@email.com"
+                    placeholder="nama@gmail.com"
                     style={styles.input}
                   />
                 </div>
@@ -162,7 +163,7 @@ export default function LoginPage({ setUser, showToast }) {
                     onClick={() => setShowPassword(!showPassword)}
                     style={styles.togglePasswordBtn}
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? <img src="https://img.icons8.com/?size=100&id=60022&format=png&color=000000" alt="visible" style={{width: '20px', height: '20px'}} /> : <img src="https://img.icons8.com/?size=100&id=100236&format=png&color=000000" alt="hidden" style={{width: '20px', height: '20px'}} />}
                   </button>
                 </div>
 
