@@ -83,6 +83,27 @@ const styles = {
     fontSize: "14px",
     whiteSpace: "nowrap"
   },
+  formCard: {
+    backgroundColor: "#ffffff",
+    padding: "clamp(20px, 3vw, 30px)",
+    borderRadius: "20px",
+    border: "2px solid #e2e8f0",
+    marginBottom: "30px",
+    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
+  },
+  formInput: {
+    width: "100%",
+    padding: "clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 15px)",
+    borderRadius: "12px",
+    border: "2px solid #f1f5f9",
+    marginBottom: "15px",
+    fontSize: "14px",
+    outline: "none",
+    display: "block",
+    boxSizing: "border-box",
+    backgroundColor: "#ffffff",
+    color: "#1e293b"
+  },
   tableCard: {
     background: "white",
     borderRadius: "24px",
@@ -126,9 +147,10 @@ function FinancePage({ user }) {
   const [filteredData, setFilteredData] = useState([]);
   const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({ type: "income", category: "Iuran", amount: "", description: "" });
+  const [formData, setFormData] = useState({ type: "", category: "", amount: "", description: "" });
 
   const categories = ["Iuran", "Konsumsi", "Transport", "Donasi", "Operasional", "Lainnya"];
   
@@ -140,12 +162,18 @@ function FinancePage({ user }) {
   }, []);
 
   useEffect(() => {
-    if (categoryFilter === "All") {
-      setFilteredData(transactions);
-    } else {
-      setFilteredData(transactions.filter(t => t.category === categoryFilter));
+    let filtered = transactions;
+    
+    if (typeFilter !== "All") {
+      filtered = filtered.filter(t => t.type === typeFilter);
     }
-  }, [categoryFilter, transactions]);
+    
+    if (categoryFilter !== "All") {
+      filtered = filtered.filter(t => t.category === categoryFilter);
+    }
+    
+    setFilteredData(filtered);
+  }, [categoryFilter, typeFilter, transactions]);
 
   const loadData = async () => {
     try {
@@ -168,7 +196,7 @@ function FinancePage({ user }) {
       }
       setShowForm(false);
       setEditingId(null);
-      setFormData({ type: "income", category: "Iuran", amount: "", description: "" });
+      setFormData({ type: "", category: "", amount: "", description: "" });
       loadData();
     } catch (e) { alert("Gagal menyimpan transaksi"); }
   };
@@ -186,12 +214,26 @@ function FinancePage({ user }) {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.header}>
-          <div>
-            <h2 style={styles.title}>Finance Reports</h2>
-            <p style={{ color: "#64748b", marginTop: "5px", fontSize: "14px" }}>
-              {canManage ? "🚀 Mode Pengelola: Tambah atau edit laporan." : "🔍 Mode Lihat: Laporan keuangan transparan."}
-            </p>
-          </div>
+         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h2 style={{ 
+    ...styles.title, 
+    margin: 0, 
+    padding: 0,
+    lineHeight: '1.2',
+    transform: 'translateX(-1.5px)', 
+  }}>
+    Finance Reports
+  </h2>
+  <p style={{ 
+    color: "#64748b", 
+    fontSize: "14px", 
+    margin: 0,
+    padding: 0,
+    paddingTop: "5px" 
+  }}>
+    Laporan transparansi keuangan HMSI ITK.
+  </p>
+</div>
           {canManage && (
             <button 
               style={{
@@ -199,8 +241,11 @@ function FinancePage({ user }) {
                 backgroundColor: showForm ? "#64748b" : "#4f46e5"
               }} 
               onClick={() => {
+                if (!showForm) {
+                  setFormData({ type: "", category: "", amount: "", description: "" });
+                  setEditingId(null);
+                }
                 setShowForm(!showForm);
-                if(showForm) setEditingId(null);
               }}
             >
               {showForm ? "✕ Batal" : "+ Transaksi Baru"}
@@ -218,54 +263,71 @@ function FinancePage({ user }) {
             <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>TOTAL PENGELUARAN</p>
             <h3 style={{ color: "#dc2626", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.total_expense.toLocaleString()}</h3>
           </div>
-          <div style={{ ...styles.card, background: "#0f172a", color: "white" }}>
-            <p style={{ color: "#94a3b8", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>SALDO AKHIR</p>
+          <div style={styles.card}>
+            <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>SALDO AKHIR</p>
             <h3 style={{ color: "#4ade80", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.balance.toLocaleString()}</h3>
           </div>
         </div>
 
         {/* Filter Section */}
         <div style={styles.filterSection}>
+          <span style={{ fontWeight: "700", color: "#475569", fontSize: "14px" }}>Filter Jenis:</span>
+          <select style={styles.select} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="All">Semua Jenis</option>
+            <option value="income">Income (+)</option>
+            <option value="expense">Expense (-)</option>
+          </select>
           <span style={{ fontWeight: "700", color: "#475569", fontSize: "14px" }}>Filter Kategori:</span>
           <select style={styles.select} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
             <option value="All">Semua Kategori</option>
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
+          <button 
+            style={{ 
+              padding: "clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px)",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+              backgroundColor: "#f1f5f9",
+              color: "#dc2626",
+              fontWeight: "700",
+              cursor: "pointer",
+              fontSize: "14px",
+              whiteSpace: "nowrap"
+            }}
+            onClick={() => {
+              setTypeFilter("All");
+              setCategoryFilter("All");
+            }}
+          >
+            ↻ Reset Filter
+          </button>
         </div>
 
         {/* Form Transaksi (Hanya untuk Ketua/Bendahara) */}
         {canManage && showForm && (
-          <form style={{ ...styles.card, marginBottom: "30px", border: "2px solid #4f46e5" }} onSubmit={handleSubmit}>
-            <h4 style={{marginTop: 0, marginBottom: "20px", color: "#1e293b"}}>
-                {editingId ? "📝 Edit Detail Transaksi" : "✨ Tambah Transaksi Baru"}
-            </h4>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "15px" }}>
-              <div>
-                <label style={{fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase"}}>Jenis</label>
-                <select style={styles.input} value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
-                  <option value="income">Income (+)</option>
-                  <option value="expense">Expense (-)</option>
-                </select>
+          <div style={styles.formCard}>
+            <h3 style={{ textAlign: "center", marginBottom: "25px", color: "#1e293b" }}>
+              {editingId ? "✏️ Edit Transaksi" : "✨ Transaksi Baru"}
+            </h3>
+            <form onSubmit={handleSubmit}>
+              <select style={styles.formInput} value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required>
+                <option value="">-- Pilih Jenis --</option>
+                <option value="income">Income (+)</option>
+                <option value="expense">Expense (-)</option>
+              </select>
+              <select style={styles.formInput} value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} required>
+                <option value="">-- Pilih Kategori --</option>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              <input style={styles.formInput} type="number" placeholder="Nominal (Rp)" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} required />
+              <input style={styles.formInput} type="text" placeholder="Keterangan" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
+              <div style={{ textAlign: "center" }}>
+                <button type="submit" style={{ ...styles.btnPrimary, width: "100%" }}>
+                  {editingId ? "Simpan Perubahan" : "Konfirmasi & Simpan"}
+                </button>
               </div>
-              <div>
-                <label style={{fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase"}}>Kategori</label>
-                <select style={styles.input} value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
-                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
-              </div>
-            </div>
-            <div style={{marginBottom: "15px"}}>
-                <label style={{fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase"}}>Nominal (Rp)</label>
-                <input style={styles.input} type="number" placeholder="Contoh: 50000" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} required />
-            </div>
-            <div style={{marginBottom: "20px"}}>
-                <label style={{fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase"}}>Keterangan</label>
-                <input style={styles.input} type="text" placeholder="Masukkan deskripsi singkat..." value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
-            </div>
-            <button type="submit" style={{ ...styles.btnPrimary, width: "100%" }}>
-              {editingId ? "Simpan Perubahan" : "Konfirmasi & Simpan"}
-            </button>
-          </form>
+            </form>
+          </div>
         )}
 
         {/* Table Data */}
@@ -311,12 +373,19 @@ function FinancePage({ user }) {
         </div>
       </div>
       
-      {/* CSS internal untuk hover effect row tabel */}
+      {/* CSS internal untuk hover effect row tabel dan select styling */}
       <style>
         {`
           .table-row:hover {
             background-color: #f8fafc;
             transition: background-color 0.2s ease;
+          }
+          select option {
+            color: #1e293b;
+            background-color: #ffffff;
+          }
+          select option:hover {
+            background-color: #eef2ff;
           }
         `}
       </style>
