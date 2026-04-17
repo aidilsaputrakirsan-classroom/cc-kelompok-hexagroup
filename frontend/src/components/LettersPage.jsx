@@ -10,31 +10,42 @@ const styles = {
   // TOAST NOTIFIKASI DI TENGAH ATAS
   toastContainer: {
     position: "fixed",
-    top: "30px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 9999,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
-    width: "auto",
-    maxWidth: "90vw",
+    justifyContent: "center",
+    zIndex: 10001,
     pointerEvents: "none"
   },
   toast: {
-    padding: "clamp(10px, 2vw, 12px) clamp(16px, 3vw, 24px)",
-    borderRadius: "50px",
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: "clamp(12px, 1.5vw, 14px)",
-    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.2)",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    animation: "popDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
+    backgroundColor: "#ffffff",
+    borderRadius: "24px",
+    padding: "clamp(30px, 4vw, 50px)",
+    maxWidth: "500px",
+    width: "90%",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+    textAlign: "center",
     pointerEvents: "auto",
-    minWidth: "auto",
-    justifyContent: "center"
+    animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
+  },
+  toastIcon: {
+    fontSize: "48px",
+    marginBottom: "16px"
+  },
+  toastTitle: {
+    fontSize: "clamp(20px, 3vw, 24px)",
+    fontWeight: "900",
+    color: "#1e293b",
+    margin: "0 0 8px 0"
+  },
+  toastMessage: {
+    fontSize: "14px",
+    color: "#64748b",
+    margin: 0,
+    lineHeight: "1.5"
   },
 
   formCard: {
@@ -58,7 +69,68 @@ const styles = {
   btnPrimary: { backgroundColor: "#4f46e5", color: "#fff", padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer", fontSize: "clamp(12px, 1.5vw, 14px)", whiteSpace: "nowrap" },
   btnCancel: { backgroundColor: "#f1f5f9", color: "#64748b", padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer", fontSize: "clamp(12px, 1.5vw, 14px)", whiteSpace: "nowrap" },
   btnEdit: { backgroundColor: "#fef9c3", color: "#a16207", border: "none", padding: "6px 12px", borderRadius: "8px", fontWeight: "700", cursor: "pointer", marginRight: "5px" },
-  btnDelete: { backgroundColor: "#fee2e2", color: "#b91c1c", border: "none", padding: "6px 12px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }
+  btnDelete: { backgroundColor: "#fee2e2", color: "#b91c1c", border: "none", padding: "6px 12px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" },
+  
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10000
+  },
+  modalContent: {
+    backgroundColor: "#ffffff",
+    borderRadius: "24px",
+    padding: "clamp(20px, 3vw, 40px)",
+    maxWidth: "500px",
+    width: "90%",
+    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+    textAlign: "center"
+  },
+  modalTitle: {
+    fontSize: "clamp(18px, 3vw, 22px)",
+    fontWeight: "900",
+    color: "#1e293b",
+    margin: "0 0 12px 0"
+  },
+  modalText: {
+    fontSize: "14px",
+    color: "#64748b",
+    margin: "0 0 24px 0",
+    lineHeight: "1.5"
+  },
+  modalButtons: {
+    display: "flex",
+    gap: "12px",
+    justifyContent: "center"
+  },
+  modalBtnCancel: {
+    backgroundColor: "#f1f5f9",
+    color: "#64748b",
+    border: "none",
+    padding: "10px 24px",
+    borderRadius: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease"
+  },
+  modalBtnDelete: {
+    backgroundColor: "#ef4444",
+    color: "#fff",
+    border: "none",
+    padding: "10px 24px",
+    borderRadius: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease"
+  }
 };
 
 function LettersPage({ user }) {
@@ -69,16 +141,41 @@ function LettersPage({ user }) {
   const [typeFilter, setTypeFilter] = useState("all");
   const [formData, setFormData] = useState({ title: "", letter_type: "", content: "" });
   const [editingId, setEditingId] = useState(null);
-  const [alert, setAlert] = useState({ show: false, message: "", type: "success" });
+  const [alert, setAlert] = useState({ show: false, message: "", type: "success", title: "", icon: "" });
+  const [confirmModal, setConfirmModal] = useState({ show: false, title: "", message: "", action: null, actionId: null });
 
   const canCRUD = user?.role?.toLowerCase() === "sekretaris" || user?.role?.toLowerCase() === "ketua";
 
   // Fungsi Alert yang otomatis hilang dalam 3 detik
-  const triggerAlert = (message, type = "success") => {
-    setAlert({ show: true, message, type });
+  const triggerAlert = (message, type = "success", title = "", icon = "") => {
+    setAlert({ show: true, message, type, title, icon });
     setTimeout(() => {
       setAlert(prev => ({ ...prev, show: false }));
     }, 3000);
+  };
+
+  // Fungsi untuk membuka modal konfirmasi
+  const openConfirmModal = (title, message, action, actionId = null) => {
+    setConfirmModal({ show: true, title, message, action, actionId });
+  };
+
+  // Fungsi untuk menutup modal konfirmasi
+  const closeConfirmModal = () => {
+    setConfirmModal({ show: false, title: "", message: "", action: null, actionId: null });
+  };
+
+  // Fungsi untuk handle aksi konfirmasi
+  const handleConfirmAction = async () => {
+    if (confirmModal.action === "delete") {
+      try {
+        await letterAPI.deleteLetter(confirmModal.actionId);
+        triggerAlert("Surat berhasil dihapus dari sistem", "success", "Terhapus!", "🗑️");
+        loadLetters();
+      } catch (e) { 
+        triggerAlert(e.response?.data?.detail || "Gagal menghapus surat", "error", "Oops!", "⚠️"); 
+      }
+    }
+    closeConfirmModal();
   };
 
   useEffect(() => { loadLetters(); }, []);
@@ -88,7 +185,7 @@ function LettersPage({ user }) {
       setLoading(true);
       const data = await letterAPI.getLetters();
       setLetters(data || []);
-    } catch (err) { triggerAlert("Gagal memuat data", "error"); } finally { setLoading(false); }
+    } catch (err) { triggerAlert("Gagal memuat data surat", "error", "Gagal", "⚠️"); } finally { setLoading(false); }
   };
 
   const handleSubmit = async (e) => {
@@ -104,27 +201,26 @@ function LettersPage({ user }) {
           content: formData.content
         };
         await letterAPI.updateLetter(editingId, updatePayload);
-        triggerAlert("Berhasil diperbarui ✨", "success");
+        triggerAlert("Surat berhasil diperbarui", "success", "Berhasil!", "✨");
       } else {
         await letterAPI.createLetter(formData.title, formData.letter_type, formData.content);
-        triggerAlert("Surat berhasil dibuat ✅", "success");
+        triggerAlert("Surat baru telah dibuat", "success", "Berhasil!", "✅");
       }
       resetForm();
       loadLetters();
     } catch (err) {
-      triggerAlert(err.response?.data?.detail || "Terjadi kesalahan sistem", "error");
+      triggerAlert(err.response?.data?.detail || "Terjadi kesalahan sistem", "error", "Oops!", "⚠️");
     }
   };
 
   const handleDelete = async (id) => {
     if (!canCRUD) return;
-    if (window.confirm("Hapus surat ini secara permanen?")) {
-      try {
-        await letterAPI.deleteLetter(id);
-        triggerAlert("Surat berhasil dihapus 🗑️", "success");
-        loadLetters();
-      } catch (err) { triggerAlert("Gagal menghapus", "error"); }
-    }
+    openConfirmModal(
+      "Hapus Surat?",
+      "Surat akan dihapus secara permanen dan tidak dapat dikembalikan.",
+      "delete",
+      id
+    );
   };
 
   const startEdit = (letter) => {
@@ -152,17 +248,59 @@ function LettersPage({ user }) {
   return (
     <div style={styles.wrapper}>
       {/* AREA NOTIFIKASI TENGAH */}
-      <div style={styles.toastContainer}>
+      <div style={{ ...styles.toastContainer, pointerEvents: alert.show ? "auto" : "none" }}>
         {alert.show && (
-          <div style={{ ...styles.toast, backgroundColor: alert.type === "success" ? "#10b981" : "#ef4444" }}>
-            {alert.message}
+          <div style={styles.toast}>
+            <div style={styles.toastIcon}>{alert.icon}</div>
+            <h3 style={styles.toastTitle}>{alert.title}</h3>
+            <p style={styles.toastMessage}>{alert.message}</p>
           </div>
         )}
       </div>
 
+      {/* MODAL KONFIRMASI */}
+      {confirmModal.show && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalTitle}>{confirmModal.title}</h2>
+            <p style={styles.modalText}>{confirmModal.message}</p>
+            <div style={styles.modalButtons}>
+              <button style={styles.modalBtnCancel} onClick={closeConfirmModal}>
+                ✕ Batal
+              </button>
+              <button 
+                style={styles.modalBtnDelete}
+                onClick={handleConfirmAction}
+              >
+                ✓ Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={styles.container}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Manajemen Surat 📩</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <h2 style={{ 
+              ...styles.title, 
+              margin: 0, 
+              padding: 0,
+              lineHeight: '1.2',
+              transform: 'translateX(-1.5px)', 
+            }}>
+              Manajemen Surat 📩
+            </h2>
+            <p style={{ 
+              color: "#64748b", 
+              fontSize: "14px", 
+              margin: 0,
+              padding: 0,
+              paddingTop: "5px" 
+            }}>
+              Kelola surat dan dokumen resmi HMSI ITK.
+            </p>
+          </div>
           {canCRUD && (
             <button style={showForm ? styles.btnCancel : styles.btnPrimary} onClick={showForm ? resetForm : () => setShowForm(true)}>
               {showForm ? "✕ Batal" : "+ Buat Surat"}
@@ -232,6 +370,10 @@ function LettersPage({ user }) {
         @keyframes popDown {
           from { opacity: 0; transform: translate(-50%, -50px); }
           to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        @keyframes fadeInScale {
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
