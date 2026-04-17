@@ -22,6 +22,8 @@ function App() {
   const [toast, setToast] = useState({
     message: "",
     type: "", // success / error
+    title: "",
+    icon: ""
   });
 
   useEffect(() => {
@@ -46,11 +48,11 @@ function App() {
     setLoading(false);
   }, []);
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
+  const showToast = (message, type = "success", title = "", icon = "") => {
+    setToast({ message, type, title, icon });
 
     setTimeout(() => {
-      setToast({ message: "", type: "" });
+      setToast({ message: "", type: "", title: "", icon: "" });
     }, 3000);
   };
 
@@ -96,18 +98,47 @@ function App() {
           <div
             style={{
               position: "fixed",
-              top: "20px",
-              right: "20px",
-              padding: "12px 20px",
-              borderRadius: "8px",
-              color: "white",
-              backgroundColor: toast.type === "success" ? "#4CAF50" : "#f44336",
-              zIndex: 9999,
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "#ffffff",
+              borderRadius: "24px",
+              padding: "clamp(30px, 4vw, 50px)",
+              maxWidth: "500px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+              textAlign: "center",
+              zIndex: 10001,
+              animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
             }}
           >
-            {toast.message}
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>
+              {toast.icon || (toast.type === "success" ? "✅" : "⚠️")}
+            </div>
+            <h3 style={{ 
+              fontSize: "clamp(20px, 3vw, 24px)", 
+              fontWeight: "900", 
+              color: "#1e293b", 
+              margin: "0 0 8px 0" 
+            }}>
+              {toast.title || (toast.type === "success" ? "Berhasil!" : "Oops!")}
+            </h3>
+            <p style={{ 
+              fontSize: "14px", 
+              color: "#64748b", 
+              margin: 0, 
+              lineHeight: "1.5" 
+            }}>
+              {toast.message}
+            </p>
           </div>
         )}
+        <style>{`
+          @keyframes fadeInScale {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          }
+        `}</style>
 
         <Routes>
           <Route

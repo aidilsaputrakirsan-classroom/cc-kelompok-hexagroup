@@ -34,8 +34,10 @@ export default function LoginPage({ setUser, showToast }) {
 
       // ✅ TOAST SUCCESS
       showToast(
-        isRegister ? "Register berhasil!" : "Login berhasil!",
-        "success"
+        isRegister ? "Akun berhasil dibuat" : "Anda berhasil masuk",
+        "success",
+        isRegister ? "Selamat!" : "Berhasil!",
+        isRegister ? "🎉" : "✅"
       );
 
       navigate("/dashboard");
@@ -45,7 +47,7 @@ export default function LoginPage({ setUser, showToast }) {
       setError(errorMsg);
 
       // ❌ TOAST ERROR
-      showToast(errorMsg, "error");
+      showToast(errorMsg, "error", "Gagal", "⚠️");
     } finally {
       setLoading(false);
     }
