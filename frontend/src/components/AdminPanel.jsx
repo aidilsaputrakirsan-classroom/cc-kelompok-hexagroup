@@ -164,16 +164,25 @@ function AdminPanel() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.header}>
-          <div>
-  <h2 style={{ ...styles.title, margin: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+  <h2 style={{ 
+    ...styles.title, 
+    margin: 0, 
+    padding: 0,
+    lineHeight: '1.2',
+    transform: 'translateX(-2px)', // Ini cara paling ampuh buat 'paksa' judul geser ke kiri tanpa ngerusak layout lain
+  }}>
     User Management
   </h2>
   <p style={{ 
     color: "#94a3b8", 
     fontSize: "14px", 
-    margin: 0 
+    margin: 0,
+    padding: 0,
+    marginTop: '4px', // Kasih jarak dikit biar nggak nempel atas bawah
+    lineHeight: '1'
   }}>
-    Kelola kredensial dan hak akses anggota SIKASI.
+    Kelola hak akses anggota SIKASI.
   </p>
 </div>
           <button style={styles.createBtn} onClick={() => setShowModal(true)}>+ Add New User</button>
