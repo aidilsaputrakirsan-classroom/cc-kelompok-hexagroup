@@ -497,3 +497,13 @@ Users endpoints adalah endpoint yang digunakan untuk mengelola data pengguna, te
 | PUT    | /users/{user_id} | Update user                    |
 | DELETE | /users/{user_id} | Hapus user                     |
 
+### ⚠️ Error Handling
+| Status Code | Deskripsi                              |
+| ----------- | -------------------------------------- |
+| 200         | Berhasil                               |
+| 201         | Data berhasil dibuat                   |
+| 400         | Request tidak valid                    |
+| 401         | Unauthorized (token tidak ada / salah) |
+| 403         | Forbidden (tidak punya akses)          |
+| 404         | Data tidak ditemukan                   |
+| 500         | Internal server error                  |
