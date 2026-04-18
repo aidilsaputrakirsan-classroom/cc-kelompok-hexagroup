@@ -441,3 +441,55 @@ http://localhost:8000/letters/6
 ---
 
 ## 🔐 Authentication
+
+### 🌐 Public Endpoints <br>
+Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa token). Endpoint ini biasanya digunakan untuk proses awal seperti registrasi, login, atau pengecekan status API. <p>
+
+| Method | Endpoint       | Deskripsi                     |
+| ------ | -------------- | ----------------------------- |
+| GET    | /              | Root endpoint (cek API jalan) |
+| GET    | /health        | Cek status API                |
+| GET    | /team          | Informasi tim                 |
+
+
+### 🔐 Authentication Endpoints
+| Method | Endpoint       | Deskripsi                   |
+| ------ | -------------- | --------------------------- |
+| POST   | /auth/register | Register user baru          |
+| POST   | /auth/login    | Login user                  |
+| POST   | /auth/refresh  | Refresh access token        |
+| GET    | /auth/me       | Mendapatkan data user login |
+
+### 💰 Finance Endpoints
+| Method | Endpoint                               | Deskripsi                   |
+| ------ | -------------------------------------- | --------------------------- |
+| POST   | /finance/transactions                  | Membuat transaksi baru      |
+| GET    | /finance/transactions                  | Menampilkan semua transaksi |
+| GET    | /finance/transactions/{transaction_id} | Detail transaksi            |
+| PUT    | /finance/transactions/{transaction_id} | Update transaksi            |
+| DELETE | /finance/transactions/{transaction_id} | Hapus transaksi             |
+| GET    | /finance/summary                       | Ringkasan keuangan          |
+
+
+### 📄 Letters Endpoints
+| Method | Endpoint                     | Deskripsi               |
+| ------ | ---------------------------- | ----------------------- |
+| POST   | /letters                     | Membuat surat baru      |
+| GET    | /letters                     | Menampilkan semua surat |
+| GET    | /letters/{letter_id}         | Detail surat            |
+| PUT    | /letters/{letter_id}         | Update surat            |
+| DELETE | /letters/{letter_id}         | Hapus surat             |
+| POST   | /letters/{letter_id}/submit  | Submit surat            |
+| POST   | /letters/{letter_id}/approve | Approve surat           |
+| POST   | /letters/{letter_id}/reject  | Reject surat            |
+
+
+### 👥 Users Endpoints
+| Method | Endpoint         | Deskripsi                      |
+| ------ | ---------------- | ------------------------------ |
+| POST   | /users           | Membuat user baru (oleh ketua) |
+| GET    | /users           | Menampilkan semua user         |
+| GET    | /users/{user_id} | Detail user                    |
+| PUT    | /users/{user_id} | Update user                    |
+| DELETE | /users/{user_id} | Hapus user                     |
+
