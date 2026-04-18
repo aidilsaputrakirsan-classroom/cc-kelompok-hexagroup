@@ -453,6 +453,7 @@ Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa tok
 
 
 ### 🔐 Authentication Endpoints
+Authentication endpoints adalah endpoint yang digunakan untuk proses autentikasi pengguna seperti registrasi, login, dan pengelolaan token. Endpoint ini memungkinkan pengguna untuk mendapatkan akses ke sistem.
 | Method | Endpoint       | Deskripsi                   |
 | ------ | -------------- | --------------------------- |
 | POST   | /auth/register | Register user baru          |
@@ -461,6 +462,7 @@ Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa tok
 | GET    | /auth/me       | Mendapatkan data user login |
 
 ### 💰 Finance Endpoints
+Finance endpoints adalah endpoint yang digunakan untuk mengelola data keuangan seperti transaksi dan ringkasan keuangan. Endpoint ini biasanya memerlukan autentikasi.
 | Method | Endpoint                               | Deskripsi                   |
 | ------ | -------------------------------------- | --------------------------- |
 | POST   | /finance/transactions                  | Membuat transaksi baru      |
@@ -472,6 +474,7 @@ Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa tok
 
 
 ### 📄 Letters Endpoints
+Letters endpoints adalah endpoint yang digunakan untuk mengelola surat, termasuk proses pembuatan, pengeditan, serta alur persetujuan (workflow) seperti submit, approve, dan reject.
 | Method | Endpoint                     | Deskripsi               |
 | ------ | ---------------------------- | ----------------------- |
 | POST   | /letters                     | Membuat surat baru      |
@@ -485,6 +488,7 @@ Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa tok
 
 
 ### 👥 Users Endpoints
+Users endpoints adalah endpoint yang digunakan untuk mengelola data pengguna, termasuk pembuatan, melihat, memperbarui, dan menghapus user dalam sistem.
 | Method | Endpoint         | Deskripsi                      |
 | ------ | ---------------- | ------------------------------ |
 | POST   | /users           | Membuat user baru (oleh ketua) |
