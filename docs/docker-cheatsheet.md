@@ -74,3 +74,63 @@
 
 👉 host.docker.internal = akses database di komputer host
 
+#
+## MANAGE CONTAINER
+
+### Melihat container yang sedang berjalan
+    docker ps
+
+👉 menampilkan container yang sedang aktif saja
+
+### Meihat semua container (aktif & tidak aktif)
+    docker ps -a
+
+👉 menampilkan semua container termasuk yang sudah mati
+
+### Melihat log container
+    docker logs sikasi-backend
+
+👉 menampilkan catatan aktivitas container untuk debug error
+
+### Melihat log secara real-time
+    docker logs -f sikasi-backend
+
+👉 -f (follow) = update terus
+
+👉 monitoring live aplikasi yang sedang berjalan
+
+### Masuk ke dalam container
+    docker exec -it sikasi-backend bash
+
+👉 seperti SSH ke container untuk mengecek file di dalam container
+
+### Cek status kesehatan container (healthcheck)
+    docker inspect --format='{{.State.Health.Status}}' sikasi-backend
+
+👉 hasil : healthy (normal) / unhealthy (ada masalah)
+
+### Menghentikan container
+    docker stop sikasi-backend
+
+👉 menghentikan container dengan aman
+
+### Menjalankan kembali container
+    docker start sikasi-backend
+
+👉 menjalankan container yang sebelumnya sudah stop
+
+### Restart container
+    docker restart sikasi-backend
+
+👉 stop + start otomatis untuk mereload aplikasi dan apply perubahan config
+
+### Menghapus container
+    docker rm sikasi-backend
+
+👉 menghapus container tetapi harus dalam keadaan stop
+
+### Paksa hapus container
+    docker rm -f sikasi-backend
+
+👉 langsung stop + hapus (digunakan apabila tidak bisa dihentikan secara normal)
+
