@@ -163,3 +163,26 @@
     docker run -p 8000:8000 --env-file .env USERNAME/sikasi-backend:v1
 
 👉 tidak perlu docker build lagi, tinggal pull dan akan langsung jalan
+
+# 
+## CLEANUP (MEMBERSIHKAN RESOURCE)
+
+### Hapus semua container yang sudah berhenti
+    docker container prune
+
+👉 menghapus container yang statusnya sudah stopped saja
+
+### Hapus image yang tidak terpakai (dangling)
+    docker image prune
+
+👉 menghapus image tanpa tag (<none>)
+
+### Hapus semua resource tidak terpakai
+    docker system prune
+
+👉 menghapus container yang stopped + network yang tidak dipakai + cache build
+
+### Hapus semua resource (Nuclear option) dengan hati - hati
+    docker system prune -a
+
+👉 menghapus semua container yang stopped, semua image yang tidak dipakai container (termasuk image penting juga bisa ikut terhapus), cache build, dan nanti harus pull/build ulang
