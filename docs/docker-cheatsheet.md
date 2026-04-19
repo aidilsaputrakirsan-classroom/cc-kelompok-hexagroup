@@ -188,7 +188,7 @@
 👉 menghapus semua container yang stopped, semua image yang tidak dipakai container (termasuk image penting juga bisa ikut terhapus), cache build, dan nanti harus pull/build ulang
 
 # 
-## MENJALANKAN DARI ROOT
+## MENJALANKAN DARI ROOT (TANPA PERLU MASUK KE FOLDER BACKEND & FRONTEND)
 
 ### Pastikan di root project (ada docker-compose.yml, backend/, frontend/)
     ls
@@ -213,3 +213,40 @@
 
 👉 saat membutuhkan update + tetap jalan di background
 
+### Lihat container  yang sedang berjalan
+    docker compose ps
+
+👉 melihat service apa saja yang aktif dan port yang dipakai
+
+### Lihat semua log
+    docker compose logs
+
+👉 semua log dari semua service
+
+### Lihat log secara real-time
+    docker compose logs -f
+
+👉 menampilkan log secara langsung (live) dan akan terus update selama container berjalan
+
+### Stop semua service
+    docker compose down
+
+👉 menghentikan semua container dari docker-compose
+
+### Stop + hapus volume untuk reset database total
+    docker compose down -v
+
+👉 semua data database akan hilanh
+
+### Restart semua service
+    docker compose restart
+
+👉 menghentikan lalu menjalankan ulang semua container
+
+#
+## SETUP DATA AWAL (SEED DATABASE)
+
+### Jalankan seed 
+    docker compose exec backend bash -c "cd /app && PYTHONPATH=/app python scripts/seed_db.py"
+
+👉 dijalankan setelah pertama setup/setelah reset database 
