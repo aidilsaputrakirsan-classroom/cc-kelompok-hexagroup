@@ -186,3 +186,30 @@
     docker system prune -a
 
 👉 menghapus semua container yang stopped, semua image yang tidak dipakai container (termasuk image penting juga bisa ikut terhapus), cache build, dan nanti harus pull/build ulang
+
+# 
+## MENJALANKAN DARI ROOT
+
+### Pastikan di root project (ada docker-compose.yml, backend/, frontend/)
+    ls
+
+### Jalankan semua service apabila tidak ada perubahan code (normal)
+    docker compose up
+
+👉 tanpa build ulang langsung jalan semua service
+
+### Jalankan + build ulang 
+    docker compose up --build
+
+👉 digunakan apabila ada perubahan code atau perubahan Dockerfile atau ada menginstall hal baru 
+
+### Jalankan di background
+    docker compose up -d
+
+👉 container jalan tanpa mengunci terminal
+
+### Build ulang + background
+    docker compose up -d --build
+
+👉 saat membutuhkan update + tetap jalan di background
+
