@@ -27,7 +27,7 @@ Pastikan :
 - backend = Up
 - frontend = Up
 
-Jika belum healthy, tunggu ±10–30 detik
+Jika belum healthy, tunggu 30 detik
 
 ---
 
@@ -62,23 +62,9 @@ Pastikan halaman sudah tampil
 ## 5. 📦 CRUD Operations
 
 ### Ketua Organisasi
-Pada role Ketua Organisasi dapat mengelola semua halaman keuangan (*finance*), administrasi (*letters*), dan Admin/Akun Pengguna dengan melakukan Create, Read, Update, dan Delete (CRUD).
+Pada role Ketua Organisasi hanya dapat mengelola Admin/Akun Pengguna dengan melakukan Create, Read, dan Delete. Kemudian untuk Finance dan Latter hanya bisa menampilkan data saja (Read).
 
 #### ➕ CREATE (Tambah Data)<p>
-**Mengelola Keuangan**<br>
-1. Buka halaman `Finance`
-2. Klik `Transaksi Baru`
-3. Isi form dengan data transaksi baru (Jenis, Kategori, Iuran, Nominal, Keterangan)
-4. Klik tombol `Konfirmasi & Simpan`
-5. Data Transaksi baru akan tersimpan pada daftar Keuangan
-
-**Mengelola Administrasi**<br>
-1. Buka halaman `Letters` 
-2. Klik `Buat Surat`
-3. Isi form dengan data surat baru (Judul, Jenis, Deskripsi)
-4. Klik tombol `Buat Surat`
-5. Data surat baru akan tersimpan pada daftar surat
-
 **Mengelola Akun Pengguna** <br>
 1. Buka halaman `Admin` untuk mengakses User Management
 2. Klik `Add New User`
@@ -103,44 +89,7 @@ Pada role Ketua Organisasi dapat mengelola semua halaman keuangan (*finance*), a
 
 <p><br>
 
-#### 📝 UPDATE (Edit Data)
-**Keuangan**
-1. Buka halaman `Finance`
-2. Pilih transaksi yang ingin di edit
-3. Klik `Edit` pada transaksi yang dipilih
-4. Menampilkan data transaksi
-5. Ubah data transaksi
-6. Klik tombol `Simpan Perubahan`
-7. Data Transaksi yang diubah akan tersimpan dan diperbarui pada daftar Keuangan
-
-**Administrasi**
-1. Buka halaman `Letters` 
-2. Pilih surat yang ingin di edit
-3. Klik `Edit` pada surat yang dipilih
-4. Menampilkan data surat
-5. Ubah data surat
-6. Klik tombol `Simpan Perubahan`
-7. Data surat yang diubah akan tersimpan dan diperbarui pada daftar Surat Administrasi
-
-<p><br>
-
 #### 🗑️ DELETE (Hapus Data)
-**Keuangan**
-1. Buka halaman `Finance`
-2. Pilih transaksi yang ingin di hapus
-3. Klik `Hapus` pada transaksi yang dipilih
-4. Menampilkan dialog konfirmasi
-5. Klik OK untuk konfirmasi penghapusan transaksi
-6. Data transaksi terhapus dan hilang dari daftar keuangan
-
-**Administrasi**
-1. Buka halaman `Letters`
-2. Pilih surat yang ingin di hapus
-3. Klik `Hapus` pada surat yang dipilih
-4. Menampilkan dialog konfirmasi
-5. Klik OK untuk konfirmasi penghapusan surat
-6. Data surat terhapus dan hilang dari daftar surat administrasi
-
 **Akun Pengguna**
 1. Buka halaman `Admin`
 2. Pilih akun pengguna yang ingin di hapus
@@ -284,7 +233,8 @@ Kemudian :
 
 ## 🧠 Code Walkthrough
 ### 1. docker-compose.yml
-File ini mendefinisikan seluruh arsitektur aplikasi SikasiApp yang berjalan menggunakan Docker. Menggunakan Docker Compose untuk menjalankan seluruh sistem secara terintegrasi.
+File ini mendefinisikan seluruh arsitektur aplikasi SikasiApp yang berjalan menggunakan Docker. 
+Docker Compose digunakan untuk menjalankan dan menghubungkan beberapa container agar bekerja sebagai satu sistem.
 - Terdapat 3 service utama
     - `database`
     - `backend`
@@ -294,78 +244,46 @@ File ini mendefinisikan seluruh arsitektur aplikasi SikasiApp yang berjalan meng
 - `network` menunjukkan semua container berada dalam satu network agar dapat saling berkomunikasi.
 
 **Database**
+| Komponen                    | Fungsi                                                   |
+| --------------------------- | -------------------------------------------------------- |
+| `image: postgres:16-alpine` | Menggunakan PostgreSQL sebagai database                  |
+| `container_name`            | Memberi nama container (`sikasiapp-db`)                  |
+| `env_file`                  | Menyimpan konfigurasi database (user, password, db name) |
+| `ports: 5433:5432`          | Menghubungkan port database ke host                      |
+| `volumes`                   | Menyimpan data agar tidak hilang ketika container dimatikan (persistent)            |
+| `networks`                  | Menghubungkan dengan service lain                        |
+| `healthcheck`               | Mengecek apakah database sudah siap digunakan            |
 
-- Database menggunakan PostgreSQL versi 16 alpine.
-    ```
-    db:
-    image: postgres:16-alpine
-    container_name: sikasiapp-db
-    ```
-- Port 5433 agar tidak bentrok dengan service lain di host.
-    ```
-    "5433:5432"
-    ```
+Service database berfungsi sebagai penyimpanan data utama aplikasi.
 
-- Volume untuk menyimpan data agar tetap persistem meskipun container dimatikan
-    ```
-    pgdata:/var/lib/postgresql/data
-    ```
-
-- healthcheck memastikan database bener-bener siap sebelum backend dijalankan
-    ```
-    pg_isready
-    ```
 <p><br>
 
 **Backend**
+| Komponen           | Fungsi                                    |
+| ------------------ | ----------------------------------------- |
+| `build`            | Membangun image dari Dockerfile backend   |
+| `container_name`   | Nama container (`sikasiapp-backend`)      |
+| `env_file`         | Konfigurasi backend (DB URL, secret, dll) |
+| `ports: 8000:8000` | Akses API dari luar                       |
+| `depends_on`       | Menunggu database siap dulu               |
+| `networks`         | Terhubung ke database & frontend          |
+| `healthcheck`      | Mengecek backend berjalan dengan baik     |
 
-- Backend dibangun dari Dockerfile di folder backend
-    ```
-    backend:
-        build:
-            context: ./backend
-    ```
-- depends_on, backend hanya dapat berjalan ketika database dalam kondisi healthy
-    ```
-    db:
-        condition: service_healthy
-    ```
+Backend berfungsi sebagai API yang memproses data dan menghubungkan frontend dengan database.
 
-- Backend dapat diakses melalui port 8000
-    ```
-    "8000:8000"
-    ```
-
-- Healthcheck backend untuk memastikan service berjalan dengan baik.
-    ```
-    /health
-    ```
 <p><br>
 
 **Frontend**
 
-- Frontend dibuild dari folder frontend
-    ```
-    frontend:
-        build:
-            context: ./frontend
-    ```
+| Komponen         | Fungsi                                      |
+| ---------------- | ------------------------------------------- |
+| `build`          | Membangun aplikasi frontend dari Dockerfile |
+| `container_name` | Nama container (`sikasiapp-frontend`)       |
+| `ports: 3000:80` | Akses aplikasi di browser                   |
+| `depends_on`     | Menunggu backend siap                       |
+| `networks`       | Terhubung ke backend                        |
 
-- Build args digunakan agar frontend dapat terhubung ke backend API.
-    ```
-    VITE_API_URL: http://localhost:8000
-    ```
-
-- Frontend dijalankan pada port 3000 dan diserve oleh Nginx di port 80 dalam container.
-    ```
-    "3000:80"
-    ```
-
-- depends_on backend, frontend hanya dapat berjalan jika backend sudah siap.
-    ```
-    backend:
-        condition: service_healthy
-    ```
+Frontend berfungsi sebagai tampilan aplikasi yang digunakan oleh user.
 
 <p><br>
 
@@ -382,82 +300,31 @@ Semua container berada dalam satu network bernama sikasinet agar dapat saling be
 ```
 pgdata:
 ```
-digunakan untuk menyimpan data PostgreSQL secara permanen.
+digunakan untuk menyimpan data PostgreSQL secara permanen. Jika Container dimatikan data tetap ada.
 
 ---
 
 ### 2. backend/Dockerfile
-Menggunakan Dockerfile untuk membangun environment dan menginstall dependency backend dengan konsep multi-stage build agar lebih optimal.
+Backend Dockerfile digunakan untuk membangun environment backend, dengan memanfaatkan layer caching agar proses build lebih cepat dan optimal.
 
-**1. Builder**
-- Menyiapkan environment dan menginstall semua dependency
-    ```
-    FROM python:3.12-slim AS builder
-    WORKDIR /app
-    COPY requirements.txt .
-    RUN python -m venv /opt/venv
-    ```
-- Virtual environment agar dependency tidak bercampur dengan sistem utama
-    ```
-    RUN python -m venv /opt/venv
-    ```
+| Instruksi | Fungsi |
+|----------|--------|
+| `FROM python:3.12-slim` | Menentukan base image |
+| `AS (builder)` | Memberi nama stage (multi-stage) |
+| `WORKDIR /app` | Menentukan folder kerja di container|
+| `COPY requirements.txt` | Menyalin file ke container |
+| `RUN pip install ...` | Menjalankan perintah saat build |
+| `ENV PATH=...` | Mengatur environment variable |
+| `COPY --from=builder` | Ambil hasil dari stage builder sebelumnya |
+| `USER appuser` | Menjalankan container sebagai user non-root |
+| `EXPOSE 8000` | Menandakan port aplikasi |
+| `cek endpoint /health` | Mengecek kondisi aplikasi dan Memastikan backend berjalan|
+| `CMD ["python", ...]` | Perintah saat container dijalankan |
 
-- Install dependency semua library backend berdasarkan requirements.txt
-    ```
-    RUN pip install --no-cache-dir -r requirements.txt
-    ```
-<p><br>
-
-**2. Production**
-
-Production digunakan untuk menjalankan aplikasi secara ringan tanpa build tools.
+Docker menyimpan setiap instruksi sebagai layer, sehingga jika tidak ada perubahan, layer tersebut tidak perlu di-build ulang.
 ```
-FROM python:3.12-slim
-WORKDIR /app
-```
-
-- Copy venv dari builder
-    ```
-    COPY --from=builder /opt/venv /opt/venv
-    ```
-    Dependency dari stage pertama dipindahkan ke production agar build lebih efisien.
-
-- Copy source code
-    ```
-    COPY . .
-    ```
-    Kode aplikasi backend kemudian disalin ke dalam container.
-
-<p><br>
-
-**3. Security (User Non-Root)**
-Aplikasi dijalankan menggunakan user non-root untuk keamanan agar lebih secure.
-```
-RUN useradd -m appuser && chown -R appuser /app
-USER appuser
-```
-<p><br>
-
-**4. Expose Port**
-Backend berjalan pada port 8000
-```
-EXPOSE 8000
-```
-
-<p><br>
-
-**5. HealthCheck**
-Untuk memastikan backend bener-bener hidup dan dapat diakses
-```
-HEALTHCHECK --interval=30s ...
-```
-
-<p><br>
-
-**6. CMD (Jalankan Aplikasi)**
-Untuk menjalankan backend setelah database siap.
-```
-CMD ["python", "wait-for-db.py"]
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 ```
 
 ---
