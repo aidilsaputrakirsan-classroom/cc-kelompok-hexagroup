@@ -7,8 +7,8 @@ User --> Frontend
 Frontend --> Backend
 Backend --> Database
 
-subgraph Docker Network: sikasiapp-network
-    Frontend[sikasiapp-frontend : Nginx]
-    Backend[sikasiapp-backend : FastAPI]
-    Database[sikasiapp-db : PostgreSQL]
-```
+subgraph sikasiapp-network
+    Frontend[sikasiapp-frontend Nginx]
+    Backend[sikasiapp-backend FastAPI]
+    Database[sikasiapp-db PostgreSQL]
+end
