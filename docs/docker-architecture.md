@@ -18,9 +18,9 @@ flowchart TD
     A[Browser User] -->|http://localhost:3000| B
 
     subgraph Services
-        B[Frontend - Nginx / React (SikasiApp UI) Port 3000:80 build: ./frontend]
-        C[Backend API - SikasiApp Port 8000:8000 build: ./backend]
-        D[(PostgreSQL 16 - SikasiApp DB Port 5432:5432 image: postgres:16-alpine)]
+        B[Frontend - Nginx / React (SikasiApp UI)<br/>Port: 3000:80<br/>build: ./frontend]
+        C[Backend API - SikasiApp<br/>Port: 8000:8000<br/>build: ./backend]
+        D[(PostgreSQL 16 - SikasiApp DB<br/>Port: 5432:5432<br/>image: postgres:16-alpine)]
     end
 
     B -->|Fetch API| C
@@ -32,11 +32,11 @@ flowchart TD
         F[Volume: sikasi_pgdata (data persistence)]
     end
 
-    D --> F
     B --> E
     C --> E
     D --> E
-
+    D --> F
+end
 ```
 
 ## 📦 Services Detail
