@@ -140,7 +140,16 @@ cc-kelompok-6/
 │   ├── requirements.txt         # Daftar dependencies untuk backend
 │   ├── models/                  # Model database
 │   ├── services/                # Layanan untuk logika bisnis dan API
-│   └── config/                  # Konfigurasi aplikasi (misalnya, pengaturan database)
+│   ├── config/                  # Konfigurasi aplikasi (misalnya, pengaturan database)
+│   └── scripts/                  # Skrip terkait docker dan pengaturan lainnya
+│       ├── run.sh               # Skrip untuk menjalankan aplikasi
+│       ├── seed_db.py           # Skrip untuk mengisi database dengan data awal
+│       ├── setup.sh             # Skrip untuk setup lingkungan
+│       ├── .dockerignore        # Mengabaikan file untuk Docker
+│       ├── .env.docker          # Konfigurasi variabel lingkungan untuk Docker
+│       ├── .env.docker.example  # Contoh file konfigurasi untuk Docker
+│       ├── .env.example         # Contoh konfigurasi file environment
+│       ├── docker-run.sh        # Skrip untuk menjalankan aplikasi dengan Docker
 │
 ├── frontend/
 │   ├── public/                  # File statis seperti gambar dan favicon
@@ -164,6 +173,9 @@ cc-kelompok-6/
 │
 ├── .gitignore                   # File untuk mengabaikan file tertentu dalam Git
 ├── README.md                    # Dokumentasi utama proyek
+├── docker-compose.yml           # Konfigurasi Docker Compose untuk orkestrasi container
+├── Dockerfile                   # Dockerfile untuk build image aplikasi
+├── Makefile                     # Makefile untuk mempermudah eksekusi perintah
 ```
 
 ## Deployment
