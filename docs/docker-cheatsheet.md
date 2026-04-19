@@ -134,3 +134,32 @@
 
 👉 langsung stop + hapus (digunakan apabila tidak bisa dihentikan secara normal)
 
+# 
+## DOCKER HUB (REGISTRY)
+
+### Login ke Docker Hub
+    docker login
+
+👉 digunakan untuk masuk ke akun Docker Hub
+
+### Memberi nama (tag) image sebelum upload
+    docker tag sikasi-backend:v1 USERNAME/sikasi-backend:v1
+
+👉 format wajib = username/nama-image (Contoh: docker tag sikasi-backend:v1 indahfortuna/sikasi-backend:v1)
+
+👉 Image lokal = sikasi-backend:v1 -> Diubah jadi : USERNAME/sikasi-backend:v1
+
+### Push image ke Docker Hub
+    docker push USERNAME/sikasi-backend:v1
+
+👉 mengirim image dari laptop ke Docker Hub (cloud)
+
+### Pull image dari Docker Hub
+    docker pull USERNAME/sikasi-backend:v1
+
+👉 nengambil image dari Docker Hub ke server/laptop lain
+
+### Jalankan langsung dari Docker Hub (Tanpa Build)
+    docker run -p 8000:8000 --env-file .env USERNAME/sikasi-backend:v1
+
+👉 tidak perlu docker build lagi, tinggal pull dan akan langsung jalan
