@@ -15,19 +15,16 @@ SikasiApp berjalan menggunakan Docker Compose dengan tiga container utama yang s
 ```mermaid
 flowchart TD
 
-    A[Browser User] -->|http://localhost:3000| B[Frontend - SikasiApp UI]
+    A[Browser User] -->|http://localhost:3000| B
 
     subgraph Services
-        B[Frontend - Nginx / React (SikasiApp UI)\nPort: 3000:80\nbuild: ./frontend]
-
-        C[Backend API - SikasiApp\nPort: 8000:8000\nbuild: ./backend]
-
-        D[(PostgreSQL 16 - SikasiApp DB\nPort: 5432:5432\nimage: postgres:16-alpine)]
+        B[Frontend - Nginx / React (SikasiApp UI) Port 3000:80 build: ./frontend]
+        C[Backend API - SikasiApp Port 8000:8000 build: ./backend]
+        D[(PostgreSQL 16 - SikasiApp DB Port 5432:5432 image: postgres:16-alpine)]
     end
 
     B -->|Fetch API| C
     C -->|CRUD Data| D
-
     C -->|depends_on: service_healthy| D
 
     subgraph Infrastructure
@@ -39,7 +36,7 @@ flowchart TD
     B --> E
     C --> E
     D --> E
-end
+
 ```
 
 ## 📦 Services Detail
