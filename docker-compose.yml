@@ -81,8 +81,6 @@ services:
 # Volume digunakan untuk menyimpan data secara persisten di luar siklus hidup kontainer.
 volumes:
   pgdata:
-volumes:
-  pgdata:
     name: sikasiapp-pgdata      # Mendefinisikan volume untuk menyimpan data PostgreSQL secara persisten.
 
 # ==================== NETWORKS ====================
