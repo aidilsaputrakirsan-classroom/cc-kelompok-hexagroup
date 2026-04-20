@@ -3,28 +3,28 @@
 # Komputasi Awan — SI ITK
 # ============================================================
 # Usage:
-#   docker compose up -d          # Start semua services
+#   docker compose up -d          # Menjalankan semua layanan 
 #   docker compose down            # Stop & remove
-#   docker compose logs -f         # Lihat logs
-#   docker compose ps              # Status services
+#   docker compose logs -f         # Lihat logs dari semua layanan
+#   docker compose ps              # Status services 
 # ============================================================
 
 services:
   # ==================== DATABASE ====================
   db:
-    image: postgres:16-alpine
+    image: postgres:16-alpine     # Menggunakan image PostgreSQL versi 16 dengan Alpine untuk ukuran lebih kecil.
     container_name: sikasiapp-db
-    restart: unless-stopped
+    restart: unless-stopped       # Kontainer akan restart kecuali dihentikan secara eksplisit.
     env_file:
-      - .env.docker
+      - .env.docker               # Memuat variabel lingkungan dari file .env.docker.
     ports:
-      - "5433:5432"
+      - "5433:5432"                 # Port untuk akses database (host:5433 -> kontainer:5432).
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data         # Menyimpan data database agar persisten meskipun kontainer di-restart.
     networks:
       - sikasinet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sikasiapp"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sikasiapp"]      # Memeriksa status database.
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,19 +40,19 @@ services:
     env_file:
       - ./backend/.env.docker
     ports:
-      - "8000:8000"
+      - "8000:8000"            # Port untuk mengakses backend (host:8000 -> kontainer:8000).
     networks:
       - sikasinet
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy       # Backend menunggu database untuk sehat terlebih dahulu.
     healthcheck:
       test:
         [
           "CMD",
           "python",
           "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",    # Memeriksa kesehatan backend dengan HTTP request.
         ]
       interval: 30s
       timeout: 10s
@@ -65,25 +65,29 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:8000
-        # VITE_API_URL: https://api.namadomain.com
+        VITE_API_URL: http://localhost:8000        # Menyediakan URL backend untuk frontend sebagai argumen.
+        # VITE_API_URL: https://api.namadomain.com      # Opsional, bisa menggunakan endpoint API eksternal.
     container_name: sikasiapp-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3000:80"       # Memetakan port 3000 pada mesin host ke port 80 pada kontainer untuk frontend.
     networks:
-      - sikasinet
+      - sikasinet       # Menghubungkan kontainer ke jaringan kustom 'sikasinet'.
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_healthy      # Memastikan backend sehat sebelum memulai frontend.
 
 # ==================== VOLUMES ====================
+# Volume digunakan untuk menyimpan data secara persisten di luar siklus hidup kontainer.
 volumes:
   pgdata:
-    name: sikasiapp-pgdata
+volumes:
+  pgdata:
+    name: sikasiapp-pgdata      # Mendefinisikan volume untuk menyimpan data PostgreSQL secara persisten.
 
 # ==================== NETWORKS ====================
+# Jaringan memungkinkan kontainer untuk berkomunikasi satu sama lain.
 networks:
   sikasinet:
     name: sikasiapp-network
-    driver: bridge
+    driver: bridge      # Menggunakan driver 'bridge' untuk komunikasi antar kontainer.
