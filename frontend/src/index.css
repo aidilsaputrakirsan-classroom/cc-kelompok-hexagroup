@@ -156,3 +156,53 @@ code {
     opacity: 1;
   }
 }
+
+/* ===== MANUAL DARK MODE TOGGLE ===== */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+body.dark #root {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Override root variables saat toggle aktif */
+body.dark {
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --bg: #16171d;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.4) 0 10px 15px -3px,
+    rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+}
+
+/* Input dan form */
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background-color: #1e293b;
+  color: white;
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Tombol */
+body.dark button {
+  color: #f8fafc;
+}
+
+/* Link */
+body.dark a {
+  color: #38bdf8;
+}
