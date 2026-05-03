@@ -1,106 +1,92 @@
+# ==========================================
+# Cloud Computing - Information Systems ITK
+# Makefile for Project Management
+# ==========================================
 .PHONY: help build run stop restart logs ps clean seed \
 shell-backend shell-db push pull \
-build-backend build-frontend images inspect-backend inspect-frontend prune
-
-# Help (semua command yg ada di Makefile)
-# Docker Compose
+build-backend build-frontend images inspect-backend
+inspect-frontend prune \
+lint test pr-check
+# --- Help Menu ---
 help:
-	@echo make build            - Build semua services
-	@echo make run              - Jalankan project
-	@echo make stop             - Stop project
-	@echo make restart          - Restart project
-	@echo make logs             - Logs semua service
-	@echo make ps               - Status container
-	@echo make clean            - Hapus container
-	@echo make seed          	- Isi data awal
+@echo "--- Docker Compose Commands ---"
+@echo "make build - Build dan jalankan semua
+services"
+@echo "make run - Jalankan project (detached
+mode)"
+@echo "make stop - Hentikan project"
+@echo "make restart - Restart semua service"
+@echo "make logs - Lihat logs semua service"
+@echo "make ps - Lihat status container"
+@echo "make clean - Hapus container dan volumes
+(Data hilang!)"
+@echo "make seed - Isi data awal (dummy data)"
+@echo ""
+@echo "--- Container Access ---"
+@echo "make shell-backend - Masuk ke bash backend"
+@echo "make shell-db - Masuk ke PostgreSQL terminal"
+@echo ""
+@echo "--- Docker Image Management ---"
+@echo "make build-backend - Build image backend saja"
+@echo "make build-frontend - Build image frontend saja"
+@echo "make images - Lihat daftar local images"
+@echo "make push - Push images ke Registry/Docker
+Hub"
+@echo "make pull - Pull images dari Registry"
+@echo "make prune - Bersihkan dangling images"
+@echo ""
+@echo "--- CI/CD & Quality Check ---"
+@echo "make lint - Jalankan linter (flake8)"
+@echo "make test - Jalankan pengujian
 
-# Container Access
-	@echo make shell-backend    - Masuk backend container
-	@echo make shell-db         - Masuk PostgreSQL
-
-# Docker Image
-	@echo make build-backend    - Build image backend
-	@echo make build-frontend   - Build image frontend
-	@echo make images           - Lihat semua images
-	@echo make inspect-backend  - Detail image backend
-	@echo make inspect-frontend - Detail image frontend
-	@echo make push             - Push images ke Docker Hub
-	@echo make pull             - Pull images dari Docker Hub
-	@echo make prune            - Hapus dangling images
-
-# Start semua services
-run/up:
-	docker compose up -d
-
-# mengirim docker image ke docker hubnya
-push:
-	docker compose push
-
-# Start dengan rebuild
+(placeholder)"
+@echo "make pr-check - Validasi sebelum Pull Request
+(Build + Test)"
+# --- Core Commands ---
+run:
+docker compose up -d
 build:
-	docker compose up --build -d
-
-# Stop & remove containers
+docker compose up --build -d
+stop:
+docker compose stop
 down:
-	docker compose down
-
-# Stop, remove, DAN hapus volumes (data hilang!)
-clean:
-	docker compose down -v
-	docker system prune -f
-
-# Restart semua
+docker compose down
 restart:
-	docker compose down
-	docker compose up -d
-
-# Lihat logs (semua services)
+docker compose down
+docker compose up -d
+clean:
+docker compose down -v
+docker system prune -f
 logs:
-	docker compose logs -f
-
-# Lihat logs backend saja
-logs-backend:
-	docker compose logs -f backend
-
-# Lihat status
+docker compose logs -f
 ps:
-	docker compose ps
-
-# Masuk ke backend shell
+docker compose ps
+# --- Access ---
 shell-backend:
-	docker compose exec backend bash
-
-# Masuk ke database
+docker compose exec backend bash
 shell-db:
-	docker compose exec db psql -U postgres -d sikasiapp
-
-# Isi data awal (dummy)
+docker compose exec db psql -U postgres -d sikasiapp
 seed:
-	docker compose exec backend python scripts/seed_db.py
-
-# Dockerfile
+docker compose exec backend python scripts/seed_db.py
+# --- Image Management ---
 build-backend:
-	docker build -t $(BACKEND_IMAGE) ./backend
-
+docker build -t backend-image ./backend
 build-frontend:
-	docker build -t $(FRONTEND_IMAGE) ./frontend
+docker build -t frontend-image ./frontend
 
 images:
-	docker images
-
-inspect-backend:
-	docker inspect $(BACKEND_IMAGE)
-
-inspect-frontend:
-	docker inspect $(FRONTEND_IMAGE)
-
+docker images
 push:
-	docker push $(BACKEND_IMAGE)
-	docker push $(FRONTEND_IMAGE)
-
+docker compose push
 pull:
-	docker pull $(BACKEND_IMAGE)
-	docker pull $(FRONTEND_IMAGE)
-
+docker compose pull
 prune:
-	docker image prune -f
+docker image prune -f
+# --- CI/CD & Quality Check (Pembaruan Lead DevOps) ---
+lint:
+docker compose exec backend flake8 .
+test:
+@echo "Menjalankan proses pengujian (testing)... (Placeholder)"
+pr-check: build test
+@echo "Pemeriksaan validasi Pull Request selesai. Kode siap
+di-push."
