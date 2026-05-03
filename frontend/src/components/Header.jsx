@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import DarkModeToggle from "./DarkModeToggle";
 
 const styles = {
   header: {
@@ -276,6 +277,7 @@ export default function Header({ user, setUser }) {
 
         {user && (
           <div style={styles.userInfo}>
+            <DarkModeToggle />
             <div style={styles.userDetails}>
               <span style={styles.userName}>{user.full_name}</span>
               <span style={styles.userRole}>{user.role}</span>
