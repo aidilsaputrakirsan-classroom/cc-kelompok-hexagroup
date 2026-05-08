@@ -4,9 +4,10 @@ import { financeAPI } from "../services/api";
 const styles = {
   container: {
     minHeight: "100vh",
-    background: "#f0f4f8",
+    background: "var(--bg-page)", // Berubah otomatis
     padding: "clamp(20px, 3vw, 40px)",
     fontFamily: "'Plus Jakarta Sans', sans-serif",
+    transition: "all 0.3s ease",
   },
   content: {
     maxWidth: "1100px",
@@ -23,7 +24,7 @@ const styles = {
   title: {
     fontSize: "clamp(22px, 5vw, 28px)",
     fontWeight: "800",
-    color: "#1e293b",
+    color: "var(--text-title)", // Berubah otomatis
     margin: 0,
   },
   summaryGrid: {
@@ -33,14 +34,14 @@ const styles = {
     marginBottom: "30px",
   },
   card: {
-    background: "white",
+    background: "var(--bg-card)", // Berubah otomatis
     padding: "clamp(15px, 2vw, 24px)",
     borderRadius: "20px",
     boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
-    border: "1px solid rgba(255,255,255,0.8)",
+    border: "1px solid var(--border-color)", // Berubah otomatis
   },
   filterSection: {
-    background: "white",
+    background: "var(--bg-card)", // Berubah otomatis
     padding: "clamp(12px, 2vw, 20px)",
     borderRadius: "20px",
     marginBottom: "20px",
@@ -48,28 +49,20 @@ const styles = {
     gap: "clamp(10px, 2vw, 15px)",
     alignItems: "center",
     boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+    border: "1px solid var(--border-color)",
     flexWrap: "wrap"
   },
   select: {
     padding: "clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px)",
     borderRadius: "12px",
-    border: "1px solid #e2e8f0",
-    backgroundColor: "#f8fafc",
+    border: "1px solid var(--border-color)",
+    backgroundColor: "var(--bg-page)",
     fontSize: "14px",
-    color: "#475569",
+    color: "var(--text-main)",
     outline: "none",
     cursor: "pointer",
     flex: "1 1 auto",
     minWidth: "100px"
-  },
-  input: {
-    padding: "clamp(10px, 1.5vw, 12px)",
-    borderRadius: "12px",
-    border: "1px solid #e2e8f0",
-    marginBottom: "10px",
-    width: "100%",
-    boxSizing: "border-box",
-    fontSize: "14px",
   },
   btnPrimary: {
     padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)",
@@ -84,10 +77,10 @@ const styles = {
     whiteSpace: "nowrap"
   },
   formCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--bg-card)",
     padding: "clamp(20px, 3vw, 30px)",
     borderRadius: "20px",
-    border: "2px solid #e2e8f0",
+    border: "2px solid var(--border-color)",
     marginBottom: "30px",
     boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
   },
@@ -95,20 +88,21 @@ const styles = {
     width: "100%",
     padding: "clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 15px)",
     borderRadius: "12px",
-    border: "2px solid #f1f5f9",
+    border: "2px solid var(--border-color)",
     marginBottom: "15px",
     fontSize: "14px",
     outline: "none",
     display: "block",
     boxSizing: "border-box",
-    backgroundColor: "#ffffff",
-    color: "#1e293b"
+    backgroundColor: "var(--bg-page)",
+    color: "var(--text-main)"
   },
   tableCard: {
-    background: "white",
+    background: "var(--bg-card)",
     borderRadius: "24px",
     overflow: "auto",
     boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+    border: "1px solid var(--border-color)",
   },
   table: {
     width: "100%",
@@ -117,18 +111,20 @@ const styles = {
   },
   th: {
     padding: "clamp(12px, 1.5vw, 18px)",
-    background: "#f8fafc",
-    color: "#64748b",
+    background: "var(--bg-page)",
+    color: "var(--text-main)",
     textAlign: "left",
     fontSize: "12px",
     fontWeight: "800",
     textTransform: "uppercase",
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
+    borderBottom: "1px solid var(--border-color)",
   },
   td: {
     padding: "clamp(12px, 1.5vw, 20px) clamp(12px, 1.5vw, 18px)",
-    borderBottom: "1px solid #f1f5f9",
+    borderBottom: "1px solid var(--border-color)",
     fontSize: "15px",
+    color: "var(--text-main)",
   },
   statusBadge: (type) => ({
     padding: "4px 12px",
@@ -153,7 +149,8 @@ const styles = {
     pointerEvents: "none"
   },
   toast: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--bg-card)",
+    color: "var(--text-main)",
     borderRadius: "24px",
     padding: "clamp(30px, 4vw, 50px)",
     maxWidth: "500px",
@@ -161,23 +158,8 @@ const styles = {
     boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
     textAlign: "center",
     pointerEvents: "auto",
+    border: "1px solid var(--border-color)",
     animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
-  },
-  toastIcon: {
-    fontSize: "48px",
-    marginBottom: "16px"
-  },
-  toastTitle: {
-    fontSize: "clamp(20px, 3vw, 24px)",
-    fontWeight: "900",
-    color: "#1e293b",
-    margin: "0 0 8px 0"
-  },
-  toastMessage: {
-    fontSize: "14px",
-    color: "#64748b",
-    margin: 0,
-    lineHeight: "1.5"
   },
   modalOverlay: {
     position: "fixed",
@@ -192,64 +174,16 @@ const styles = {
     zIndex: 10000
   },
   modalContent: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--bg-card)",
+    color: "var(--text-main)",
     borderRadius: "24px",
     padding: "clamp(20px, 3vw, 40px)",
     maxWidth: "500px",
     width: "90%",
     boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
-    textAlign: "center"
+    textAlign: "center",
+    border: "1px solid var(--border-color)",
   },
-  modalTitle: {
-    fontSize: "clamp(18px, 3vw, 22px)",
-    fontWeight: "900",
-    color: "#1e293b",
-    margin: "0 0 12px 0"
-  },
-  modalText: {
-    fontSize: "14px",
-    color: "#64748b",
-    margin: "0 0 24px 0",
-    lineHeight: "1.5"
-  },
-  modalButtons: {
-    display: "flex",
-    gap: "12px",
-    justifyContent: "center"
-  },
-  modalBtnCancel: {
-    backgroundColor: "#f1f5f9",
-    color: "#64748b",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.3s ease"
-  },
-  modalBtnConfirm: {
-    backgroundColor: "#10b981",
-    color: "#fff",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.3s ease"
-  },
-  modalBtnDelete: {
-    backgroundColor: "#ef4444",
-    color: "#fff",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.3s ease"
-  }
 };
 
 function FinancePage({ user }) {
@@ -265,29 +199,21 @@ function FinancePage({ user }) {
   const [confirmModal, setConfirmModal] = useState({ show: false, title: "", message: "", action: null, actionId: null });
 
   const categories = ["Iuran", "Konsumsi", "Transport", "Donasi", "Operasional", "Lainnya"];
-  
-  // Logika: Hanya Ketua dan Bendahara yang bisa manipulasi data
   const canManage = user.role === "bendahara" || user.role === "ketua";
 
-  // Fungsi Alert yang otomatis hilang dalam 3 detik
   const triggerAlert = (message, type = "success", title = "", icon = "") => {
     setAlert({ show: true, message, type, title, icon });
-    setTimeout(() => {
-      setAlert(prev => ({ ...prev, show: false }));
-    }, 3000);
+    setTimeout(() => setAlert(prev => ({ ...prev, show: false })), 3000);
   };
 
-  // Fungsi untuk membuka modal konfirmasi
   const openConfirmModal = (title, message, action, actionId = null) => {
     setConfirmModal({ show: true, title, message, action, actionId });
   };
 
-  // Fungsi untuk menutup modal konfirmasi
   const closeConfirmModal = () => {
     setConfirmModal({ show: false, title: "", message: "", action: null, actionId: null });
   };
 
-  // Fungsi untuk handle aksi konfirmasi
   const handleConfirmAction = async () => {
     if (confirmModal.action === "delete") {
       try {
@@ -295,37 +221,24 @@ function FinancePage({ user }) {
         triggerAlert("Transaksi berhasil dihapus dari sistem", "success", "Terhapus!", "🗑️");
         loadData();
       } catch (e) { 
-        console.error("Error deleting transaction:", e);
         triggerAlert(e.response?.data?.detail || "Gagal menghapus transaksi", "error", "Oops!", "⚠️"); 
       }
     }
     closeConfirmModal();
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   useEffect(() => {
     let filtered = transactions;
-    
-    if (typeFilter !== "All") {
-      filtered = filtered.filter(t => t.type === typeFilter);
-    }
-    
-    if (categoryFilter !== "All") {
-      filtered = filtered.filter(t => t.category === categoryFilter);
-    }
-    
+    if (typeFilter !== "All") filtered = filtered.filter(t => t.type === typeFilter);
+    if (categoryFilter !== "All") filtered = filtered.filter(t => t.category === categoryFilter);
     setFilteredData(filtered);
   }, [categoryFilter, typeFilter, transactions]);
 
   const loadData = async () => {
     try {
-      const [tData, sData] = await Promise.all([
-        financeAPI.getTransactions(),
-        financeAPI.getSummary()
-      ]);
+      const [tData, sData] = await Promise.all([financeAPI.getTransactions(), financeAPI.getSummary()]);
       setTransactions(tData);
       setSummary(sData);
     } catch (e) { triggerAlert("Gagal memuat data", "error", "Error!", "⚠️"); }
@@ -348,43 +261,30 @@ function FinancePage({ user }) {
     } catch (e) { triggerAlert(e.response?.data?.detail || "Gagal menyimpan transaksi", "error", "Oops!", "⚠️"); }
   };
 
-  const handleDelete = async (id) => {
-    openConfirmModal(
-      "Hapus Transaksi?",
-      "Transaksi akan dihapus secara permanen dan tidak dapat dikembalikan.",
-      "delete",
-      id
-    );
-  };
-
   return (
     <div style={styles.container}>
-      {/* AREA NOTIFIKASI TENGAH */}
       <div style={{ ...styles.toastContainer, pointerEvents: alert.show ? "auto" : "none" }}>
         {alert.show && (
           <div style={styles.toast}>
-            <div style={styles.toastIcon}>{alert.icon}</div>
-            <h3 style={styles.toastTitle}>{alert.title}</h3>
-            <p style={styles.toastMessage}>{alert.message}</p>
+            <div style={{fontSize: "48px", marginBottom: "16px"}}>{alert.icon}</div>
+            <h3 style={{fontWeight: "900", margin: "0 0 8px 0"}}>{alert.title}</h3>
+            <p style={{fontSize: "14px", opacity: 0.8, margin: 0}}>{alert.message}</p>
           </div>
         )}
       </div>
 
-      {/* MODAL KONFIRMASI */}
       {confirmModal.show && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
-            <h2 style={styles.modalTitle}>{confirmModal.title}</h2>
-            <p style={styles.modalText}>{confirmModal.message}</p>
-            <div style={styles.modalButtons}>
-              <button style={styles.modalBtnCancel} onClick={closeConfirmModal}>
-                ✕ Batal
-              </button>
+            <h2 style={{fontWeight: "900", margin: "0 0 12px 0"}}>{confirmModal.title}</h2>
+            <p style={{fontSize: "14px", opacity: 0.8, marginBottom: "24px"}}>{confirmModal.message}</p>
+            <div style={{display: "flex", gap: "12px", justifyContent: "center"}}>
+              <button style={{background: "#f1f5f9", border: "none", padding: "10px 24px", borderRadius: "12px", cursor: "pointer"}} onClick={closeConfirmModal}>Batal</button>
               <button 
-                style={confirmModal.action === "delete" ? styles.modalBtnDelete : styles.modalBtnConfirm} 
+                style={{background: confirmModal.action === "delete" ? "#ef4444" : "#10b981", color: "white", border: "none", padding: "10px 24px", borderRadius: "12px", cursor: "pointer"}} 
                 onClick={handleConfirmAction}
               >
-                ✓ {confirmModal.action === "delete" ? "Hapus" : "Konfirmasi"}
+                Konfirmasi
               </button>
             </div>
           </div>
@@ -393,99 +293,51 @@ function FinancePage({ user }) {
 
       <div style={styles.content}>
         <div style={styles.header}>
-         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-  <h2 style={{ 
-    ...styles.title, 
-    margin: 0, 
-    padding: 0,
-    lineHeight: '1.2',
-    transform: 'translateX(-1.5px)', 
-  }}>
-    Finance Reports
-  </h2>
-  <p style={{ 
-    color: "#64748b", 
-    fontSize: "14px", 
-    margin: 0,
-    padding: 0,
-    paddingTop: "5px" 
-  }}>
-    Laporan transparansi keuangan HMSI ITK.
-  </p>
-</div>
+          <div>
+            <h2 style={styles.title}>Finance Reports</h2>
+            <p style={{ color: "var(--text-main)", opacity: 0.6, fontSize: "14px", margin: 0 }}>Laporan transparansi keuangan HMSI ITK.</p>
+          </div>
           {canManage && (
             <button 
-              style={{
-                ...styles.btnPrimary,
-                backgroundColor: showForm ? "#64748b" : "#4f46e5"
-              }} 
-              onClick={() => {
-                if (!showForm) {
-                  setFormData({ type: "", category: "", amount: "", description: "" });
-                  setEditingId(null);
-                }
-                setShowForm(!showForm);
-              }}
+              style={{ ...styles.btnPrimary, backgroundColor: showForm ? "#64748b" : "#4f46e5" }} 
+              onClick={() => { setShowForm(!showForm); if(!showForm) setEditingId(null); }}
             >
               {showForm ? "✕ Batal" : "+ Transaksi Baru"}
             </button>
           )}
         </div>
 
-        {/* Summary Cards */}
         <div style={styles.summaryGrid}>
           <div style={styles.card}>
-            <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>TOTAL PEMASUKAN</p>
+            <p style={{ color: "var(--text-main)", opacity: 0.6, fontWeight: "600", fontSize: "12px", margin: "0 0 8px 0" }}>TOTAL PEMASUKAN</p>
             <h3 style={{ color: "#16a34a", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.total_income.toLocaleString()}</h3>
           </div>
           <div style={styles.card}>
-            <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>TOTAL PENGELUARAN</p>
+            <p style={{ color: "var(--text-main)", opacity: 0.6, fontWeight: "600", fontSize: "12px", margin: "0 0 8px 0" }}>TOTAL PENGELUARAN</p>
             <h3 style={{ color: "#dc2626", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.total_expense.toLocaleString()}</h3>
           </div>
           <div style={styles.card}>
-            <p style={{ color: "#64748b", margin: "0 0 8px 0", fontWeight: "600", fontSize: "12px" }}>SALDO AKHIR</p>
-            <h3 style={{ color: "#1e3a8a", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.balance.toLocaleString()}</h3>
+            <p style={{ color: "var(--text-main)", opacity: 0.6, fontWeight: "600", fontSize: "12px", margin: "0 0 8px 0" }}>SALDO AKHIR</p>
+            <h3 style={{ color: "#4f46e5", fontSize: "24px", margin: 0, fontWeight: "800" }}>Rp {summary.balance.toLocaleString()}</h3>
           </div>
         </div>
 
-        {/* Filter Section */}
         <div style={styles.filterSection}>
-          <span style={{ fontWeight: "700", color: "#475569", fontSize: "14px" }}>Filter Jenis:</span>
+          <span style={{ fontWeight: "700", fontSize: "14px" }}>Filter:</span>
           <select style={styles.select} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
             <option value="All">Semua Jenis</option>
             <option value="income">Income (+)</option>
             <option value="expense">Expense (-)</option>
           </select>
-          <span style={{ fontWeight: "700", color: "#475569", fontSize: "14px" }}>Filter Kategori:</span>
           <select style={styles.select} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
             <option value="All">Semua Kategori</option>
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
-          <button 
-            style={{ 
-              padding: "clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px)",
-              borderRadius: "12px",
-              border: "1px solid #e2e8f0",
-              backgroundColor: "#f1f5f9",
-              color: "#dc2626",
-              fontWeight: "700",
-              cursor: "pointer",
-              fontSize: "14px",
-              whiteSpace: "nowrap"
-            }}
-            onClick={() => {
-              setTypeFilter("All");
-              setCategoryFilter("All");
-            }}
-          >
-            ↻ Reset Filter
-          </button>
         </div>
 
-        {/* Form Transaksi (Hanya untuk Ketua/Bendahara) */}
         {canManage && showForm && (
           <div style={styles.formCard}>
-            <h3 style={{ textAlign: "center", marginBottom: "25px", color: "#1e293b" }}>
+            <h3 style={{ textAlign: "center", marginBottom: "25px", color: "var(--text-title)" }}>
               {editingId ? "✏️ Edit Transaksi" : "✨ Transaksi Baru"}
             </h3>
             <form onSubmit={handleSubmit}>
@@ -500,16 +352,11 @@ function FinancePage({ user }) {
               </select>
               <input style={styles.formInput} type="number" placeholder="Nominal (Rp)" value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})} required />
               <input style={styles.formInput} type="text" placeholder="Keterangan" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required />
-              <div style={{ textAlign: "center" }}>
-                <button type="submit" style={{ ...styles.btnPrimary, width: "100%" }}>
-                  {editingId ? "Simpan Perubahan" : "Konfirmasi & Simpan"}
-                </button>
-              </div>
+              <button type="submit" style={{ ...styles.btnPrimary, width: "100%" }}>Simpan</button>
             </form>
           </div>
         )}
 
-        {/* Table Data */}
         <div style={styles.tableCard}>
           <table style={styles.table}>
             <thead>
@@ -522,20 +369,20 @@ function FinancePage({ user }) {
             </thead>
             <tbody>
               {filteredData.map((t) => (
-                <tr key={t.id} className="table-row">
+                <tr key={t.id}>
                   <td style={styles.td}>
-                    <div style={{ fontWeight: "700", color: "#1e293b", marginBottom: "4px" }}>{t.description}</div>
+                    <div style={{ fontWeight: "700", marginBottom: "4px" }}>{t.description}</div>
                     <div style={styles.statusBadge(t.type)}>{t.type}</div>
                   </td>
                   <td style={styles.td}>{t.category}</td>
-                  <td style={{ ...styles.td, fontWeight: "800", color: t.type === 'income' ? '#16a34a' : '#1e293b' }}>
+                  <td style={{ ...styles.td, fontWeight: "800", color: t.type === 'income' ? '#16a34a' : 'var(--text-title)' }}>
                     {t.type === 'income' ? '+ ' : '- '}Rp {t.amount.toLocaleString()}
                   </td>
                   {canManage && (
                     <td style={styles.td}>
-                      <button style={{ marginRight: "12px", color: "#4f46e5", border: "1px solid #e2e8f0", padding: "6px 12px", borderRadius: "8px", background: "white", cursor: "pointer", fontWeight: "600", fontSize: "12px" }} 
+                      <button style={{ marginRight: "12px", color: "#4f46e5", border: "1px solid var(--border-color)", padding: "6px 12px", borderRadius: "8px", background: "var(--bg-page)", cursor: "pointer" }} 
                         onClick={() => { setEditingId(t.id); setFormData(t); setShowForm(true); window.scrollTo({top: 0, behavior: 'smooth'}); }}>Edit</button>
-                      <button style={{ color: "#ef4444", border: "1px solid #fee2e2", padding: "6px 12px", borderRadius: "8px", background: "#fef2f2", cursor: "pointer", fontWeight: "600", fontSize: "12px" }} 
+                      <button style={{ color: "#ef4444", border: "1px solid #fee2e2", padding: "6px 12px", borderRadius: "8px", background: "#fef2f2", cursor: "pointer" }} 
                         onClick={() => handleDelete(t.id)}>Hapus</button>
                     </td>
                   )}
@@ -544,38 +391,11 @@ function FinancePage({ user }) {
             </tbody>
           </table>
           {filteredData.length === 0 && (
-            <div style={{padding: "60px", textAlign: "center", color: "#94a3b8"}}>
-                <div style={{fontSize: "40px", marginBottom: "10px"}}>Empty</div>
-                <p>Tidak ada catatan transaksi untuk kategori ini.</p>
-            </div>
+            <div style={{padding: "60px", textAlign: "center", opacity: 0.5}}>Tidak ada catatan transaksi.</div>
           )}
         </div>
       </div>
-      
-      {/* CSS internal untuk hover effect row tabel, select styling, dan toast animation */}
-      <style>
-        {`
-          .table-row:hover {
-            background-color: #f8fafc;
-            transition: background-color 0.2s ease;
-          }
-          select option {
-            color: #1e293b;
-            background-color: #ffffff;
-          }
-          select option:hover {
-            background-color: #eef2ff;
-          }
-          @keyframes popDown {
-            from { opacity: 0; transform: translate(-50%, -50px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-          }
-          @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-          }
-        `}
-      </style>
+      <style>{`@keyframes fadeInScale { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }`}</style>
     </div>
   );
 }

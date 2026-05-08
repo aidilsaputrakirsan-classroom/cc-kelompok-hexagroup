@@ -19,183 +19,121 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [apiStatus, setApiStatus] = useState(null);
 
+  // DARK MODE STATE
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
   const [toast, setToast] = useState({
     message: "",
-    type: "", // success / error
+    type: "",
     title: "",
     icon: ""
   });
 
+  // Fungsi Toggle untuk dikirim ke LoginPage & Header
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const userData = localStorage.getItem("user");
+
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
-    setLoading(false);
 
-    // Check API connection
+    setLoading(false);
     checkAPIConnection().then(setApiStatus);
   }, []);
 
+  // GLOBAL DARK MODE SYNC
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem("access_token");
-    const userData = localStorage.getItem("user");
-    if (token && userData) {
-      setUser(JSON.parse(userData));
-    }
-    setLoading(false);
-  }, []);
+    document.body.classList.toggle("dark", darkMode);
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   const showToast = (message, type = "success", title = "", icon = "") => {
     setToast({ message, type, title, icon });
-
     setTimeout(() => {
       setToast({ message: "", type: "", title: "", icon: "" });
     }, 3000);
   };
 
   if (loading) {
-    return (
-      <div style={{ padding: "20px", textAlign: "center" }}>Loading...</div>
-    );
+    return <div className="loading-screen">Loading...</div>;
   }
 
   return (
     <Router>
-      <div className="App">
+      <div className={`App ${darkMode ? "dark" : ""}`}>
+        
+        {/* API STATUS ALERTS */}
         {apiStatus === false && (
-          <div
-            style={{
-              backgroundColor: "#f8d7da",
-              color: "#721c24",
-              padding: "10px",
-              textAlign: "center",
-              fontSize: "14px",
-            }}
-          >
-            ⚠️ Backend API is offline — cannot connect to{" "}
-            {import.meta.env.VITE_API_URL || "http://localhost:8000"}
+          <div className="api-alert offline">
+            ⚠️ Backend API is offline — {import.meta.env.VITE_API_URL || "http://localhost:8000"}
           </div>
         )}
         {apiStatus === true && (
-          <div
-            style={{
-              backgroundColor: "#d4edda",
-              color: "#155724",
-              padding: "10px",
-              textAlign: "center",
-              fontSize: "14px",
-            }}
-          >
+          <div className="api-alert online">
             ✅ Backend API connected
           </div>
         )}
-        {user && <Header user={user} setUser={setUser} />}
 
+        {user && (
+          <Header
+            user={user}
+            setUser={setUser}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+          />
+        )}
+
+        {/* TOAST NOTIFICATION */}
         {toast.message && (
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "#ffffff",
-              borderRadius: "24px",
-              padding: "clamp(30px, 4vw, 50px)",
-              maxWidth: "500px",
-              width: "90%",
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
-              textAlign: "center",
-              zIndex: 10001,
-              animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
-            }}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>
-              {toast.icon || (toast.type === "success" ? "✅" : "⚠️")}
-            </div>
-            <h3 style={{ 
-              fontSize: "clamp(20px, 3vw, 24px)", 
-              fontWeight: "900", 
-              color: "#1e293b", 
-              margin: "0 0 8px 0" 
-            }}>
-              {toast.title || (toast.type === "success" ? "Berhasil!" : "Oops!")}
-            </h3>
-            <p style={{ 
-              fontSize: "14px", 
-              color: "#64748b", 
-              margin: 0, 
-              lineHeight: "1.5" 
-            }}>
-              {toast.message}
-            </p>
+          <div className="custom-toast">
+            <div className="toast-icon">{toast.icon || (toast.type === "success" ? "✅" : "⚠️")}</div>
+            <h3>{toast.title || (toast.type === "success" ? "Berhasil!" : "Oops!")}</h3>
+            <p>{toast.message}</p>
           </div>
         )}
-        <style>{`
-          @keyframes fadeInScale {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          }
-        `}</style>
 
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              !user ? (
-                <LoginPage setUser={setUser} showToast={showToast} />
+        {/* AREA KONTEN UTAMA */}
+        <main className="theme-transition-wrapper">
+          <Routes>
+            <Route
+              path="/login"
+              element={!user ? (
+                <LoginPage 
+                  setUser={setUser} 
+                  showToast={showToast} 
+                  theme={darkMode ? "dark" : "light"} 
+                  toggleTheme={toggleTheme} 
+                />
               ) : (
                 <Navigate to="/dashboard" />
-              )
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              user ? (
-                <Dashboard user={user} showToast={showToast} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/finance"
-            element={
-              user ? (
-                <FinancePage user={user} showToast={showToast} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/letters"
-            element={
-              user ? (
-                <LettersPage user={user} showToast={showToast} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              user && user.role === "ketua" ? (
-                <AdminPanel user={user} showToast={showToast} />
-              ) : (
-                <Navigate to="/dashboard" />
-              )
-            }
-          />
-          <Route
-            path="/"
-            element={<Navigate to={user ? "/dashboard" : "/login"} />}
-          />
-        </Routes>
+              )}
+            />
+            <Route
+              path="/dashboard"
+              element={user ? <Dashboard user={user} showToast={showToast} /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/finance"
+              element={user ? <FinancePage user={user} showToast={showToast} /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/letters"
+              element={user ? <LettersPage user={user} showToast={showToast} /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/admin"
+              element={user && user.role === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
+            />
+            <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );
