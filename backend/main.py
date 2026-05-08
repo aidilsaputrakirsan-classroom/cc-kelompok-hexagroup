@@ -17,14 +17,16 @@ from models import User, UserRole
 
 load_dotenv()
 
-# Initialize DB
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(
     title="Organization Management System",
     description="Monolith API with Role-Based Access Control",
     version="2.0.0"
 )
+
+@app.on_event("startup")
+async def startup_event():
+    if os.getenv("TESTING", "false").lower() not in {"1", "true", "yes"}:
+        Base.metadata.create_all(bind=engine)
 
 # CORS Configuration
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")

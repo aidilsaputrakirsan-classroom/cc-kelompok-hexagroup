@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest-only")
 os.environ.setdefault("DATABASE_URL", "sqlite:///./test.db")
+os.environ.setdefault("TESTING", "true")
 
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
