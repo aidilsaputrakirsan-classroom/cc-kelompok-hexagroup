@@ -17,9 +17,10 @@ const formatDate = (dateString) => {
 const styles = {
   container: { 
     minHeight: "100vh",
-    background: "#f0f4f8", 
+    background: "var(--bg-page)", // Berubah otomatis
     padding: "clamp(20px, 3vw, 40px)",
     fontFamily: "'Inter', sans-serif",
+    transition: "background 0.3s ease"
   },
   content: { maxWidth: "1200px", margin: "0 auto" },
   header: { 
@@ -30,7 +31,7 @@ const styles = {
     flexWrap: "wrap",
     gap: "15px"
   },
-  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "#1e293b", letterSpacing: "-1px" },
+  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "var(--text-title)", letterSpacing: "-1px" },
   statsGrid: { 
     display: "grid", 
     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -38,66 +39,84 @@ const styles = {
     marginBottom: "30px" 
   },
   statCard: {
-    background: "#ffffff", 
+    background: "var(--bg-card)", // Berubah otomatis
     padding: "clamp(15px, 2vw, 25px)",
     borderRadius: "20px",
     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-    textAlign: "center"
+    textAlign: "center",
+    border: "1px solid var(--border-color)"
   },
   filterBar: { 
     display: "flex", 
     gap: "clamp(10px, 2vw, 15px)", 
     marginBottom: "30px", 
     padding: "clamp(12px, 2vw, 15px)", 
-    background: "#ffffff", 
+    background: "var(--bg-card)", 
     borderRadius: "18px", 
     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+    border: "1px solid var(--border-color)",
     flexWrap: "wrap"
   },
   input: { 
-    background: "#f8fafc", 
-    border: "1px solid #e2e8f0", 
+    background: "var(--bg-page)", 
+    border: "1px solid var(--border-color)", 
     padding: "clamp(10px, 1.5vw, 12px) clamp(12px, 2vw, 20px)", 
     borderRadius: "12px", 
-    color: "#1e293b", 
+    color: "var(--text-title)", 
     flex: "1 1 auto",
     minWidth: "150px",
     outline: "none",
     fontSize: "14px"
   },
   select: { 
-    background: "#f8fafc", 
-    border: "1px solid #e2e8f0", 
+    background: "var(--bg-page)", 
+    border: "1px solid var(--border-color)", 
     padding: "clamp(10px, 1.5vw, 12px)", 
     borderRadius: "12px", 
-    color: "#1e293b", 
+    color: "var(--text-title)", 
     flex: "1 1 auto",
     minWidth: "100px",
     cursor: "pointer",
     outline: "none"
   },
   tableWrapper: { 
-    background: "#ffffff", 
+    background: "var(--bg-card)", 
     borderRadius: "24px", 
     overflow: "auto", 
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+    border: "1px solid var(--border-color)"
   },
   table: { width: "100%", borderCollapse: "collapse", minWidth: "500px" },
-  th: { padding: "clamp(12px, 2vw, 20px)", background: "#f8fafc", color: "#64748b", textAlign: "left", fontSize: "12px", fontWeight: "800", textTransform: "uppercase", whiteSpace: "nowrap" },
-  td: { padding: "clamp(12px, 2vw, 20px)", borderBottom: "1px solid #f1f5f9", fontSize: "14px", color: "#1e293b" },
+  th: { 
+    padding: "clamp(12px, 2vw, 20px)", 
+    background: "var(--bg-page)", 
+    color: "var(--text-main)", 
+    textAlign: "left", 
+    fontSize: "12px", 
+    fontWeight: "800", 
+    textTransform: "uppercase", 
+    whiteSpace: "nowrap",
+    opacity: 0.8
+  },
+  td: { 
+    padding: "clamp(12px, 2vw, 20px)", 
+    borderBottom: "1px solid var(--border-color)", 
+    fontSize: "14px", 
+    color: "var(--text-title)" 
+  },
   badge: (role) => {
+    // Badge tetap menggunakan warna cerah agar mudah dibedakan di dark mode
     const configs = {
-      ketua: { bg: "#eef2ff", color: "#4338ca" },
-      bendahara: { bg: "#f0fdf4", color: "#166534" },
-      sekretaris: { bg: "#fefce8", color: "#a16207" },
-      anggota: { bg: "#f8fafc", color: "#475569" }
+      ketua: { bg: "rgba(79, 70, 229, 0.15)", color: "#818cf8" },
+      bendahara: { bg: "rgba(22, 163, 74, 0.15)", color: "#4ade80" },
+      sekretaris: { bg: "rgba(234, 179, 8, 0.15)", color: "#facc15" },
+      anggota: { bg: "rgba(148, 163, 184, 0.15)", color: "#94a3b8" }
     };
     const config = configs[role.toLowerCase()] || configs.anggota;
     return { padding: "6px 14px", borderRadius: "10px", fontSize: "11px", fontWeight: "800", backgroundColor: config.bg, color: config.color, textTransform: "uppercase" };
   },
   createBtn: { background: "#4f46e5", color: "#fff", padding: "12px 24px", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer" },
   
-  // Update Style Button Delete agar lebih responsif
   deleteBtn: { 
     background: "none", 
     border: "none", 
@@ -110,8 +129,16 @@ const styles = {
     transition: "background 0.2s"
   },
 
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15, 23, 42, 0.8)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2000, backdropFilter: "blur(8px)" },
-  modalContent: { background: "#ffffff", padding: "40px", borderRadius: "24px", width: "100%", maxWidth: "450px" }
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2000, backdropFilter: "blur(8px)" },
+  modalContent: { 
+    background: "var(--bg-card)", 
+    padding: "40px", 
+    borderRadius: "24px", 
+    width: "100%", 
+    maxWidth: "450px",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-title)"
+  }
 };
 
 function AdminPanel() {
@@ -130,13 +157,12 @@ function AdminPanel() {
     } catch (err) { console.error(err); }
   };
 
-  // --- FUNGSI DELETE ---
   const handleDelete = async (userId, name) => {
-    if (window.confirm(`Hapus akses untuk ${name}? Tindakan ini  tidak bisa dibatalkan.`)) {
+    if (window.confirm(`Hapus akses untuk ${name}? Tindakan ini tidak bisa dibatalkan.`)) {
       try {
-        await userAPI.deleteUser(userId); // Memanggil API Hapus
+        await userAPI.deleteUser(userId);
         alert("User berhasil dihapus.");
-        loadUsers(); // Refresh data tabel
+        loadUsers();
       } catch (err) {
         alert("Gagal menghapus user: " + err.message);
       }
@@ -164,37 +190,38 @@ function AdminPanel() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.header}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-  <h2 style={{ 
-    ...styles.title, 
-    margin: 0, 
-    padding: 0,
-    lineHeight: '1.2',
-    transform: 'translateX(-2px)', // Ini cara paling ampuh buat 'paksa' judul geser ke kiri tanpa ngerusak layout lain
-  }}>
-    User Management
-  </h2>
-  <p style={{ 
-    color: "#94a3b8", 
-    fontSize: "14px", 
-    margin: 0,
-    padding: 0,
-    marginTop: '4px', // Kasih jarak dikit biar nggak nempel atas bawah
-    lineHeight: '1'
-  }}>
-    Kelola hak akses anggota SIKASI.
-  </p>
-</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <h2 style={{ 
+              ...styles.title, 
+              margin: 0, 
+              padding: 0,
+              lineHeight: '1.2',
+              transform: 'translateX(-2px)',
+            }}>
+              User Management
+            </h2>
+            <p style={{ 
+              color: "var(--text-main)", 
+              fontSize: "14px", 
+              margin: 0,
+              padding: 0,
+              marginTop: '4px',
+              lineHeight: '1',
+              opacity: 0.7
+            }}>
+              Kelola hak akses anggota SIKASI.
+            </p>
+          </div>
           <button style={styles.createBtn} onClick={() => setShowModal(true)}>+ Add New User</button>
         </div>
 
         <div style={styles.statsGrid}>
           <div style={styles.statCard}>
-            <div style={{ color: "#64748b", fontSize: "11px", fontWeight: "800", textTransform: "uppercase" }}>Registered Users</div>
-            <div style={{ fontSize: "32px", fontWeight: "900", marginTop: "5px", color: "#1e293b" }}>{users.length}</div>
+            <div style={{ color: "var(--text-main)", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", opacity: 0.6 }}>Registered Users</div>
+            <div style={{ fontSize: "32px", fontWeight: "900", marginTop: "5px", color: "var(--text-title)" }}>{users.length}</div>
           </div>
           <div style={styles.statCard}>
-            <div style={{ color: "#64748b", fontSize: "11px", fontWeight: "800", textTransform: "uppercase" }}>Master Admin</div>
+            <div style={{ color: "var(--text-main)", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", opacity: 0.6 }}>Master Admin</div>
             <div style={{ fontSize: "32px", fontWeight: "900", marginTop: "5px", color: "#f97316" }}>{users.filter(u => u.role === 'ketua').length}</div>
           </div>
         </div>
@@ -224,21 +251,21 @@ function AdminPanel() {
               {filteredUsers.map((u) => (
                 <tr key={u.id}>
                   <td style={styles.td}>
-                    <div style={{ fontWeight: "800", color: "#1e293b", fontSize: "15px" }}>{u.full_name}</div>
-                    <div style={{ fontSize: "12px", color: "#64748b" }}>{u.email}</div>
+                    <div style={{ fontWeight: "800", color: "var(--text-title)", fontSize: "15px" }}>{u.full_name}</div>
+                    <div style={{ fontSize: "12px", color: "var(--text-main)", opacity: 0.7 }}>{u.email}</div>
                   </td>
                   <td style={styles.td}><span style={styles.badge(u.role)}>{u.role}</span></td>
-                  <td style={styles.td}><span style={{color: "#64748b"}}>{formatDate(u.created_at)}</span></td>
+                  <td style={styles.td}><span style={{color: "var(--text-main)", opacity: 0.8}}>{formatDate(u.created_at)}</span></td>
                   <td style={{ ...styles.td, textAlign: "right" }}>
                     {u.role !== 'ketua' ? (
                       <button 
                         style={styles.deleteBtn} 
-                        onClick={() => handleDelete(u.id, u.full_name)} // PASANG DISINI
+                        onClick={() => handleDelete(u.id, u.full_name)}
                       >
                         Delete
                       </button>
                     ) : (
-                      <span style={{ fontSize: "10px", color: "#94a3b8", fontWeight: "800" }}>PROTECTED</span>
+                      <span style={{ fontSize: "10px", color: "var(--text-main)", fontWeight: "800", opacity: 0.5 }}>PROTECTED</span>
                     )}
                   </td>
                 </tr>
@@ -251,22 +278,22 @@ function AdminPanel() {
       {showModal && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
-            <h3 style={{ fontSize: "24px", fontWeight: "900", color: "#1e293b", marginBottom: "20px" }}>Add New User</h3>
+            <h3 style={{ fontSize: "24px", fontWeight: "900", color: "var(--text-title)", marginBottom: "20px" }}>Add New User</h3>
             <form onSubmit={handleCreate}>
               <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "#64748b", display: "block", marginBottom: "8px", fontWeight: "700" }}>Full Name</label>
+                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Full Name</label>
                 <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="text" required onChange={e => setFormData({...formData, full_name: e.target.value})} />
               </div>
               <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "#64748b", display: "block", marginBottom: "8px", fontWeight: "700" }}>Email Address</label>
+                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Email Address</label>
                 <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="email" required onChange={e => setFormData({...formData, email: e.target.value})} />
               </div>
               <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "#64748b", display: "block", marginBottom: "8px", fontWeight: "700" }}>Password</label>
+                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Password</label>
                 <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="password" required onChange={e => setFormData({...formData, password: e.target.value})} />
               </div>
               <div style={{ marginBottom: "30px" }}>
-                <label style={{ fontSize: "12px", color: "#64748b", display: "block", marginBottom: "8px", fontWeight: "700" }}>Assign Role</label>
+                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Assign Role</label>
                 <select style={{...styles.select, width: "100%"}} onChange={e => setFormData({...formData, role: e.target.value})}>
                   <option value="anggota">Anggota</option>
                   <option value="sekretaris">Sekretaris</option>
@@ -276,7 +303,7 @@ function AdminPanel() {
               </div>
               <div style={{ display: "flex", gap: "12px" }}>
                 <button type="submit" style={{ ...styles.createBtn, flex: 1 }}>Confirm</button>
-                <button type="button" onClick={() => setShowModal(false)} style={{ background: "#f1f5f9", color: "#475569", border: "none", padding: "12px", borderRadius: "12px", flex: 1, fontWeight: "700", cursor: "pointer" }}>Cancel</button>
+                <button type="button" onClick={() => setShowModal(false)} style={{ background: "var(--bg-page)", color: "var(--text-main)", border: "1px solid var(--border-color)", padding: "12px", borderRadius: "12px", flex: 1, fontWeight: "700", cursor: "pointer" }}>Cancel</button>
               </div>
             </form>
           </div>
