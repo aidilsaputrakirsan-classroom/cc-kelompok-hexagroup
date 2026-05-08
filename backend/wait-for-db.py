@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-import socket, time, sys, os
+import socket
+import time
+import sys
+import os
 
 host = "db"
 port = 5432

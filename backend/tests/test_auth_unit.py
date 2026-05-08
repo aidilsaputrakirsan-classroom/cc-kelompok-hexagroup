@@ -2,7 +2,6 @@
 test_auth_unit.py — Unit test untuk fungsi di auth.py
 (tidak butuh HTTP client, langsung test fungsinya)
 """
-import pytest
 import time
 import os
 

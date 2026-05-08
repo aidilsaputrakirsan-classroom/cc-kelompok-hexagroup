@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, status
+from auth import get_current_user
 from models import User, UserRole
 
 
@@ -42,7 +43,3 @@ def require_ketua(current_user: User = Depends(get_current_user)):
             detail="Only ketua can access this resource"
         )
     return current_user
-
-
-# Import at bottom to avoid circular imports
-from auth import get_current_user

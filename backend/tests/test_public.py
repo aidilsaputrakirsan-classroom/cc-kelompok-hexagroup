@@ -1,7 +1,6 @@
 """
 test_public.py — Endpoint publik: /, /health, /team
 """
-import pytest
 
 
 class TestRootEndpoint:
@@ -10,7 +9,7 @@ class TestRootEndpoint:
         assert resp.status_code == 200
 
     def test_root_contains_app_name(self, client):
-        data = resp = client.get("/")
+        resp = client.get("/")
         assert "Sikasi" in resp.json()["message"]
 
     def test_root_version(self, client):

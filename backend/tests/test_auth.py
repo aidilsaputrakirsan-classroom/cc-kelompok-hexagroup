@@ -1,8 +1,6 @@
 """
 test_auth.py — /auth/register, /auth/login, /auth/refresh, /auth/me
 """
-import pytest
-from conftest import make_user
 
 
 VALID_REGISTER = {

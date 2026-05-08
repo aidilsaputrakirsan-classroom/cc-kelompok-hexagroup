@@ -9,7 +9,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import models
 import crud
-import schemas
 from database import Base, SessionLocal
 
 load_dotenv()
