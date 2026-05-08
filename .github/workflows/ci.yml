@@ -84,7 +84,7 @@ jobs:
         run: docker build -t sikasi-app-backend:ci ./backend
       # - name: 🐳 Build frontend image
       #   run: docker build -t sikasi-app-frontend:ci ./frontend
-      # - name: ✅ Build success
+      - name: ✅ Build success
         run: |
           echo "✅ All Docker images built successfully!"
           docker images | grep sikasi-app
