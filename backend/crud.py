@@ -1,15 +1,15 @@
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from models import User, Transaction, Letter, LetterStatus
-from schemas import UserRegister, TransactionCreate, LetterCreate
+from models import User, Transaction, Letter, Item, LetterStatus
+from schemas import UserRegister, TransactionCreate, LetterCreate, ItemCreate
 from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
+    return pwd_context.hash(password[:72])
+    
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
@@ -75,6 +75,22 @@ def delete_transaction(db: Session, transaction_id: int):
         db.delete(transaction)
         db.commit()
     return transaction
+
+
+# ===== ITEM CRUD =====
+def create_item(db: Session, item: ItemCreate):
+    db_item = Item(
+        name=item.name,
+        description=item.description
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+def get_all_items(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(Item).offset(skip).limit(limit).all()
 
 
 # ===== LETTER CRUD =====

@@ -33,6 +33,15 @@ class Transaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+class Item(Base):
+    __tablename__ = "items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class LetterStatus(str, enum.Enum):
     draft = "draft"
     submitted = "submitted"

@@ -5,12 +5,25 @@ import os
 from dotenv import load_dotenv
 
 from database import get_db, Base, engine
-from schemas import UserRegister, UserLogin, UserCreateByKetua, TransactionCreate, LetterCreate, TransactionResponse, LetterResponse, UserResponse, RefreshToken, UserUpdate
+from schemas import (
+    UserRegister,
+    UserLogin,
+    UserCreateByKetua,
+    TransactionCreate,
+    LetterCreate,
+    ItemCreate,
+    TransactionResponse,
+    LetterResponse,
+    UserResponse,
+    RefreshToken,
+    UserUpdate,
+)
 from crud import (
     create_user, get_user_by_email, get_user_by_id, verify_password,
     create_transaction, get_all_transactions, get_transaction_by_id, update_transaction, delete_transaction,
     create_letter, get_all_letters, get_letter_by_id, update_letter, delete_letter, update_letter_status,
-    get_all_users, update_user, delete_user
+    get_all_users, update_user, delete_user,
+    create_item, get_all_items
 )
 from auth import create_access_token, decode_token, create_refresh_token
 from models import User, UserRole
@@ -37,11 +50,13 @@ app.add_middleware(
 )
 
 # Security
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db=Depends(get_db)):
     """Get authenticated user from token"""
+    if credentials is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     token = credentials.credentials
     payload = decode_token(token)
     if payload is None:
@@ -72,8 +87,10 @@ def root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
-
+    return {
+        "status": "healthy",
+        "service": "backend"
+    }
 
 @app.get("/team")
 def team_info():
@@ -103,9 +120,13 @@ def register(user_data: UserRegister, db=Depends(get_db)):
     refresh_token = create_refresh_token(user.email)
 
     return {
+        "id": user.id,
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": user.role,
         "user": {
             "id": user.id,
             "email": user.email,
@@ -240,6 +261,28 @@ def get_finance_summary(
         "transaction_count": len(transactions)
     }
 
+
+# ===== ITEM ENDPOINTS =====
+@app.post("/items/")
+def create_item_endpoint(
+    item: ItemCreate,
+    user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """Create item - authenticated users only"""
+    created_item = create_item(db, item)
+    return created_item
+
+
+@app.get("/items/")
+def list_items(
+    skip: int = 0,
+    limit: int = 10,
+    user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    items = get_all_items(db, skip, limit)
+    return items
 
 
 # ===== LETTER ENDPOINTS =====
