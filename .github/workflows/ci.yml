@@ -117,4 +117,3 @@ jobs:
       - name: ✅ Build success
         run: 
           echo "✅ All Docker images built successfully!"
-          docker images | grep sikasi-app
