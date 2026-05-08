@@ -18,8 +18,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from database import Base, get_db
 from main import app
-from models import User, UserRole
-from crud import create_user, hash_password
+from crud import create_user
 
 # ── Engine SQLite khusus test ───────────────────────────────────────────────
 TEST_DATABASE_URL = "sqlite:///./test.db"
