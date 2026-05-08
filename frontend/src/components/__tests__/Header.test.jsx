@@ -1,9 +1,19 @@
+import { vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Header from "../Header";
 
-// ================= MOCK ROUTER =================
+/* ================= 1. MOCK CONTEXT (DIPERBAIKI) ================= */
+// Kita mock langsung path useTheme agar tidak undefined saat dipanggil DarkModeToggle
+vi.mock("../../context/ThemeContext", () => ({
+  useTheme: () => ({
+    darkMode: false,
+    toggleDarkMode: vi.fn(),
+  }),
+}));
+
+/* ================= 2. MOCK ROUTER (DIPERBAIKI) ================= */
 const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
@@ -15,35 +25,41 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// ================= HELPER =================
+/* ================= 3. HELPER RENDER ================= */
 const renderHeader = (user = null, setUser = vi.fn()) => {
   return render(
     <BrowserRouter>
-      <Header user={user} setUser={setUser} />
-    </BrowserRouter>,
+      <Header
+        user={user}
+        setUser={setUser}
+        darkMode={false}
+        setDarkMode={vi.fn()}
+      />
+    </BrowserRouter>
   );
 };
 
-// ================= TEST =================
+/* ================= 4. TEST SUITE ================= */
 describe("Header Component", () => {
   const userKetua = {
     full_name: "Test User",
     role: "ketua",
   };
 
-  const userNonKetua = {
+  const userAnggota = {
     full_name: "Test User",
     role: "anggota",
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Bersihkan localStorage setiap sebelum tes
+    localStorage.clear();
   });
 
-  // ================= BASIC =================
   it("menampilkan logo SIKASI", () => {
     renderHeader(userKetua);
-    expect(screen.getByText(/sikasi/i)).toBeInTheDocument();
+    expect(screen.getByText("SIKASI")).toBeInTheDocument();
   });
 
   it("menampilkan nama dan role user", () => {
@@ -52,64 +68,63 @@ describe("Header Component", () => {
     expect(screen.getByText(/ketua/i)).toBeInTheDocument();
   });
 
-  // ================= CONDITIONAL =================
-  it("menampilkan menu ketika user ada", () => {
+  it("menampilkan menu ketika user login", () => {
     renderHeader(userKetua);
-    expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /dashboard/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /finance/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /letters/i })).toBeInTheDocument();
   });
 
-  it("tidak menampilkan menu ketika user null", () => {
+  it("tidak menampilkan menu jika user null", () => {
     renderHeader(null);
-    expect(screen.queryByText(/dashboard/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /dashboard/i })).not.toBeInTheDocument();
   });
 
-  // ================= ROLE =================
-  it("role ketua bisa melihat menu admin", () => {
+  it("ketua bisa melihat admin", () => {
     renderHeader(userKetua);
-    expect(screen.getByText(/admin/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /admin/i })).toBeInTheDocument();
   });
 
-  it("role selain ketua tidak bisa melihat menu admin", () => {
-    renderHeader(userNonKetua);
-    expect(screen.queryByText(/admin/i)).not.toBeInTheDocument();
+  it("anggota tidak bisa melihat admin", () => {
+    renderHeader(userAnggota);
+    expect(screen.queryByRole("button", { name: /admin/i })).not.toBeInTheDocument();
   });
 
-  // ================= LOGOUT =================
-  it("menampilkan modal saat klik logout", () => {
+  it("navigasi ke finance", () => {
     renderHeader(userKetua);
+    fireEvent.click(screen.getByRole("button", { name: /finance/i }));
+    expect(mockNavigate).toHaveBeenCalledWith("/finance");
+  });
 
-    fireEvent.click(screen.getByText(/logout/i));
+  it("navigasi ke dashboard lewat logo", () => {
+    renderHeader(userKetua);
+    fireEvent.click(screen.getByText("SIKASI"));
+    expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
+  });
 
+  it("menampilkan modal logout", () => {
+    renderHeader(userKetua);
+    fireEvent.click(screen.getByRole("button", { name: /logout/i }));
     expect(
-      screen.getByText(/apakah anda yakin ingin logout/i),
+      screen.getByText(/apakah anda yakin ingin logout/i)
     ).toBeInTheDocument();
   });
 
-  it("logout menghapus session dan redirect ke login", () => {
+  it("logout berhasil", () => {
     const mockSetUser = vi.fn();
-
-    // ✅ FIX: spy localStorage
     const clearSpy = vi.spyOn(Storage.prototype, "clear");
 
     renderHeader(userKetua, mockSetUser);
 
-    // buka modal
-    fireEvent.click(screen.getByText(/logout/i));
-
-    // klik tombol konfirmasi (yang ada "✓ Logout")
-    fireEvent.click(screen.getByText(/✓ logout/i));
+    // 1. Klik tombol logout di Header untuk buka modal
+    fireEvent.click(screen.getByRole("button", { name: /logout/i }));
+    
+    // 2. Klik tombol konfirmasi logout di dalam Modal
+    const confirmBtn = screen.getByText(/✓ Logout/i);
+    fireEvent.click(confirmBtn);
 
     expect(clearSpy).toHaveBeenCalled();
     expect(mockSetUser).toHaveBeenCalledWith(null);
     expect(mockNavigate).toHaveBeenCalledWith("/login");
-  });
-
-  // ================= NAVIGATION =================
-  it("navigasi ke finance saat tombol diklik", () => {
-    renderHeader(userKetua);
-
-    fireEvent.click(screen.getByText(/finance/i));
-
-    expect(mockNavigate).toHaveBeenCalledWith("/finance");
   });
 });
