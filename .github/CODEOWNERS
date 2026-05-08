@@ -1,0 +1,32 @@
+# =============================================
+# CODEOWNERS — Cloud Team Hexagroup
+# =============================================
+# Setiap baris: pola file → username GitHub reviewer
+# Reviewer otomatis ditambahkan saat PR mengubah file terkait
+
+# Backend — Lead Backend
+/backend/                @10231001-achmad-bayhaqi-lead-backend
+
+# Frontend — Lead Frontend
+/frontend/               @IndahNurFortuna-lead-frontend
+/frontend/               @IndahFortuna-lead-frontend
+
+# Docker & Infrastructure — Lead DevOps
+docker-compose.yml       @10231010-a11y-lead-devops
+docker-compose.yml       @alfiani-a11y-lead-devops
+/backend/Dockerfile      @10231010-a11y-lead-devops
+/backend/Dockerfile      @alfiani-a11y-lead-devops
+/frontend/Dockerfile     @10231010-a11y-lead-devops
+/frontend/Dockerfile     @alfiani-a11y-lead-devops
+Makefile                 @10231010-a11y-lead-devops
+Makefile                 @alfiani-a11y-lead-devops
+
+# Documentation — Lead QA & Docs
+README.md                @NilamAyu-lead-qa
+README.md                @nilamay-lead-qa
+/docs/                   @NilamAyu-lead-qa
+/docs/                   @nilamay-lead-qa
+
+# CI/CD (jika 5 orang) — Lead CI/CD
+/.github/workflows/   @Hahahanaa-lead-cicd
+/.github/workflows/   @zhwahna-lead-cicd
