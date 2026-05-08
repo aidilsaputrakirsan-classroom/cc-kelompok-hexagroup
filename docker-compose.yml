@@ -33,7 +33,7 @@ services:
   # ==================== BACKEND ====================
   backend:
     build:
-      context: ./backend
+      context: ./backend      
       dockerfile: Dockerfile
     container_name: sikasiapp-backend
     restart: unless-stopped

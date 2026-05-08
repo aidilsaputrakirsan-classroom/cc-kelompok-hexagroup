@@ -174,9 +174,20 @@ cc-kelompok-6/
 ├── .gitignore                   # File untuk mengabaikan file tertentu dalam Git
 ├── README.md                    # Dokumentasi utama proyek
 ├── docker-compose.yml           # Konfigurasi Docker Compose untuk orkestrasi container
+├── docker-compose.prod.yml
 ├── Dockerfile                   # Dockerfile untuk build image aplikasi
 ├── Makefile                     # Makefile untuk mempermudah eksekusi perintah
 ```
+## Panduan Penggunaan 
+Lead DevOps telah menambahkan beberapa fitur otomatisasi baru untuk menjaga kualitas kode
+tim sebelum digabungkan ke branch main:
+
+| Perintah | Fungsi |
+| :--- | :--- |
+| `make lint` | Menjalankan linter *flake8* di dalam container backend untuk memastikan kode mengikuti standar PEP8. |
+| `make test` | Perintah cadangan untuk menjalankan unit testing otomatis (saat ini masih berupa placeholder). |
+| `make pr-check` | Perintah wajib sebelum melakukan *push*. Menjalankan proses build ulang dan test secara bersamaan. |
+
 
 ## Deployment
 
