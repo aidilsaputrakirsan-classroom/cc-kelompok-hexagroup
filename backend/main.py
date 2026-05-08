@@ -174,11 +174,11 @@ def create_transaction_endpoint(
 def list_transactions(
     skip: int = 0,
     limit: int = 10,
+    category: str = None,
     user: User = Depends(get_current_user),
     db=Depends(get_db)
 ):
-    """List all transactions - all authenticated users can read"""
-    transactions = get_all_transactions(db, skip, limit)
+    transactions = get_all_transactions(db, skip, limit, category=category)
     return transactions
 
 
@@ -223,11 +223,11 @@ def delete_transaction_endpoint(
 
 @app.get("/finance/summary")
 def get_finance_summary(
+    category: str = None,
     user: User = Depends(get_current_user),
     db=Depends(get_db)
 ):
-    """Get finance summary - all roles can view"""
-    transactions = get_all_transactions(db, skip=0, limit=10000)  # Get all for calculation
+    transactions = get_all_transactions(db, skip=0, limit=10000, category=category)
 
     total_income = sum(t.amount for t in transactions if t.type == "income")
     total_expense = sum(t.amount for t in transactions if t.type == "expense")

@@ -47,8 +47,11 @@ def create_transaction(db: Session, transaction: TransactionCreate):
     return db_transaction
 
 
-def get_all_transactions(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Transaction).offset(skip).limit(limit).all()
+def get_all_transactions(db: Session, skip: int = 0, limit: int = 10, category: str = None):
+    query = db.query(Transaction)
+    if category:
+        query = query.filter(Transaction.category.ilike(f"%{category}%"))
+    return query.offset(skip).limit(limit).all()
 
 
 def get_transaction_by_id(db: Session, transaction_id: int):
