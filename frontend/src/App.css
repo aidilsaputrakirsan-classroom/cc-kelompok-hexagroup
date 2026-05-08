@@ -106,7 +106,56 @@ input, textarea, select {
   height: 100vh;
 }
 
+<<<<<<< feature/dark-mode
 @keyframes fadeInScale {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+=======
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Semua container utama */
+body.dark #root {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Card / section */
+body.dark .card,
+body.dark .container,
+body.dark .box,
+body.dark .modalContent {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+/* Button umum */
+body.dark button {
+  color: #f8fafc;
+}
+
+/* Input */
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background-color: #1e293b;
+  color: white;
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Link */
+body.dark a {
+  color: #38bdf8;
+}
+
+/* Border */
+body.dark * {
+  border-color: rgba(255,255,255,0.08);
+>>>>>>> main
 }
