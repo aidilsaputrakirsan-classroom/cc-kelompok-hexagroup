@@ -3,7 +3,6 @@ test_finance.py — /finance/transactions & /finance/summary
 Hanya bendahara yang bisa CREATE / UPDATE / DELETE.
 Semua user ter-autentikasi bisa READ.
 """
-import pytest
 from conftest import transaction_payload
 
 

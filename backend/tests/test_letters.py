@@ -5,7 +5,6 @@ Status workflow:  draft → submitted → approved | rejected
 - CREATE / UPDATE / DELETE / SUBMIT / APPROVE / REJECT : sekretaris only
 - READ (list + detail)                                 : semua user login
 """
-import pytest
 from conftest import letter_payload
 
 
@@ -80,8 +79,8 @@ class TestListLetters:
         self._create(client, sekretaris_headers)  # letter draft kedua
 
         resp = client.get("/letters?status=draft", headers=sekretaris_headers)
-        for l in resp.json():
-            assert l["status"] == "draft"
+        for letter in resp.json():
+         assert letter["status"] == "draft"
 
     def test_unauthenticated_cannot_list(self, client):
         resp = client.get("/letters")

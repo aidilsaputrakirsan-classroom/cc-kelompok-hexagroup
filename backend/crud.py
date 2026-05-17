@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from models import User, Transaction, Letter, LetterStatus
-from schemas import UserRegister, TransactionCreate, LetterCreate
+from schemas import TransactionCreate, LetterCreate
 from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

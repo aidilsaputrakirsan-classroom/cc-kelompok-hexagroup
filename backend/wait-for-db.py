@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
-import socket, time, sys, os
+import time
+import sys
+import os
+from urllib.parse import urlparse
+import socket
 
-host = "db"
-port = 5432
+database_url = os.getenv("DATABASE_URL")
+
+if not database_url:
+    print("DATABASE_URL not set")
+    sys.exit(1)
+
+parsed = urlparse(database_url)
+
+host = parsed.hostname
+port = parsed.port or 5432
 
 for i in range(30):
     try:
@@ -16,9 +28,8 @@ else:
     print("Database not ready after 30s, exiting.")
     sys.exit(1)
 
-# execvp menggantikan proses ini → uvicorn jadi PID 1
 os.execvp("uvicorn", [
     "uvicorn", "main:app",
     "--host", "0.0.0.0",
-    "--port", "8000"
+    "--port", os.getenv("PORT", "8000")
 ])

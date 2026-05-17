@@ -1,5 +1,5 @@
 # ==============================================
-# CI Pipeline — Cloud Team Hexagroup
+# CI Pipeline — HexaGroup
 # ==============================================
 # Pipeline ini berjalan otomatis saat:
 # - Push ke branch main
@@ -8,7 +8,8 @@
 # Jobs:
 # 1. test-backend: Install deps + run pytest
 # 2. test-frontend: Install deps + run vitest
-# 3. build-docker: Build Docker images (pastikan Dockerfile valid)
+# 3. lint: Ruff untuk pengecekan kualitas kode backend
+# 4. build-docker: Build Docker images (pastikan Dockerfile valid)
 
 name: CI Pipeline
 
@@ -18,12 +19,9 @@ on:
   pull_request:
     branches: [main]
 
-# ==============================================
-# OPTIMISASI CI (Tugas Lead DevOps - Modul 10)
-# ==============================================
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true    # Batalkan run lama jika ada push baru di branch yang sama
+  cancel-in-progress: true
 
 jobs:
   # ================================
@@ -32,11 +30,10 @@ jobs:
   test-backend:
     name: 🐍 Test Backend
     runs-on: ubuntu-latest
-    timeout-minutes: 10       # Optimisasi: Batasi waktu jalan maksimal 10 menit
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: ./backend
-
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -45,15 +42,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: 'pip'        # Optimisasi: Cache dependencies otomatis
-
-      - name: 📦 Cache pip packages manual
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
 
       - name: 📥 Install dependencies
         run: |
@@ -61,8 +51,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🧪 Run tests with coverage
-        run: |
-          pytest
+        run: pytest
 
   # ================================
   # JOB 2: Test Frontend (React/Vitest)
@@ -70,11 +59,10 @@ jobs:
   test-frontend:
     name: ⚛️ Test Frontend
     runs-on: ubuntu-latest
-    timeout-minutes: 10       # Optimisasi: Batasi waktu jalan maksimal 10 menit
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: ./frontend
-
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -96,14 +84,38 @@ jobs:
         run: npm run build
 
   # ================================
-  # JOB 3: Build Docker Images
+  # JOB 3: Lint Backend (Ruff)
+  # ================================
+  lint:
+    name: 🔍 Lint Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install ruff
+        run: pip install ruff
+
+      - name: 🔍 Run Ruff Linter
+        run: ruff check .
+
+  # ================================
+  # JOB 4: Build Docker Images
   # ================================
   build-docker:
     name: 🐳 Build Docker
     runs-on: ubuntu-latest
-    needs: [test-backend, test-frontend] # Hanya jalan jika kedua test PASS
     timeout-minutes: 15
-
+    needs: [test-backend, test-frontend, lint]
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -115,5 +127,4 @@ jobs:
         run: docker build -t sikasi-app-frontend:ci ./frontend
 
       - name: ✅ Build success
-        run: 
-          echo "✅ All Docker images built successfully!"
+        run: echo "✅ All Docker images built successfully!"
