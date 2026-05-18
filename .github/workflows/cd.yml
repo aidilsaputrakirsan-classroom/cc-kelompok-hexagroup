@@ -1,0 +1,86 @@
+# ==============================================
+# CD Pipeline — HexaGroup
+# ==============================================
+# Pipeline berjalan otomatis saat merge ke main
+#
+# Jobs:
+# 1. deploy: Deploy ke Railway
+# 2. health-check: Verifikasi app berjalan setelah deploy
+
+name: CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ================================
+  # JOB 1: Deploy ke Railway
+  # ================================
+  deploy:
+    name: 🚀 Deploy to Railway
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚂 Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: 🚀 Deploy Backend to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway deploy --service backend --detach
+
+      - name: 🚀 Deploy Frontend to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway deploy --service frontend --detach
+
+      - name: ✅ Deploy triggered
+        run: echo "✅ Deploy triggered! Waiting for Railway to spin up..."
+
+  # ================================
+  # JOB 2: Health Check
+  # ================================
+  health-check:
+    name: 🏥 Health Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: deploy
+
+    steps:
+      - name: ⏳ Wait for Railway to be ready
+        run: |
+          echo "Waiting for deployment to be ready..."
+          sleep 30
+
+      - name: 🏥 Health check backend
+        run: |
+          HEALTH_URL="${{ secrets.RAILWAY_BACKEND_URL }}/health"
+          MAX_RETRIES=5
+          COUNT=0
+
+          until [ $COUNT -ge $MAX_RETRIES ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $HEALTH_URL)
+
+            if [ "$HTTP_STATUS" == "200" ]; then
+              echo "✅ Health check passed! (HTTP $HTTP_STATUS)"
+              exit 0
+            fi
+
+            COUNT=$((COUNT+1))
+            echo "⏳ Attempt $COUNT/$MAX_RETRIES (HTTP $HTTP_STATUS), retrying in 10s..."
+            sleep 10
+          done
+
+          echo "❌ Health check FAILED after $MAX_RETRIES attempts!"
+          echo "👉 Check Railway dashboard for logs."
+          exit 1
