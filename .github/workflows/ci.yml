@@ -185,7 +185,7 @@ jobs:
           echo "🌿 Branch      : ${{ github.ref_name }}"
           echo ""
           echo "🌐 PRODUCTION URLs:"
-          echo "   Frontend : https://cloudapp-frontend-xxx.up.railway.app"
+          echo "   Frontend : https://sikasi-frontend-production-5f57.up.railway.app"
           echo "   Backend  : sikasi-backend-production-a11c.up.railway.app"
           echo "   API Docs : https://sikasi-backend-production-a11c.up.railway.app/docs"
           echo "========================================"
