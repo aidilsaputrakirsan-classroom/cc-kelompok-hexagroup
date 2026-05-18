@@ -149,6 +149,7 @@ jobs:
       - name: 🚀 Deploy Backend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         run: |
           cd backend
           railway up --service backend --detach
@@ -156,12 +157,24 @@ jobs:
       - name: 🚀 Deploy Frontend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         run: |
           cd frontend
           railway up --service frontend --detach
 
       - name: ✅ Deploy complete
         run: |
-          echo "✅ Deployment successful!"
-          echo "Backend: https://sikasi-backend-production-a11c.up.railway.app"
-          echo "Frontend: https://sikasi-frontend-production-5f57.up.railway.app"
+          echo "========================================"
+          echo "       🚀 DEPLOYMENT SUMMARY"
+          echo "========================================"
+          echo "✅ Status      : SUCCESS"
+          echo "📦 Commit SHA  : ${{ github.sha }}"
+          echo "👤 Deployed by : ${{ github.actor }}"
+          echo "🕐 Timestamp   : $(date '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🌿 Branch      : ${{ github.ref_name }}"
+          echo ""
+          echo "🌐 PRODUCTION URLs:"
+          echo "   Frontend : https://sikasi-frontend-production-5f57.up.railway.app"
+          echo "   Backend  : sikasi-backend-production-a11c.up.railway.app"
+          echo "   API Docs : https://sikasi-backend-production-a11c.up.railway.app/docs"
+          echo "========================================"
