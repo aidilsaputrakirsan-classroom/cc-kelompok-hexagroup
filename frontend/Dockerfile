@@ -17,7 +17,7 @@ COPY . .
 
 # Set API URL untuk production build
 # Ini akan di-embed ke dalam bundle JavaScript
-ARG VITE_API_URL=http://localhost:8000
+ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build React app → output di /app/dist/
