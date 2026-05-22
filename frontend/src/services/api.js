@@ -66,6 +66,11 @@ async function apiCall(
   if (!response.ok) {
     let errorMsg = `HTTP ${response.status}`;
 
+      // HANDLE SERVICE UNAVAILABLE
+  if (response.status === 503) {
+    errorMsg = "Service temporarily unavailable";
+  }
+  
     try {
       const errorData = await response.json();
 
@@ -181,7 +186,10 @@ export const userAPI = {
 // FIX: /health → /auth/health (gateway tidak punya route /health)
 export const checkAPIConnection = async () => {
   try {
-    const res = await fetch(`${API_URL}/auth/health`);
+    const res = await fetch(`${API_URL}/auth/health`, {
+      method: "GET",
+    });
+
     return res.ok;
   } catch {
     return false;
