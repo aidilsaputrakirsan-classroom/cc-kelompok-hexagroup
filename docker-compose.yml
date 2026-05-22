@@ -1,91 +1,219 @@
 # ============================================================
-# Docker Compose — sikasi App
+# Docker Compose — sikasi App (Microservices)
 # Komputasi Awan — SI ITK
 # ============================================================
 # Usage:
-#   docker compose up -d          # Menjalankan semua layanan 
-#   docker compose down            # Stop & remove
-#   docker compose logs -f         # Lihat logs dari semua layanan
-#   docker compose ps              # Status services 
+#   docker compose up -d          # Menjalankan semua layanan
+#   docker compose down           # Stop & remove
+#   docker compose logs -f        # Lihat logs dari semua layanan
+#   docker compose ps             # Status services
 # ============================================================
-
+#
 services:
-  # ==================== DATABASE ====================
-  db:
-    image: postgres:16-alpine     # Menggunakan image PostgreSQL versi 16 dengan Alpine untuk ukuran lebih kecil.
-    container_name: sikasiapp-db
-    restart: unless-stopped       # Kontainer akan restart kecuali dihentikan secara eksplisit.
+  # ==================== DATABASES ====================
+
+  auth-db:
+    image: postgres:16-alpine
+    container_name: sikasiapp-auth-db
+    restart: unless-stopped
     env_file:
-      - .env.docker               # Memuat variabel lingkungan dari file .env.docker.
-    ports:
-      - "5433:5432"                 # Port untuk akses database (host:5433 -> kontainer:5432).
+      - .env
+    environment:
+      POSTGRES_DB: auth_db
     volumes:
-      - pgdata:/var/lib/postgresql/data         # Menyimpan data database agar persisten meskipun kontainer di-restart.
+      - auth_pgdata:/var/lib/postgresql/data
     networks:
       - sikasinet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sikasiapp"]      # Memeriksa status database.
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
-  # ==================== BACKEND ====================
-  backend:
-    build:
-      context: ./backend      
-      dockerfile: Dockerfile
-    container_name: sikasiapp-backend
+  finance-db:
+    image: postgres:16-alpine
+    container_name: sikasiapp-finance-db
     restart: unless-stopped
     env_file:
-      - ./backend/.env.docker
-    ports:
-      - "8000:8000"            # Port untuk mengakses backend (host:8000 -> kontainer:8000).
+      - .env
+    environment:
+      POSTGRES_DB: finance_db
+    volumes:
+      - finance_pgdata:/var/lib/postgresql/data
+    networks:
+      - sikasinet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d finance_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  letter-db:
+    image: postgres:16-alpine
+    container_name: sikasiapp-letter-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: letter_db
+    volumes:
+      - letter_pgdata:/var/lib/postgresql/data
+    networks:
+      - sikasinet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d letter_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ==================== BACKEND SERVICES ====================
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: sikasiapp-auth-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@auth-db:5432/auth_db
     networks:
       - sikasinet
     depends_on:
-      db:
-        condition: service_healthy       # Backend menunggu database untuk sehat terlebih dahulu.
+      auth-db:
+        condition: service_healthy
     healthcheck:
       test:
         [
           "CMD",
           "python",
           "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",    # Memeriksa kesehatan backend dengan HTTP request.
+          "import urllib.request; urllib.request.urlopen('http://localhost:8001/auth/health')",
         ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 15s
 
+  finance-service:
+    build:
+      context: ./services/finance-service
+      dockerfile: Dockerfile
+    container_name: sikasiapp-finance-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@finance-db:5432/finance_db
+      AUTH_SERVICE_URL: http://auth-service:8001
+    networks:
+      - sikasinet
+    depends_on:
+      finance-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8002/finance/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  letters-service:
+    build:
+      context: ./services/letters-service
+      dockerfile: Dockerfile
+    container_name: sikasiapp-letters-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@letter-db:5432/letter_db
+      AUTH_SERVICE_URL: http://auth-service:8001
+    networks:
+      - sikasinet
+    depends_on:
+      letter-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8003/letters/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ==================== GATEWAY ====================
+
+  gateway:
+    image: nginx:alpine
+    container_name: sikasiapp-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./services/gateway/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - sikasinet
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      finance-service:
+        condition: service_healthy
+      letters-service:
+        condition: service_healthy
+
   # ==================== FRONTEND ====================
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:8000        # Menyediakan URL backend untuk frontend sebagai argumen.
-        # VITE_API_URL: https://api.namadomain.com      # Opsional, bisa menggunakan endpoint API eksternal.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost}
     container_name: sikasiapp-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"       # Memetakan port 3000 pada mesin host ke port 80 pada kontainer untuk frontend.
+      - "3000:80"
     networks:
-      - sikasinet       # Menghubungkan kontainer ke jaringan kustom 'sikasinet'.
+      - sikasinet
     depends_on:
-      backend:
-        condition: service_healthy      # Memastikan backend sehat sebelum memulai frontend.
+      gateway:
+        condition: service_started
 
 # ==================== VOLUMES ====================
-# Volume digunakan untuk menyimpan data secara persisten di luar siklus hidup kontainer.
+
 volumes:
-  pgdata:
-    name: sikasiapp-pgdata      # Mendefinisikan volume untuk menyimpan data PostgreSQL secara persisten.
+  auth_pgdata:
+    name: sikasiapp-auth-pgdata
+
+  finance_pgdata:
+    name: sikasiapp-finance-pgdata
+
+  letter_pgdata:
+    name: sikasiapp-letter-pgdata
 
 # ==================== NETWORKS ====================
-# Jaringan memungkinkan kontainer untuk berkomunikasi satu sama lain.
+
 networks:
   sikasinet:
     name: sikasiapp-network
-    driver: bridge      # Menggunakan driver 'bridge' untuk komunikasi antar kontainer.
+    driver: bridge
