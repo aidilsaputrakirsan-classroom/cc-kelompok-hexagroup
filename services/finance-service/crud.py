@@ -1,13 +1,14 @@
 from sqlalchemy.orm import Session
 from models import Transaction
 from schemas import TransactionCreate
-from datetime import datetime
 
 
 # ── Transaction ──────────────────────────────────────────
 def create_transaction(db: Session, t: TransactionCreate):
     obj = Transaction(type=t.type, category=t.category, amount=t.amount, description=t.description)
-    db.add(obj); db.commit(); db.refresh(obj)
+    db.add(obj)
+    db.commit()
+    db.refresh(obj)
     return obj
 
 
@@ -28,12 +29,14 @@ def update_transaction(db: Session, tid: int, data: dict):
         for k, v in data.items():
             if v is not None:
                 setattr(t, k, v)
-        db.commit(); db.refresh(t)
+        db.commit()
+        db.refresh(t)
     return t
 
 
 def delete_transaction(db: Session, tid: int):
     t = get_transaction_by_id(db, tid)
     if t:
-        db.delete(t); db.commit()
+        db.delete(t)
+        db.commit()
     return t
