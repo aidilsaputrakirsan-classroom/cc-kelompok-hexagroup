@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import jwt
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
