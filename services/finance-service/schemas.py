@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
-from typing import Literal, Optional
+from typing import Literal
 
 
 class TransactionCreate(BaseModel):
