@@ -1,3 +1,18 @@
+# ==============================================
+# CI Pipeline — HexaGroup (Microservices)
+# ==============================================
+# Pipeline ini berjalan otomatis saat:
+# - Push ke branch manapun
+# - Pull Request ke branch main
+#
+# Jobs:
+# 1. test-auth-service     : Pytest untuk Auth Service
+# 2. test-finance-service  : Pytest untuk Finance Service
+# 3. lint-auth-service     : Ruff lint Auth Service
+# 4. lint-finance-service  : Ruff lint Finance Service
+# 5. test-frontend         : Vitest + build frontend
+# 6. build-docker          : Build semua Docker images
+
 name: CI Pipeline
 
 on:
@@ -46,11 +61,11 @@ jobs:
         run: pytest
 
   # ================================
-  # JOB 2: Test Item Service
-  # (otomatis skip kalau folder belum ada)
+  # JOB 2: Test Finance Service
+  # (otomatis skip kalau folder belum ada testsnya)
   # ================================
-  test-item-service:
-    name: 📦 Test Item Service
+  test-finance-service:
+    name: 💰 Test Finance Service
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -58,32 +73,32 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔍 Cek folder item-service
-        id: check_item
+      - name: 🔍 Cek folder finance-service
+        id: check_finance
         run: |
-          if [ -d "services/item-service" ]; then
+          if [ -d "services/finance-service" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ services/item-service belum ada, di-skip"
+            echo "⚠️ services/finance-service belum ada, di-skip"
           fi
 
       - name: 🐍 Setup Python
-        if: steps.check_item.outputs.exists == 'true'
+        if: steps.check_finance.outputs.exists == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: 📥 Install dependencies
-        if: steps.check_item.outputs.exists == 'true'
-        working-directory: ./services/item-service
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: 🧪 Run tests with coverage
-        if: steps.check_item.outputs.exists == 'true'
-        working-directory: ./services/item-service
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
         env:
           DATABASE_URL: "sqlite:///./test.db"
           AUTH_SERVICE_URL: "http://auth-service:8001"
@@ -117,11 +132,11 @@ jobs:
         run: ruff check .
 
   # ================================
-  # JOB 4: Lint Item Service
+  # JOB 4: Lint Finance Service
   # (otomatis skip kalau folder belum ada)
   # ================================
-  lint-item-service:
-    name: 🔍 Lint Item Service
+  lint-finance-service:
+    name: 🔍 Lint Finance Service
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -129,29 +144,29 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔍 Cek folder item-service
-        id: check_item
+      - name: 🔍 Cek folder finance-service
+        id: check_finance
         run: |
-          if [ -d "services/item-service" ]; then
+          if [ -d "services/finance-service" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ services/item-service belum ada, di-skip"
+            echo "⚠️ services/finance-service belum ada, di-skip"
           fi
 
       - name: 🐍 Setup Python
-        if: steps.check_item.outputs.exists == 'true'
+        if: steps.check_finance.outputs.exists == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: 📥 Install ruff
-        if: steps.check_item.outputs.exists == 'true'
+        if: steps.check_finance.outputs.exists == 'true'
         run: pip install ruff
 
       - name: 🔍 Run Ruff Linter
-        if: steps.check_item.outputs.exists == 'true'
-        working-directory: ./services/item-service
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
         run: ruff check .
 
   # ================================
@@ -187,7 +202,7 @@ jobs:
 
   # ================================
   # JOB 6: Build Docker Images
-  # Jalan setelah semua test lulus
+  # Jalan setelah semua test & lint lulus
   # ================================
   build-docker:
     name: 🐳 Build Docker Images
@@ -195,9 +210,9 @@ jobs:
     timeout-minutes: 15
     needs:
       - test-auth-service
-      - test-item-service
+      - test-finance-service
       - lint-auth-service
-      - lint-item-service
+      - lint-finance-service
       - test-frontend
 
     steps:
@@ -207,18 +222,18 @@ jobs:
       - name: 🐳 Build auth-service image
         run: docker build -t hexagroup-auth-service:ci ./services/auth-service
 
-      - name: 🔍 Cek folder item-service untuk build
-        id: check_item
+      - name: 🔍 Cek folder finance-service untuk build
+        id: check_finance
         run: |
-          if [ -d "services/item-service" ]; then
+          if [ -d "services/finance-service" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 🐳 Build item-service image
-        if: steps.check_item.outputs.exists == 'true'
-        run: docker build -t hexagroup-item-service:ci ./services/item-service
+      - name: 🐳 Build finance-service image
+        if: steps.check_finance.outputs.exists == 'true'
+        run: docker build -t hexagroup-finance-service:ci ./services/finance-service
 
       - name: 🐳 Build frontend image
         run: docker build -t hexagroup-frontend:ci ./frontend
