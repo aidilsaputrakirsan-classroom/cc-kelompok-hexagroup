@@ -21,9 +21,10 @@ describe("API Service", () => {
 
     const result = await checkAPIConnection();
 
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining("/health"), {
-      method: "GET",
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/health"),
+      { method: "GET" }
+    );
     expect(result).toBe(true);
   });
 

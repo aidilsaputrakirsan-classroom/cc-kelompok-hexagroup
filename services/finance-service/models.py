@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Enum
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from database import Base
 from datetime import datetime
-import enum
 
 class Transaction(Base):
     __tablename__ = "transactions"
