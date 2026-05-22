@@ -1,21 +1,25 @@
 # ==============================================
-# CI Pipeline — HexaGroup
+# CI Pipeline — HexaGroup (Microservices)
 # ==============================================
 # Pipeline ini berjalan otomatis saat:
-# - Push ke branch main
+# - Push ke branch manapun
 # - Pull Request ke branch main
 #
 # Jobs:
-# 1. test-backend: Install deps + run pytest
-# 2. test-frontend: Install deps + run vitest
-# 3. lint: Ruff untuk pengecekan kualitas kode backend
-# 4. build-docker: Build Docker images (pastikan Dockerfile valid)
+# 1. test-auth-service     : Pytest untuk Auth Service
+# 2. test-finance-service  : Pytest untuk Finance Service
+# 3. test-letters-service  : Pytest untuk Letters Service
+# 4. lint-auth-service     : Ruff lint Auth Service
+# 5. lint-finance-service  : Ruff lint Finance Service
+# 6. lint-letters-service  : Ruff lint Letters Service
+# 7. test-frontend         : Vitest + build frontend
+# 8. build-docker          : Build semua Docker images per service
 
 name: CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
     branches: [main]
 
@@ -25,15 +29,16 @@ concurrency:
 
 jobs:
   # ================================
-  # JOB 1: Test Backend (Python/FastAPI)
+  # JOB 1: Test Auth Service
   # ================================
-  test-backend:
-    name: 🐍 Test Backend
+  test-auth-service:
+    name: 🔐 Test Auth Service
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./services/auth-service
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -43,7 +48,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-          cache-dependency-path: backend/requirements.txt
+          cache-dependency-path: services/auth-service/requirements.txt
 
       - name: 📥 Install dependencies
         run: |
@@ -51,10 +56,206 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🧪 Run tests with coverage
+        env:
+          SECRET_KEY: "test-secret-key-for-ci-only"
+          DATABASE_URL: "sqlite:///./test.db"
+          TESTING: "true"
         run: pytest
 
   # ================================
-  # JOB 2: Test Frontend (React/Vitest)
+  # JOB 2: Test Finance Service
+  # (otomatis skip kalau belum ada tests)
+  # ================================
+  test-finance-service:
+    name: 💰 Test Finance Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Cek folder finance-service
+        id: check_finance
+        run: |
+          if [ -d "services/finance-service" ] && [ -d "services/finance-service/tests" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ services/finance-service/tests belum ada, di-skip"
+          fi
+
+      - name: 🐍 Setup Python
+        if: steps.check_finance.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install dependencies
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Run tests with coverage
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
+        env:
+          DATABASE_URL: "sqlite:///./test.db"
+          AUTH_SERVICE_URL: "http://auth-service:8001"
+          TESTING: "true"
+        run: pytest
+
+  # ================================
+  # JOB 3: Test Letters Service
+  # (otomatis skip kalau belum ada tests)
+  # ================================
+  test-letters-service:
+    name: 📄 Test Letters Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Cek folder letters-service
+        id: check_letters
+        run: |
+          if [ -d "services/letters-service" ] && [ -d "services/letters-service/tests" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ services/letters-service/tests belum ada, di-skip"
+          fi
+
+      - name: 🐍 Setup Python
+        if: steps.check_letters.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install dependencies
+        if: steps.check_letters.outputs.exists == 'true'
+        working-directory: ./services/letters-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Run tests with coverage
+        if: steps.check_letters.outputs.exists == 'true'
+        working-directory: ./services/letters-service
+        env:
+          DATABASE_URL: "sqlite:///./test.db"
+          AUTH_SERVICE_URL: "http://auth-service:8001"
+          TESTING: "true"
+        run: pytest
+
+  # ================================
+  # JOB 4: Lint Auth Service
+  # ================================
+  lint-auth-service:
+    name: 🔍 Lint Auth Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./services/auth-service
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install ruff
+        run: pip install ruff
+
+      - name: 🔍 Run Ruff Linter
+        run: ruff check .
+
+  # ================================
+  # JOB 5: Lint Finance Service
+  # (otomatis skip kalau folder belum ada)
+  # ================================
+  lint-finance-service:
+    name: 🔍 Lint Finance Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Cek folder finance-service
+        id: check_finance
+        run: |
+          if [ -d "services/finance-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ services/finance-service belum ada, di-skip"
+          fi
+
+      - name: 🐍 Setup Python
+        if: steps.check_finance.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install ruff
+        if: steps.check_finance.outputs.exists == 'true'
+        run: pip install ruff
+
+      - name: 🔍 Run Ruff Linter
+        if: steps.check_finance.outputs.exists == 'true'
+        working-directory: ./services/finance-service
+        run: ruff check .
+
+  # ================================
+  # JOB 6: Lint Letters Service
+  # (otomatis skip kalau folder belum ada)
+  # ================================
+  lint-letters-service:
+    name: 🔍 Lint Letters Service
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Cek folder letters-service
+        id: check_letters
+        run: |
+          if [ -d "services/letters-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ services/letters-service belum ada, di-skip"
+          fi
+
+      - name: 🐍 Setup Python
+        if: steps.check_letters.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install ruff
+        if: steps.check_letters.outputs.exists == 'true'
+        run: pip install ruff
+
+      - name: 🔍 Run Ruff Linter
+        if: steps.check_letters.outputs.exists == 'true'
+        working-directory: ./services/letters-service
+        run: ruff check .
+
+  # ================================
+  # JOB 7: Test Frontend
   # ================================
   test-frontend:
     name: ⚛️ Test Frontend
@@ -63,6 +264,7 @@ jobs:
     defaults:
       run:
         working-directory: ./frontend
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -84,47 +286,57 @@ jobs:
         run: npm run build
 
   # ================================
-  # JOB 3: Lint Backend (Ruff)
-  # ================================
-  lint:
-    name: 🔍 Lint Backend
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: 📥 Install ruff
-        run: pip install ruff
-
-      - name: 🔍 Run Ruff Linter
-        run: ruff check .
-
-  # ================================
-  # JOB 4: Build Docker Images
+  # JOB 8: Build Docker Images per Service
+  # Jalan setelah semua test dan lint lulus
   # ================================
   build-docker:
-    name: 🐳 Build Docker
+    name: 🐳 Build Docker Images
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [test-backend, test-frontend, lint]
+    needs:
+      - test-auth-service
+      - test-finance-service
+      - test-letters-service
+      - lint-auth-service
+      - lint-finance-service
+      - lint-letters-service
+      - test-frontend
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐳 Build backend image
-        run: docker build -t sikasi-app-backend:ci ./backend
+      - name: 🐳 Build auth-service image
+        run: docker build -t hexagroup-auth-service:ci ./services/auth-service
+
+      - name: 🔍 Cek folder finance-service untuk build
+        id: check_finance
+        run: |
+          if [ -d "services/finance-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🐳 Build finance-service image
+        if: steps.check_finance.outputs.exists == 'true'
+        run: docker build -t hexagroup-finance-service:ci ./services/finance-service
+
+      - name: 🔍 Cek folder letters-service untuk build
+        id: check_letters
+        run: |
+          if [ -d "services/letters-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🐳 Build letters-service image
+        if: steps.check_letters.outputs.exists == 'true'
+        run: docker build -t hexagroup-letters-service:ci ./services/letters-service
 
       - name: 🐳 Build frontend image
-        run: docker build -t sikasi-app-frontend:ci ./frontend
+        run: docker build -t hexagroup-frontend:ci ./frontend
 
       - name: ✅ Build success
         run: echo "✅ All Docker images built successfully!"
