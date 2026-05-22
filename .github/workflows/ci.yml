@@ -1,19 +1,24 @@
 # ==============================================
-# CI Pipeline — HexaGroup (Microservices)
+# CI Pipeline — HexaGroup
 # ==============================================
 # Pipeline ini berjalan otomatis saat:
-# - Push ke branch manapun
+# - Push ke branch main
 # - Pull Request ke branch main
 #
-# Jobs:
-# 1. test-auth-service     : Pytest untuk Auth Service
-# 2. test-finance-service  : Pytest untuk Finance Service
-# 3. test-letters-service  : Pytest untuk Letters Service
-# 4. lint-auth-service     : Ruff lint Auth Service
-# 5. lint-finance-service  : Ruff lint Finance Service
-# 6. lint-letters-service  : Ruff lint Letters Service
-# 7. test-frontend         : Vitest + build frontend
-# 8. build-docker          : Build semua Docker images per service
+# Jobs Monolith:
+# 1. test-backend  : Install deps + run pytest
+# 2. test-frontend : Install deps + run vitest
+# 3. lint          : Ruff untuk pengecekan kualitas kode backend
+#
+# Jobs Microservices (Modul 12):
+# 4. test-auth-service    : Pytest untuk Auth Service
+# 5. test-finance-service : Pytest untuk Finance Service
+# 6. test-letters-service : Pytest untuk Letters Service
+# 7. lint-auth-service    : Ruff lint Auth Service
+# 8. lint-finance-service : Ruff lint Finance Service
+# 9. lint-letters-service : Ruff lint Letters Service
+#
+# 10. build-docker : Build Docker images (monolith + microservices)
 
 name: CI Pipeline
 
@@ -29,7 +34,91 @@ concurrency:
 
 jobs:
   # ================================
-  # JOB 1: Test Auth Service
+  # JOB 1: Test Backend (Monolith)
+  # ================================
+  test-backend:
+    name: 🐍 Test Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: 📥 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Run tests with coverage
+        run: pytest
+
+  # ================================
+  # JOB 2: Test Frontend
+  # ================================
+  test-frontend:
+    name: ⚛️ Test Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm test -- --run
+
+      - name: 🏗️ Build frontend
+        run: npm run build
+
+  # ================================
+  # JOB 3: Lint Backend (Monolith)
+  # ================================
+  lint:
+    name: 🔍 Lint Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📥 Install ruff
+        run: pip install ruff
+
+      - name: 🔍 Run Ruff Linter
+        run: ruff check .
+
+  # ================================
+  # JOB 4: Test Auth Service
   # ================================
   test-auth-service:
     name: 🔐 Test Auth Service
@@ -63,7 +152,7 @@ jobs:
         run: pytest
 
   # ================================
-  # JOB 2: Test Finance Service
+  # JOB 5: Test Finance Service
   # (otomatis skip kalau belum ada tests)
   # ================================
   test-finance-service:
@@ -108,7 +197,7 @@ jobs:
         run: pytest
 
   # ================================
-  # JOB 3: Test Letters Service
+  # JOB 6: Test Letters Service
   # (otomatis skip kalau belum ada tests)
   # ================================
   test-letters-service:
@@ -153,7 +242,7 @@ jobs:
         run: pytest
 
   # ================================
-  # JOB 4: Lint Auth Service
+  # JOB 7: Lint Auth Service
   # ================================
   lint-auth-service:
     name: 🔍 Lint Auth Service
@@ -179,7 +268,7 @@ jobs:
         run: ruff check .
 
   # ================================
-  # JOB 5: Lint Finance Service
+  # JOB 8: Lint Finance Service
   # (otomatis skip kalau folder belum ada)
   # ================================
   lint-finance-service:
@@ -217,7 +306,7 @@ jobs:
         run: ruff check .
 
   # ================================
-  # JOB 6: Lint Letters Service
+  # JOB 9: Lint Letters Service
   # (otomatis skip kalau folder belum ada)
   # ================================
   lint-letters-service:
@@ -255,56 +344,33 @@ jobs:
         run: ruff check .
 
   # ================================
-  # JOB 7: Test Frontend
-  # ================================
-  test-frontend:
-    name: ⚛️ Test Frontend
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: ./frontend
-
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: 📥 Install dependencies
-        run: npm ci
-
-      - name: 🧪 Run tests
-        run: npm test -- --run
-
-      - name: 🏗️ Build frontend
-        run: npm run build
-
-  # ================================
-  # JOB 8: Build Docker Images per Service
+  # JOB 10: Build Docker Images
   # Jalan setelah semua test dan lint lulus
   # ================================
   build-docker:
-    name: 🐳 Build Docker Images
+    name: 🐳 Build Docker
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs:
+      - test-backend
+      - test-frontend
+      - lint
       - test-auth-service
       - test-finance-service
       - test-letters-service
       - lint-auth-service
       - lint-finance-service
       - lint-letters-service
-      - test-frontend
 
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
+
+      - name: 🐳 Build backend image
+        run: docker build -t sikasi-app-backend:ci ./backend
+
+      - name: 🐳 Build frontend image
+        run: docker build -t sikasi-app-frontend:ci ./frontend
 
       - name: 🐳 Build auth-service image
         run: docker build -t hexagroup-auth-service:ci ./services/auth-service
@@ -334,9 +400,6 @@ jobs:
       - name: 🐳 Build letters-service image
         if: steps.check_letters.outputs.exists == 'true'
         run: docker build -t hexagroup-letters-service:ci ./services/letters-service
-
-      - name: 🐳 Build frontend image
-        run: docker build -t hexagroup-frontend:ci ./frontend
 
       - name: ✅ Build success
         run: echo "✅ All Docker images built successfully!"
