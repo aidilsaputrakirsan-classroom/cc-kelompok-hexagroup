@@ -15,12 +15,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Set API URL untuk production build
-# Ini akan di-embed ke dalam bundle JavaScript
-ARG VITE_API_URL=http://localhost:8000
-ENV VITE_API_URL=$VITE_API_URL
-
 # Build React app → output di /app/dist/
+ARG VITE_API_URL=https://sikasi-backend-production-a11c.up.railway.app
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # ============================================================
