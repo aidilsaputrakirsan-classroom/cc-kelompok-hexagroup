@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost";
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Helper to make fetch requests with auth
 async function apiCall(
@@ -29,7 +29,14 @@ async function apiCall(
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, options);
+  
+let response;
+
+try {
+  response = await fetch(`${API_URL}${endpoint}`, options);
+} catch (err) {
+  throw new Error("Service temporarily unavailable");
+}
 
   // ===== AUTO REFRESH TOKEN =====
   if (response.status === 401 && !isRefresh) {
