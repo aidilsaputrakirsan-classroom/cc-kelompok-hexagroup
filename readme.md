@@ -1,6 +1,6 @@
 # ☁️ Cloud App - SIKASI (Sistem Informasi Keuangan dan Administrasi HMSI)
 
-## 🔄 CI/CD
+
 ![CI Pipeline](https://github.com/aidilsaputrakirsan-classroom/cc-kelompok-hexagroup/actions/workflows/ci.yml/badge.svg) 
 
 Sistem ini adalah sistem yang dirancang untuk membantu para pengurus Himpunan Mahasiswa Sistem Informasi (HMSI) dalam mengelola keuangan dan administrasi organisasi secara terintegrasi dalam satu platform. Melalui sistem ini, bendahara dapat mencatat dana masuk dan dana keluar sehingga arus kas (cash flow) dapat terpantau dan terupdate secara otomatis. Selain itu, sistem juga menyediakan fitur pengelolaan surat masuk dan surat keluar, termasuk penomoran surat serta pengelolaan tanda tangan dari Ketua Himpunan Sistem Informasi (HMSI) secara digital. Dengan demikian, seluruh data keuangan dan administrasi dapat tersimpan dengan rapi dan terstruktur.
@@ -359,7 +359,7 @@ Backend Features
 |  2  | List Surat | `/latters` | GET | Menampilkan semua daftar surat yang tersimpan |
 |  3  | Detail Surat | `/letters/{letter_id}` | GET | Melihat isi detail dan status terkini dari satu surat |
 |  4  | Update Surat | `/letters/{letter_id}` | PUT | Memperbarui konten surat selama statusnya masih draf |
-|  5  | Update Surat | `/letters/{letter_id}` | PUT | Memperbarui konten surat selama statusnya masih draf |
+
 
 Frontend Pages
 | No | Halaman | Keterangan |
@@ -498,9 +498,10 @@ Database akan digunakan untuk menyimpan:
 Semua layanan ini nantinya akan dideploy secara terintegrasi di cloud.
 
 ---
+
 ## 🔄 CI/CD
 Pipeline otomatis berjalan saat push ke main:
-1. ✅ Test backend (pytest)
-2. ✅ Test frontend (Vitest)
-3. ✅ Build Docker images
-4. ✅ Deploy ke Railway
+1. ✅ Test backend (pytest).
+2. ✅ Test frontend (Vitest).
+3. ✅ Build Docker images.
+4. ✅ Deploy ke Railway.
