@@ -53,7 +53,7 @@
 - Komunikasi data antara server Frontend dan Backend API sempat mengalami kegagalan interkoneksi pada lingkungan produksi, mengakibatkan beberapa *request* dari sisi pengguna tidak mendapatkan respons (*timeout*).
 
 **Pipeline CI/CD Gagal**
-- Otomasi pengujian pada GitHub Actions tidak berjalan lancar akibat kesalahan sintaksis atau konfigurasi pada file YAML `.github/workflows/ci.yml`. Masalah ini menyebabkan status integrasi kode utama tertahan pada status *Failing* (Merah).
+- Otomasi pengujian pada GitHub Actions tidak berjalan lancar akibat kesalahan sintaksis atau konfigurasi pada file YAML. Masalah ini menyebabkan status integrasi kode utama tertahan pada status *Failing* (Merah).
 
 ---
 
