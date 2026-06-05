@@ -137,3 +137,42 @@ jobs:
 
       - name: ✅ Build success
         run: echo "✅ All Docker images built successfully!"
+
+# ================================
+  # JOB 5: Integration Tests
+  # ================================
+integration-test:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]   # Hanya jalan jika kedua job di atas berhasil
+
+    steps:
+      # 1. Ambil kode dari repository
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Jalankan semua services dengan Docker Compose
+      - name: 🐳 Start all services
+        run: docker compose up -d --build
+
+      # 3. Tunggu sampai semua services benar-benar siap
+      - name: ⏳ Wait for services to be ready
+        run: |
+          echo "Menunggu services siap..."
+          sleep 15
+          # Coba ping gateway sampai 5 kali, jeda 3 detik tiap percobaan
+          curl --retry 5 --retry-delay 3 --retry-connrefused http://localhost/health
+          echo "Services sudah siap!"
+
+      # 4. Install dependency Python untuk testing
+      - name: 📦 Install test dependencies
+        run: pip install httpx pytest
+
+      # 5. Jalankan integration tests
+      - name: 🧪 Run integration tests
+        run: pytest tests/integration/ -v
+
+      # 6. Matikan semua services (selalu dijalankan, bahkan jika test gagal)
+      - name: 🛑 Stop all services
+        if: always()
+        run: docker compose down -v
