@@ -1,17 +1,46 @@
-# Production overrides — gunakan dengan:
-# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ============================================================
+# Docker Compose Override — Production
+# ============================================================
+# Jalankan dengan:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Perbedaan dari base:
+#   - restart: always (lebih agresif dari unless-stopped)
+#   - Port database tidak dibuka ke host
+#   - Resource limits lebih ketat
+# ============================================================
 
 services:
-  backend:
+
+  auth-db:
+    restart: always
+    ports: !reset []        # Tidak expose port DB ke host di production
+
+  finance-db:
+    restart: always
+    ports: !reset []
+
+  letter-db:
+    restart: always
+    ports: !reset []
+
+  auth-service:
+    restart: always
     environment:
-      - DEBUG=false
-      - CORS_ORIGINS=https://yourdomain.com
+      DEBUG: "false"
+
+  finance-service:
+    restart: always
+    environment:
+      DEBUG: "false"
+
+  letters-service:
+    restart: always
+    environment:
+      DEBUG: "false"
+
+  gateway:
     restart: always
 
   frontend:
     restart: always
-
-  db:
-    restart: always
-    # Tidak expose port ke host di production
-    ports: !reset []
