@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
+<<<<<<< feature/error-handling-ui
 import { useState, useEffect } from "react";
 import axios from "axios";
+=======
+import { useState } from "react";
+>>>>>>> main
 
 const styles = {
   container: {
@@ -111,6 +115,7 @@ const styles = {
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
+<<<<<<< feature/error-handling-ui
   // =======================
   // STATE (FIX TASK)
   // =======================
@@ -180,6 +185,23 @@ function Dashboard({ user }) {
   };
 
   // role access
+=======
+  // SERVICE UNAVAILABLE HANDLER
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+
+  const retryConnection = () => {
+    setServiceUnavailable(false);
+
+    // simulasi retry API
+    setTimeout(() => {
+      alert("Retrying connection...");
+    }, 500);
+  };
+
+  // UBAH KE TRUE UNTUK TESTING
+  // const [serviceUnavailable, setServiceUnavailable] = useState(true);
+
+>>>>>>> main
   const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
   const canAccessFinance = allowedRoles.includes(user.role);
   const canAccessLetters = allowedRoles.includes(user.role);
@@ -188,6 +210,11 @@ function Dashboard({ user }) {
   const onHover = (e, accessible) => {
     if (accessible) {
       e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
+<<<<<<< feature/error-handling-ui
+=======
+      e.currentTarget.style.boxShadow =
+        "0 40px 60px rgba(56, 189, 248, 0.2)";
+>>>>>>> main
     }
   };
 
@@ -206,6 +233,7 @@ function Dashboard({ user }) {
 
   return (
     <div style={styles.container}>
+<<<<<<< feature/error-handling-ui
 
       {/* =======================
           AUTH DOWN BANNER
@@ -252,6 +280,9 @@ function Dashboard({ user }) {
           SERVICE UNAVAILABLE BANNER (502/503 ERROR)
       ======================= */}
       {serviceUnavailable && !authDown && (
+=======
+      {serviceUnavailable && (
+>>>>>>> main
         <div
           style={{
             width: "100%",
@@ -265,17 +296,35 @@ function Dashboard({ user }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+<<<<<<< feature/error-handling-ui
             flexWrap: "wrap",
             gap: "12px",
           }}
         >
           <div>
             <div style={{ fontWeight: "600" }}>⚠️ {errorMessage}</div>
+=======
+            gap: "20px",
+            flexWrap: "wrap",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "600",
+              fontSize: "0.95rem",
+            }}
+          >
+            ⚠️ Some features temporarily unavailable
+>>>>>>> main
           </div>
 
           <button
             onClick={retryConnection}
+<<<<<<< feature/error-handling-ui
             disabled={isRetrying}
+=======
+>>>>>>> main
             style={{
               padding: "10px 18px",
               borderRadius: "10px",
@@ -283,16 +332,26 @@ function Dashboard({ user }) {
               background: "#0284c7",
               color: "white",
               fontWeight: "700",
+<<<<<<< feature/error-handling-ui
               cursor: isRetrying ? "not-allowed" : "pointer",
               opacity: isRetrying ? 0.6 : 1,
             }}
           >
             {isRetrying ? "Retrying..." : "Retry"}
+=======
+              cursor: "pointer",
+            }}
+          >
+            Retry
+>>>>>>> main
           </button>
         </div>
       )}
 
+<<<<<<< feature/error-handling-ui
       {/* HEADER */}
+=======
+>>>>>>> main
       <header style={styles.header}>
         <div style={styles.roleBadge}>
           👑 {user.role.toUpperCase()} Access
@@ -313,6 +372,7 @@ function Dashboard({ user }) {
             ...styles.menuCard,
             ...(!canAccessFinance && styles.disabled),
           }}
+<<<<<<< feature/error-handling-ui
           onClick={() => canAccessFinance && navigate("/finance")}
         >
           <div style={styles.iconBox}>💰</div>
@@ -321,6 +381,24 @@ function Dashboard({ user }) {
 
           {canAccessFinance && (
             <button style={styles.btnAction}>Masuk Modul →</button>
+=======
+          onMouseEnter={(e) => onHover(e, canAccessFinance)}
+          onMouseLeave={(e) => onLeave(e, canAccessFinance)}
+          onClick={() => canAccessFinance && navigate("/finance")}
+        >
+          <div style={styles.iconBox}>💰</div>
+
+          <div style={styles.cardTitle}>Finance</div>
+
+          <div style={styles.cardDescription}>
+            Manajemen anggaran, pemasukan, dan laporan keuangan organisasi.
+          </div>
+
+          {canAccessFinance && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
           )}
         </div>
 
@@ -329,6 +407,7 @@ function Dashboard({ user }) {
             ...styles.menuCard,
             ...(!canAccessLetters && styles.disabled),
           }}
+<<<<<<< feature/error-handling-ui
           onClick={() => canAccessLetters && navigate("/letters")}
         >
           <div style={styles.iconBox}>📝</div>
@@ -337,6 +416,24 @@ function Dashboard({ user }) {
 
           {canAccessLetters && (
             <button style={styles.btnAction}>Masuk Modul →</button>
+=======
+          onMouseEnter={(e) => onHover(e, canAccessLetters)}
+          onMouseLeave={(e) => onLeave(e, canAccessLetters)}
+          onClick={() => canAccessLetters && navigate("/letters")}
+        >
+          <div style={styles.iconBox}>📝</div>
+
+          <div style={styles.cardTitle}>Letters</div>
+
+          <div style={styles.cardDescription}>
+            Pengelolaan surat menyurat, nomor surat, dan arsip digital.
+          </div>
+
+          {canAccessLetters && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
           )}
         </div>
 
@@ -346,10 +443,23 @@ function Dashboard({ user }) {
             onClick={() => navigate("/admin")}
           >
             <div style={styles.iconBox}>👥</div>
+<<<<<<< feature/error-handling-ui
             <h2>Admin Panel</h2>
             <p>Manajemen user & akses</p>
 
             <button style={styles.btnAction}>Masuk Modul →</button>
+=======
+
+            <div style={styles.cardTitle}>Admin Panel</div>
+
+            <div style={styles.cardDescription}>
+              Kontrol hak akses anggota, tambah user, dan konfigurasi sistem.
+            </div>
+
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
           </div>
         )}
       </div>
