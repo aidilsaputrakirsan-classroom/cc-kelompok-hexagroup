@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
+from sqlalchemy import text
+from database import get_db
+from auth_client import auth_circuit
 
 from database import get_db, Base, engine
 from schemas import LetterCreate
@@ -46,7 +49,35 @@ def require_role(*roles: str):
 # ── Health ───────────────────────────────────────────────
 @app.get("/letters/health")
 def health():
-    return {"status": "healthy", "service": "letters-service"}
+    # Cek database
+    db_status = "connected"
+    try:
+        db = next(get_db())
+        db.execute(text("SELECT 1"))
+        db.close()
+    except Exception:
+        db_status = "disconnected"
+
+    cb = auth_circuit.get_status()
+    overall = "healthy"
+    if cb["state"] != "CLOSED":
+        overall = "degraded"
+    if db_status != "connected":
+        overall = "unhealthy"
+
+    return {
+        "status": overall,
+        "service": "letters-service",
+        "dependencies": {
+            "auth-service": {
+                "status": "available" if cb["state"] == "CLOSED" else "unavailable",
+                "circuit_breaker": cb,
+            },
+            "database": {
+                "status": db_status,
+            },
+        },
+    }
 
 # ── Letters ──────────────────────────────────────────────
 @app.post("/letters")
