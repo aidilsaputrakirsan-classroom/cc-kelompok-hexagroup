@@ -76,7 +76,6 @@ def verify_token(token: str) -> dict:
 
         except httpx.TimeoutException as e:
             logger.warning(f"Auth service timeout (attempt {attempt}/{MAX_RETRIES}): {e}")
-            last_exception = e
 
         # Exponential backoff sebelum retry berikutnya
         if attempt < MAX_RETRIES:
