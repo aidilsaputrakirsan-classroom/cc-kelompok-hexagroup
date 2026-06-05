@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
+from sqlalchemy import text
+from auth_client import auth_circuit
 
 from database import get_db, Base, engine
 from schemas import LetterCreate
@@ -46,12 +48,40 @@ def require_role(*roles: str):
 # ── Health ───────────────────────────────────────────────
 @app.get("/letters/health")
 def health():
-    return {"status": "healthy", "service": "letters-service"}
+    # Cek database
+    db_status = "connected"
+    try:
+        db = next(get_db())
+        db.execute(text("SELECT 1"))
+        db.close()
+    except Exception:
+        db_status = "disconnected"
+
+    cb = auth_circuit.get_status()
+    overall = "healthy"
+    if cb["state"] != "CLOSED":
+        overall = "degraded"
+    if db_status != "connected":
+        overall = "unhealthy"
+
+    return {
+        "status": overall,
+        "service": "letters-service",
+        "dependencies": {
+            "auth-service": {
+                "status": "available" if cb["state"] == "CLOSED" else "unavailable",
+                "circuit_breaker": cb,
+            },
+            "database": {
+                "status": db_status,
+            },
+        },
+    }
 
 # ── Letters ──────────────────────────────────────────────
 @app.post("/letters")
-def create_ltr(l: LetterCreate, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
-    return create_letter(db, l)
+def create_ltr(letter: LetterCreate, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
+    return create_letter(db, letter)
 
 
 @app.get("/letters")
@@ -61,18 +91,18 @@ def list_ltr(status: str = None, skip: int = 0, limit: int = 10, _=Depends(get_c
 
 @app.get("/letters/{id}")
 def get_ltr(id: int, _=Depends(get_current_user), db=Depends(get_db)):
-    l = get_letter_by_id(db, id)
-    if not l:
+    letter = get_letter_by_id(db, id)
+    if not letter:
         raise HTTPException(status_code=404, detail="Letter not found")
-    return l
+    return letter
 
 
 @app.put("/letters/{id}")
 def update_ltr(id: int, data: LetterCreate, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
-    l = get_letter_by_id(db, id)
-    if not l:
+    letter = get_letter_by_id(db, id)
+    if not letter:
         raise HTTPException(status_code=404, detail="Letter not found")
-    if l.status != "draft":
+    if letter.status != "draft":
         raise HTTPException(status_code=400, detail="Can only edit letters in draft status")
     return update_letter(db, id, data.dict(exclude_unset=True))
 
@@ -86,29 +116,29 @@ def delete_ltr(id: int, _=Depends(require_role("sekretaris")), db=Depends(get_db
 
 @app.post("/letters/{id}/submit")
 def submit_ltr(id: int, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
-    l = get_letter_by_id(db, id)
-    if not l:
+    letter = get_letter_by_id(db, id)
+    if not letter:
         raise HTTPException(status_code=404, detail="Letter not found")
-    if l.status != "draft":
+    if letter.status != "draft":
         raise HTTPException(status_code=400, detail="Can only submit letters in draft status")
     return update_letter_status(db, id, "submitted")
 
 
 @app.post("/letters/{id}/approve")
 def approve_ltr(id: int, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
-    l = get_letter_by_id(db, id)
-    if not l:
+    letter = get_letter_by_id(db, id)
+    if not letter:
         raise HTTPException(status_code=404, detail="Letter not found")
-    if l.status != "submitted":
+    if letter.status != "submitted":
         raise HTTPException(status_code=400, detail="Can only approve submitted letters")
     return update_letter_status(db, id, "approved")
 
 
 @app.post("/letters/{id}/reject")
 def reject_ltr(id: int, _=Depends(require_role("sekretaris")), db=Depends(get_db)):
-    l = get_letter_by_id(db, id)
-    if not l:
+    letter = get_letter_by_id(db, id)
+    if not letter:
         raise HTTPException(status_code=404, detail="Letter not found")
-    if l.status != "submitted":
+    if letter.status != "submitted":
         raise HTTPException(status_code=400, detail="Can only reject submitted letters")
     return update_letter_status(db, id, "rejected")

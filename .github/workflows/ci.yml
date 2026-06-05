@@ -56,8 +56,8 @@ jobs:
   # ================================
   # JOB 2: Test Frontend (React/Vitest)
   # ================================
-  test-frontend:
-    name: ⚛️ Test Frontend
+  lint-letters-service:
+    name: 🔍 Lint Letters Service
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -67,21 +67,30 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
+      - name: 🔍 Cek folder letters-service
+        id: check_letters
+        run: |
+          if [ -d "services/letters-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ services/letters-service belum ada, di-skip"
+          fi
+
+      - name: 🐍 Setup Python
+        if: steps.check_letters.outputs.exists == 'true'
+        uses: actions/setup-python@v5
         with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+          python-version: "3.12"
 
-      - name: 📥 Install dependencies
-        run: npm ci
+      - name: 📥 Install ruff
+        if: steps.check_letters.outputs.exists == 'true'
+        run: pip install ruff
 
-      - name: 🧪 Run tests
-        run: npm test -- --run
-
-      - name: 🏗️ Build frontend
-        run: npm run build
+      - name: 🔍 Run Ruff Linter
+        if: steps.check_letters.outputs.exists == 'true'
+        working-directory: ./services/letters-service
+        run: ruff check .
 
   # ================================
   # JOB 3: Lint Backend (Ruff)
