@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const styles = {
   container: {
@@ -131,6 +132,21 @@ const styles = {
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
+  // SERVICE UNAVAILABLE HANDLER
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+
+  const retryConnection = () => {
+    setServiceUnavailable(false);
+
+    // simulasi retry API
+    setTimeout(() => {
+      alert("Retrying connection...");
+    }, 500);
+  };
+
+  // UBAH KE TRUE UNTUK TESTING
+  // const [serviceUnavailable, setServiceUnavailable] = useState(true);
+
   const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
   const canAccessFinance = allowedRoles.includes(user.role);
   const canAccessLetters = allowedRoles.includes(user.role);
@@ -139,7 +155,8 @@ function Dashboard({ user }) {
   const onHover = (e, accessible) => {
     if (accessible) {
       e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
-      e.currentTarget.style.boxShadow = "0 40px 60px rgba(56, 189, 248, 0.2)";
+      e.currentTarget.style.boxShadow =
+        "0 40px 60px rgba(56, 189, 248, 0.2)";
     }
   };
 
@@ -152,39 +169,110 @@ function Dashboard({ user }) {
 
   return (
     <div style={styles.container}>
+      {serviceUnavailable && (
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "1400px",
+            backgroundColor: "#fef3c7",
+            color: "#92400e",
+            padding: "16px 20px",
+            borderRadius: "16px",
+            marginBottom: "24px",
+            border: "1px solid #facc15",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "20px",
+            flexWrap: "wrap",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "600",
+              fontSize: "0.95rem",
+            }}
+          >
+            ⚠️ Some features temporarily unavailable
+          </div>
+
+          <button
+            onClick={retryConnection}
+            style={{
+              padding: "10px 18px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#0284c7",
+              color: "white",
+              fontWeight: "700",
+              cursor: "pointer",
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       <header style={styles.header}>
-        <div style={styles.roleBadge}>👑 {user.role.toUpperCase()} Access</div>
+        <div style={styles.roleBadge}>
+          👑 {user.role.toUpperCase()} Access
+        </div>
+
         <h1 style={styles.title}>SISTEM INFORMASI HMSI ITK</h1>
-        <p style={styles.subtitle}>Selamat Datang, <b>{user.full_name}</b></p>
+
+        <p style={styles.subtitle}>
+          Selamat Datang, <b>{user.full_name}</b>
+        </p>
       </header>
 
       <div style={styles.menuGrid}>
         <div
-          style={{ ...styles.menuCard, ...(!canAccessFinance && styles.disabled) }}
+          style={{
+            ...styles.menuCard,
+            ...(!canAccessFinance && styles.disabled),
+          }}
           onMouseEnter={(e) => onHover(e, canAccessFinance)}
           onMouseLeave={(e) => onLeave(e, canAccessFinance)}
           onClick={() => canAccessFinance && navigate("/finance")}
         >
           <div style={styles.iconBox}>💰</div>
+
           <div style={styles.cardTitle}>Finance</div>
+
           <div style={styles.cardDescription}>
             Manajemen anggaran, pemasukan, dan laporan keuangan organisasi.
           </div>
-          {canAccessFinance && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
+
+          {canAccessFinance && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+          )}
         </div>
 
         <div
-          style={{ ...styles.menuCard, ...(!canAccessLetters && styles.disabled) }}
+          style={{
+            ...styles.menuCard,
+            ...(!canAccessLetters && styles.disabled),
+          }}
           onMouseEnter={(e) => onHover(e, canAccessLetters)}
           onMouseLeave={(e) => onLeave(e, canAccessLetters)}
           onClick={() => canAccessLetters && navigate("/letters")}
         >
           <div style={styles.iconBox}>📝</div>
+
           <div style={styles.cardTitle}>Letters</div>
+
           <div style={styles.cardDescription}>
             Pengelolaan surat menyurat, nomor surat, dan arsip digital.
           </div>
-          {canAccessLetters && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
+
+          {canAccessLetters && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+          )}
         </div>
 
         {canAccessAdmin && (
@@ -195,11 +283,16 @@ function Dashboard({ user }) {
             onClick={() => navigate("/admin")}
           >
             <div style={styles.iconBox}>👥</div>
+
             <div style={styles.cardTitle}>Admin Panel</div>
+
             <div style={styles.cardDescription}>
               Kontrol hak akses anggota, tambah user, dan konfigurasi sistem.
             </div>
-            <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>
+
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
           </div>
         )}
       </div>
