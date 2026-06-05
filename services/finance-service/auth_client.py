@@ -39,7 +39,6 @@ def verify_token(token: str) -> dict:
             detail="Auth service circuit breaker OPEN. Try again later."
         )
 
-    last_exception = None
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -65,18 +64,15 @@ def verify_token(token: str) -> dict:
             # Retryable server errors
             if resp.status_code in RETRYABLE_STATUS_CODES:
                 logger.warning(f"Auth service returned {resp.status_code} (attempt {attempt}/{MAX_RETRIES})")
-                last_exception = HTTPException(status_code=resp.status_code, detail=f"Auth service error: {resp.status_code}")
 
             else:
                 raise HTTPException(status_code=resp.status_code, detail=f"Unexpected auth response: {resp.status_code}")
 
         except httpx.ConnectError as e:
             logger.warning(f"Cannot connect to auth-service (attempt {attempt}/{MAX_RETRIES}): {e}")
-            last_exception = e
 
         except httpx.TimeoutException as e:
             logger.warning(f"Auth service timeout (attempt {attempt}/{MAX_RETRIES}): {e}")
-            last_exception = e
 
         # Exponential backoff sebelum retry berikutnya
         if attempt < MAX_RETRIES:

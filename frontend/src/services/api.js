@@ -73,11 +73,6 @@ try {
   if (!response.ok) {
     let errorMsg = `HTTP ${response.status}`;
 
-      // HANDLE SERVICE UNAVAILABLE
-  if (response.status === 503) {
-    errorMsg = "Service temporarily unavailable";
-  }
-  
     try {
       const errorData = await response.json();
 
