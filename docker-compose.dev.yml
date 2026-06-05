@@ -1,0 +1,49 @@
+# ============================================================
+# Docker Compose Override — Development
+# ============================================================
+# Jalankan dengan:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#
+# Perbedaan dari base:
+#   - Bind mount kode → hot-reload aktif tanpa rebuild image
+#   - Port services dibuka ke host untuk debug langsung
+#   - Resource limits dilepas agar tidak menghambat development
+# ============================================================
+
+services:
+
+  auth-service:
+    volumes:
+      - ./services/auth-service:/app        # Hot-reload: edit kode langsung terefleksi
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+    ports:
+      - "8001:8001"                         # Akses langsung untuk debug
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"                       # Lebih longgar untuk development
+          memory: 512M
+
+  finance-service:
+    volumes:
+      - ./services/finance-service:/app     # Hot-reload
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002", "--reload"]
+    ports:
+      - "8002:8002"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  letters-service:
+    volumes:
+      - ./services/letters-service:/app     # Hot-reload
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003", "--reload"]
+    ports:
+      - "8003:8003"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
