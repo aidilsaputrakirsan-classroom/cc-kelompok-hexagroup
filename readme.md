@@ -1,8 +1,22 @@
 # ☁️ Cloud App - SIKASI (Sistem Informasi Keuangan dan Administrasi HMSI)
 
+
+![CI Pipeline](https://github.com/aidilsaputrakirsan-classroom/cc-kelompok-hexagroup/actions/workflows/ci.yml/badge.svg) 
+
 Sistem ini adalah sistem yang dirancang untuk membantu para pengurus Himpunan Mahasiswa Sistem Informasi (HMSI) dalam mengelola keuangan dan administrasi organisasi secara terintegrasi dalam satu platform. Melalui sistem ini, bendahara dapat mencatat dana masuk dan dana keluar sehingga arus kas (cash flow) dapat terpantau dan terupdate secara otomatis. Selain itu, sistem juga menyediakan fitur pengelolaan surat masuk dan surat keluar, termasuk penomoran surat serta pengelolaan tanda tangan dari Ketua Himpunan Sistem Informasi (HMSI) secara digital. Dengan demikian, seluruh data keuangan dan administrasi dapat tersimpan dengan rapi dan terstruktur.
 
 Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, ketertiban, dan efisiensi dalam pengelolaan organisasi. Sistem ini hadir sebagai solusi atas permasalahan pencatatan manual yang sering tidak terorganisir, sulit direkap, dan kurang transparan. Dengan adanya sistem yang terintegrasi, proses pelaporan dan administrasi menjadi lebih akurat, praktis, dan mudah diakses ketika dibutuhkan.
+
+---
+
+## 🌐 Live Demo
+| Service | URL |
+|---------|-----|
+| Frontend | [https://sikasi-frontend-production-5f57.up.railway.app](https://sikasi-frontend-production-5f57.up.railway.app) |
+| Backend API | [https://sikasi-backend-production-a11c.up.railway.app](https://sikasi-backend-production-a11c.up.railway.app) |
+| API Docs (Swagger) | [https://sikasi-backend-production.up.railway.app/docs](https://sikasi-backend-production.up.railway.app/docs) |
+
+---
 
 ## 👥 Tim
 
@@ -14,6 +28,8 @@ Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, 
 | Zahwa Hanna Dwi Putri | 10231092 | Lead CI/CD & Deploy |
 | Nilam Ayu NandaStari Romdoni | 10231070 | Lead QA & Docs |
 
+---
+
 ## 🛠️ Tech Stack
 
 | Teknologi | Fungsi | Keterangan |
@@ -24,6 +40,8 @@ Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, 
 | Docker    | Containerization | Menjalankan aplikasi dalam container agar environment development dan production tetap konsisten |
 | GitHub Actions | CI/CD | Melakukan otomatisasi proses pembangunan aplikasi, pengujian, serta penerapan sistem setiap kali terjadi perubahan pada kode |
 | Railway/Render | Cloud Deployment | Layanan cloud untuk mendistribusikan dan menjalankan aplikasi pada server secara online |
+
+---
 
 ## 🏗️ Architecture
 
@@ -43,7 +61,7 @@ flowchart TD
     G --> H[(PostgreSQL sikasi_app)]
 ```
 
-*(Diagram ini akan berkembang setiap minggu)*
+---
 
 ## 🚀 Getting Started
 
@@ -76,8 +94,152 @@ flowchart TD
 
 4. **PostgreSQL 14+** <br>
     PostgreSQL 14+ adalah sistem manajemen basis data relasional open-source versi terbaru yang menawarkan performa lebih cepat, keamanan lebih baik, serta dukungan fitur lanjutan seperti JSON, indexing yang efisien, dan replikasi data. Versi ini cocok digunakan untuk aplikasi modern karena stabil, scalable, dan mampu menangani data dalam jumlah besar.
+
+---
+## 📅 Roadmap
+
+Berikut adalah roadmap untuk menunjukkan progres dan milestone proyek kami:
+
+| Minggu | Target | Status |
+|--------|--------|--------|
+| 1 | Setup Proyek: Menyiapkan struktur proyek, repositori GitHub, dan lingkungan pengembangan (backend dan frontend). | ✅ |
+| 2 | CRUD API & Database: Implementasi REST API untuk transaksi keuangan (masuk/keluar) dan surat (masuk/keluar), serta setup database PostgreSQL. | ✅ |
+| 3 | Frontend React Setup: Membuat tampilan antarmuka pengguna (frontend) dengan React, termasuk halaman login dan dashboard. | ✅ |
+| 4 | Full-Stack Integration: Menghubungkan frontend dan backend, memastikan komunikasi antara API dan frontend berjalan dengan baik. | ✅ |
+| 5-7 | Docker & Docker Compose: Containerisasi aplikasi dengan Docker dan setup Docker Compose untuk mengelola backend, frontend, dan database secara terpisah. | ✅ |
+| 8 | UTS: Persiapan dan presentasi demo untuk UTS, menampilkan implementasi awal sistem.| ✅ |
+| 9-11 | CI/CD Pipeline: Pengaturan CI/CD pipeline untuk otomatisasi testing, build, dan deployment menggunakan GitHub Actions. | ✅ |
+| 12-14 | Microservices Architecture: Mengimplementasikan arsitektur microservices untuk meningkatkan skalabilitas dan modularitas aplikasi. | ⬜ |
+| 15-16 | Final Deployment & UAS Demo: Finalisasi aplikasi, deployment ke cloud, dan persiapan untuk presentasi demo UAS. | ⬜ |
+
 ---
 
+## Struktur Proyek 
+
+Berikut adalah struktur proyek untuk aplikasi Sistem Informasi Keuangan dan Administrasi HMSI (SIKASI).
+
+```
+cc-kelompok-6/
+├── backend/
+│   ├── __pycache__/
+│   ├── scripts/
+│   │   ├── run.sh
+│   │   ├── seed_db.py
+│   │   ├── setup.sh
+│   ├── tests/
+│   │   ├── __pycache__/
+│   │   ├── conftest.py
+│   │   ├── test_auth_unit.py
+│   │   ├── test_auth.py
+│   │   ├── test_crud_user.py
+│   │   ├── test_finance.py
+│   │   ├── test_letters.py
+│   │   ├── test_public.py
+│   │   └── test_users.py
+│   │   
+│   ├── .dockerignore
+│   ├── .env.docker
+│   ├── .env.docker.example
+│   ├── .env.example
+│   ├── auth.py
+│   ├── crud.py
+│   ├── database.py
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── models.py
+│   ├── pytest.ini
+│   ├── requirements.txt
+│   ├── role_dependencies.py
+│   ├── schemas.py
+│   └── test.db
+│
+├── frontend/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── __tests__/
+│   │   │   ├── AdminPanel.jsx
+│   │   │   ├── DarkmodeToggle.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── ErrorBoundary.jsx
+│   │   │   ├── FinancePage.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── ItemCard.jsx
+│   │   │   ├── ItemForm.jsx
+│   │   │   ├── ItemList.jsx
+│   │   │   ├── LettersPage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   └── SearchBar.jsx
+│   │   │    
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   │
+│   │   ├── test/
+│   │   │   ├── App.css
+│   │   │   ├── App.jsx
+│   │   │   ├── index.css
+│   │   │   └── main.jsx
+│   │   │    
+│   │   ├── .dockerignore
+│   │   ├── .env.example
+│   │   ├── .env.production
+│   │   ├── .gitignore
+│   │   ├── Dockerfile
+│   │   ├── eslint.config.js
+│   │   ├── index.html
+│   │   ├── nginx.conf
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   └── vite.config.js
+│
+├── docs/
+│   ├── image/
+│   │
+│   ├── api-documentation.md
+│   ├── api-test-results.md
+│   ├── database-schema.md
+│   ├── deployment-guide.md
+│   ├── docker-architecture.md
+│   ├── docker-cheatsheet.md
+│   ├── docker-images.md
+│   ├── git-workflow.md
+│   ├── image-comparison.md
+│   ├── image-optimization.md
+│   ├── production-test.md
+│   ├── setup-guide.md
+│   ├── testing-guide.md
+│   ├── ui-test-results.md
+│   ├── uts-demo-script.md
+│   ├── member-Achmad-Bayhaqi.md
+│   ├── member-Alfiani-Dwiyuniarti.md
+│   ├── member-Indah-Nur-Fortuna.md
+│   ├── member-Nilam-Ayu-NandaStari-Romdoni.md
+│   └── member-Zahwa-Hanna-Dwi-Putri.md
+│
+├── scripts/
+│   └── docker-run.sh
+│
+├── services/
+│   ├── auth-service/
+│   ├── finance-service/
+│   ├── gateway/
+│   └── letters-service/
+│
+├── .env.docker
+├── .env.example
+├── .gitignore
+├── docker-compose.prod.yml
+├── docker-compose.yml
+├── Makefile
+└── readme.md
+```
+
+---
+
+## 📖 Quick Start
 ### Setup Backend
 ```bash
 # Masuk ke Folder Backend
@@ -94,7 +256,7 @@ uvicorn main:app --reload --port 8000
 # Menjalankan Swagger UI Di : http://localhost:8000/docs
 ```
 
-Backend berhasil menampilkan pesan {"message":"Hello from Sikasi App API!","status":"running","version":"0.1.0"} di browser  http://localhost:8000 dan backend juga berhasil menampilkan dokumentasi API otomatis di http://localhost:8000/docs (Swagger UI)
+Backend berhasil menampilkan pesan {"message":"Hello from Sikasi App API!","status":"running","version":"0.1.0"} dan juga berhasil menampilkan dokumentasi API otomatis di Swagger UI
 
 ### Setup Frontend
 ```bash
@@ -113,71 +275,186 @@ npm run dev
 
 Frontend berhasil menampilkan data dari backend API → koneksi full-stack
 
-## 📅 Roadmap
+---
 
-Berikut adalah roadmap untuk menunjukkan progres dan milestone proyek kami:
+### Setup Docker
+Pastikan Docker Desktop sudah terpasang dan sedang berjalan (*running*).
 
-| Minggu | Target | Status |
-|--------|--------|--------|
-| 1 | Setup Proyek: Menyiapkan struktur proyek, repositori GitHub, dan lingkungan pengembangan (backend dan frontend). | ✅ Completed |
-| 2 | CRUD API & Database: Implementasi REST API untuk transaksi keuangan (masuk/keluar) dan surat (masuk/keluar), serta setup database PostgreSQL. | ✅ Completed |
-| 3 | Frontend React Setup: Membuat tampilan antarmuka pengguna (frontend) dengan React, termasuk halaman login dan dashboard. | ✅ Completed |
-| 4 | Full-Stack Integration: Menghubungkan frontend dan backend, memastikan komunikasi antara API dan frontend berjalan dengan baik. | ✅ Completed |
-| 5-7 | Docker & Docker Compose: Containerisasi aplikasi dengan Docker dan setup Docker Compose untuk mengelola backend, frontend, dan database secara terpisah. | ✅ Completed |
-| 8 | UTS: Persiapan dan presentasi demo untuk UTS, menampilkan implementasi awal sistem.| 🔄 In Progress |
-| 9-11 | CI/CD Pipeline: Pengaturan CI/CD pipeline untuk otomatisasi testing, build, dan deployment menggunakan GitHub Actions. | ⬜ Pending |
-| 12-14 | Microservices Architecture: Mengimplementasikan arsitektur microservices untuk meningkatkan skalabilitas dan modularitas aplikasi. | ⬜ Pending |
-| 15-16 | Final Deployment & UAS Demo: Finalisasi aplikasi, deployment ke cloud, dan persiapan untuk presentasi demo UAS. | ⬜ Pending |
-
-## Struktur Proyek 
-
-Berikut adalah struktur proyek untuk aplikasi Sistem Informasi Keuangan dan Administrasi HMSI (SIKASI).
-
+**Menjalankan Sistem**
+Gunakan perintah berikut untuk membangun dan menjalankan seluruh service pada sistem: 
 ```
-cc-kelompok-6/
-├── backend/
-│   ├── main.py                  # Main entry untuk aplikasi FastAPI (backend)
-│   ├── requirements.txt         # Daftar dependencies untuk backend
-│   ├── models/                  # Model database
-│   ├── services/                # Layanan untuk logika bisnis dan API
-│   ├── config/                  # Konfigurasi aplikasi (misalnya, pengaturan database)
-│   └── scripts/                  # Skrip terkait docker dan pengaturan lainnya
-│       ├── run.sh               # Skrip untuk menjalankan aplikasi
-│       ├── seed_db.py           # Skrip untuk mengisi database dengan data awal
-│       ├── setup.sh             # Skrip untuk setup lingkungan
-│       ├── .dockerignore        # Mengabaikan file untuk Docker
-│       ├── .env.docker          # Konfigurasi variabel lingkungan untuk Docker
-│       ├── .env.docker.example  # Contoh file konfigurasi untuk Docker
-│       ├── .env.example         # Contoh konfigurasi file environment
-│       ├── docker-run.sh        # Skrip untuk menjalankan aplikasi dengan Docker
-│
-├── frontend/
-│   ├── public/                  # File statis seperti gambar dan favicon
-│   ├── src/                     # Kode sumber aplikasi React
-│   │   ├── components/          # Komponen UI aplikasi
-│   │   ├── assets/              # Gambar dan file lainnya untuk frontend
-│   │   ├── App.css              # Styling global untuk aplikasi
-│   │   ├── App.jsx              # Komponen utama untuk aplikasi React
-│   │   ├── index.css            # Styling CSS tambahan
-│   │   └── main.jsx             # Entry point untuk aplikasi React
-│   ├── package.json             # Dependencies dan pengaturan untuk frontend
-│   └── vite.config.js           # Konfigurasi untuk build dan development frontend
-│
-├── docs/                        # Dokumentasi tim dan proyek
-│   ├── member-Achmad-Bayhaqi.md
-│   ├── member-Alfiani-Dwiyuniarti.md
-│   ├── member-Indah-Nur-Fortuna.md
-│   ├── member-Nilam-Ayu-NandaStari-Romdoni.md
-│   ├── member-Zahwa-Hanna-Dwi-Putri.md
-│   └── README.md                # Dokumentasi utama proyek, roadmap, dll.
-│
-├── .gitignore                   # File untuk mengabaikan file tertentu dalam Git
-├── README.md                    # Dokumentasi utama proyek
-├── docker-compose.yml           # Konfigurasi Docker Compose untuk orkestrasi container
-├── docker-compose.prod.yml
-├── Dockerfile                   # Dockerfile untuk build image aplikasi
-├── Makefile                     # Makefile untuk mempermudah eksekusi perintah
+docker compose up -d --build
 ```
+
+Setelah proses selesai, sistem dapat diakses melalui:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+**Menghentikan Sistem**
+Untuk menghentikan seluruh service pada sistem dapat menggunakan perintah berikut:
+```
+docker compose down
+```
+
+## 🐳 Docker Compose Commands
+Berikut merupakan perintah dasar Docker Compose yang digunakan:
+| Command | Keterangan |
+|--------|--------|
+| `docker compose up` | Menjalankan semua service |
+| `docker compose up -d` | Menjalankan di background (detached) |
+| `docker compose down` | Menghentikan dan menghapus container |
+| `docker compose logs` | Menampilkan log semua service |
+| `docker compose ps` | Menampilkan status container |
+| `docker compose up -d --build` | Build ulang image lalu menjalankan service | 
+
+---
+
+---
+## 📦 Modul SIKASI
+### Modul Autentikasi 
+Modul ini menangani pendaftaran pengguna baru, manajemen sesi (login/logout), serta pengamanan hak akses data menggunakan token.
+
+Backend Features
+|  No  | Fitur | Endpoint | Method | Keterangan |
+| ---- | ----- | -------- | ------ | ---------- |
+|  1  | Registrasi Akun | `/auth/register` | POST | Mendaftarkan pengguna (user) baru ke dalam sistem |
+|  2  | Login Pengguna | `/auth/login` | POST | Autentikasi pengguna dan mendapatkan access token |
+|  3  | Refresh Token | `/auth/refresh` | POST | Memperbarui access token yang telah kedaluwarsa |
+
+Frontend Pages
+| No | Halaman | Keterangan |
+| -- | ------- | ---------- |
+| 1 | `Login Page` | Form login untuk masuk ke sistem + menyimpan token di storage | 
+| 2 | `Register Page` | Form pendaftaran akun baru bagi pengguna |
+| 3 | `Logout Action` | Menghapus token dari storage dan mengarahkan kembali ke halaman login | 
+
+### Modul Keuangan (Finance)
+Modul untuk mencatat, memperbarui, dan menghapus transaksi, serta menyajikan ringkasan laporan keuangan dalam sistem.
+
+Backend Features
+|  No  | Fitur | Endpoint | Method | Keterangan |
+| ---- | ----- | -------- | ------ | ---------- |
+|  1  | Catat Transaksi | `/finance/transactions` | POST | Membuat dan menyimpan data transaksi baru |
+|  2  | List Transaksi | `/finance/transactions` | GET | Mengambil seluruh daftar riwayat transaksi keuangan |
+|  3  | Detail Transaksi | `/finance/transactions/{transaction_id}` | GET | Melihat rincian satu transaksi secara spesifik berdasarkan ID |
+|  4  | Update Transaksi | `/finance/transactions/{transaction_id}` | PUT | Mengubah atau memperbarui data transaksi tertentu |
+|  5  | Hapus Transaksi | `/finance/transactions/{transaction_id}` | DELETE | Menghapus pencatatan transaksi dari database |
+|  6  | Summary Keuangan | `/finance/summary` | GET | Mengambil akumulasi/ringkasan total pemasukan & pengeluaran |
+
+Frontend Pages
+| No | Halaman | Keterangan |
+| -- | ------- | ---------- |
+| 1 | `Dashboard Finance` | Menampilkan ringkasan (summary) kas dan grafik keuangan |
+| 2 | `Transaction List` | Tabel riwayat transaksi lengkap dengan opsi filter data |
+| 3 | `Form Transaksi` | Halaman input untuk membuat, mengedit, atau menghapus transaksi |
+
+### Modul Surat (Letters)
+Modul untuk mengelola pembuatan dokumen surat menyurat.
+
+Backend Features
+|  No  | Fitur | Endpoint | Method | Keterangan |
+| ---- | ----- | -------- | ------ | ---------- |
+|  1  | Buat Surat Baru | `/latters` | POST | Membuat draf surat baru |
+|  2  | List Surat | `/latters` | GET | Menampilkan semua daftar surat yang tersimpan |
+|  3  | Detail Surat | `/letters/{letter_id}` | GET | Melihat isi detail dan status terkini dari satu surat |
+|  4  | Update Surat | `/letters/{letter_id}` | PUT | Memperbarui konten surat selama statusnya masih draf |
+
+
+Frontend Pages
+| No | Halaman | Keterangan |
+| -- | ------- | ---------- |
+| 1 | `Letter Dashboard` | Menampilkan daftar surat |
+| 2 | `Update Surat` | Form Update untuk mengedit isi surat |
+
+### Modul Pengguna (Users)
+Modul khusus (biasanya untuk hak akses Admin/Ketua) untuk mengontrol data user yang terdaftar di dalam aplikasi.
+
+Backend Features
+|  No  | Fitur | Endpoint | Method | Keterangan |
+| ---- | ----- | -------- | ------ | ---------- |
+|  1  | Tambah User | `/users` | POST | Membuat akun user baru langsung dari panel admin/ketua |
+|  2  | List User | `/users` | GET | Mengambil seluruh daftar user yang ada di database |
+|  3  | Detail User | `/users/{user_id}` | GET | Melihat informasi profil lengkap user tertentu |
+|  4  | Update User | `/users/{user_id}` | PUT | Memperbarui data atau mengubah role user |
+|  5  | Hapus User | `/users/{user_id}` | DELETE | Menonaktifkan atau menghapus akun user dari sistem |
+
+Frontend Pages
+| No | Halaman | Keterangan |
+| -- | ------- | ---------- |
+| 1 | `User Dashboard` | Menampilkan Tabel daftar seluruh anggota/user |
+| 2 | `Form User` | Halaman detail untuk mengedit informasi data diri user atau hak aksesnya |
+
+---
+
+## 🔗 API Endpoints
+
+### 🌐 Public Endpoints <br>
+Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa token). Endpoint ini biasanya digunakan untuk proses awal seperti registrasi, login, atau pengecekan status API. <p>
+
+| Method | Endpoint       | Deskripsi                     |
+| ------ | -------------- | ----------------------------- |
+| GET    | /              | Root endpoint (cek API jalan) |
+| GET    | /health        | Cek status API                |
+| GET    | /team          | Informasi tim                 |
+
+
+### 🔐 Authentication Endpoints
+Authentication endpoints adalah endpoint yang digunakan untuk proses autentikasi pengguna seperti registrasi, login, dan pengelolaan token. Endpoint ini memungkinkan pengguna untuk mendapatkan akses ke sistem.
+| Method | Endpoint       | Deskripsi                   |
+| ------ | -------------- | --------------------------- |
+| POST   | /auth/register | Register user baru          |
+| POST   | /auth/login    | Login user                  |
+| POST   | /auth/refresh  | Refresh access token        |
+| GET    | /auth/me       | Mendapatkan data user login |
+
+### 💰 Finance Endpoints
+Finance endpoints adalah endpoint yang digunakan untuk mengelola data keuangan seperti transaksi dan ringkasan keuangan. Endpoint ini biasanya memerlukan autentikasi.
+| Method | Endpoint                               | Deskripsi                   |
+| ------ | -------------------------------------- | --------------------------- |
+| POST   | /finance/transactions                  | Membuat transaksi baru      |
+| GET    | /finance/transactions                  | Menampilkan semua transaksi |
+| GET    | /finance/transactions/{transaction_id} | Detail transaksi            |
+| PUT    | /finance/transactions/{transaction_id} | Update transaksi            |
+| DELETE | /finance/transactions/{transaction_id} | Hapus transaksi             |
+| GET    | /finance/summary                       | Ringkasan keuangan          |
+
+
+### 📄 Letters Endpoints
+Letters endpoints adalah endpoint yang digunakan untuk mengelola surat, termasuk proses pembuatan, pengeditan.
+| Method | Endpoint                     | Deskripsi               |
+| ------ | ---------------------------- | ----------------------- |
+| POST   | /letters                     | Membuat surat baru      |
+| GET    | /letters                     | Menampilkan semua surat |
+| GET    | /letters/{letter_id}         | Detail surat            |
+| PUT    | /letters/{letter_id}         | Update surat            |
+| DELETE | /letters/{letter_id}         | Hapus surat             |
+
+
+### 👥 Users Endpoints
+Users endpoints adalah endpoint yang digunakan untuk mengelola data pengguna, termasuk pembuatan, melihat, memperbarui, dan menghapus user dalam sistem.
+| Method | Endpoint         | Deskripsi                      |
+| ------ | ---------------- | ------------------------------ |
+| POST   | /users           | Membuat user baru (oleh ketua) |
+| GET    | /users           | Menampilkan semua user         |
+| GET    | /users/{user_id} | Detail user                    |
+| PUT    | /users/{user_id} | Update user                    |
+| DELETE | /users/{user_id} | Hapus user                     |
+
+### ⚠️ Error Handling
+| Status Code | Deskripsi                              |
+| ----------- | -------------------------------------- |
+| 200         | Berhasil                               |
+| 201         | Data berhasil dibuat                   |
+| 400         | Request tidak valid                    |
+| 401         | Unauthorized (token tidak ada / salah) |
+| 403         | Forbidden (tidak punya akses)          |
+| 404         | Data tidak ditemukan                   |
+| 500         | Internal server error                  |
+
+
+---
+
 ## Panduan Penggunaan 
 Lead DevOps telah menambahkan beberapa fitur otomatisasi baru untuk menjaga kualitas kode
 tim sebelum digabungkan ke branch main:
@@ -220,337 +497,11 @@ Database akan digunakan untuk menyimpan:
 
 Semua layanan ini nantinya akan dideploy secara terintegrasi di cloud.
 
-
 ---
 
-## 📡 API Documentation
-
-### 1️⃣ POST /letters
-Endpoint ini digunakan untuk menambahkan item baru ke dalam sistem inventory.<p>
-**Method** <br>
-```
-POST
-```
-**URL**
-```
-http://localhost:8000/letters
-```
-**Request Body** <p>
-Item 1 : 
-```
-{
-    "title": "keluar",
-    "letter_type": "Leave Request",
-    "content": gapapa"
-}
-```
-Item 2 : 
-```
-{
-    "title": "gak sesuai",
-    "letter_type": "Complaint",
-    "content": berbeda aja"
-}
-```
-Item 3 : 
-```
-{
-    "title": "surat izin",
-    "letter_type": "Other",
-    "content": ada acara"
-}
-```
-
-**Response Body** <p>
-Item 1 :
-```
-{
-    "content": "gapapa"
-    "id": 4,
-    "created_at": "2026-04-11T13:58:01.703590",
-    "letter_type": "Leave Request",
-    "status": "draft",
-    "title": "keluar",
-    "update_at": "2026-04-11T13:58:01.703590"
-}
-```
-
-Item 2 :
-```
-{
-    "content": "berbeda aja"
-    "id": 5,
-    "created_at": "2026-04-11T14:58:01.818530",
-    "letter_type": "Complaint",
-    "status": "draft",
-    "title": "ga sesuai",
-    "update_at": "2026-04-11T14:58:01.818530"
-}
-```
-
-Item 3 :
-```
-{
-    "content": "ada acara"
-    "id": 6,
-    "created_at": "2026-04-11T14:01:30.467232",
-    "letter_type": "Other",
-    "status": "draft",
-    "title": "surat izin",
-    "update_at": "2026-04-11T14:01:30.467232"
-}
-```
-
-
-### 2️⃣ GET /letters
-Endpoint ini digunakan untuk mengambil seluruh daftar item yang tersimpan di dalam sistem inventory. Biasanya digunakan ketika pengguna ingin melihat semua item yang tersedia di database.<p>
-
-**Method** <br>
-```
-GET
-```
-**URL**
-```
-http://localhost:8000/letters?skip=0&limit=3
-```
-**Request Body** <p>
-Endpoint ini tidak memerlukan request body karena hanya digunakan untuk mengambil daftar item.
-
-**Response Body** <p>
-```
-[
-    {
-        "content": "gapapa"
-        "id": 4,
-        "created_at": "2026-04-11T13:58:01.703590",
-        "letter_type": "Leave Request",
-        "status": "draft",
-        "title": "keluar",
-        "update_at": "2026-04-11T13:58:01.703590"
-    },
-    {
-        "content": "berbeda aja"
-        "id": 5,
-        "created_at": "2026-04-11T14:58:01.818530",
-        "letter_type": "Complaint",
-        "status": "draft",
-        "title": "ga sesuai",
-        "update_at": "2026-04-11T14:58:01.818530"
-    },
-    {
-        "content": "ada acara"
-        "id": 6,
-        "created_at": "2026-04-11T14:01:30.467232",
-        "letter_type": "Other",
-        "status": "draft",
-        "title": "surat izin",
-        "update_at": "2026-04-11T14:01:30.467232"
-    }
-]
-```
-
-### 3️⃣ GET /letters/{letter_id}
-Endpoint ini digunakan untuk mengambil data satu item tertentu berdasarkan ID dan biasanya digunakan ketika pengguna ingin melihat detail dari satu item secara spesifik.
-
-**Method** <br>
-```
-GET 
-```
-**URL**
-```
-http://localhost:8000/letters/6
-```
-**Request Body** <p>
-Endpoint ini tidak memerlukan request body karena hanya digunakan untuk mengambil daftar item.
-
-**Response Body** <p>
-```
-{
-    "content": "ada acara"
-    "id": 6,
-    "created_at": "2026-04-11T14:01:30.467232",
-    "letter_type": "Other",
-    "status": "draft",
-    "title": "surat izin",
-    "update_at": "2026-04-11T14:01:30.467232"
-}
-```
-
-### 4️⃣ PUT /letter/{letter_id}
-Endpoint ini digunakan untuk memperbarui data item yang sudah ada di dalam sistem inventory berdasarkan ID item. <p>
-
-**Method** <br>
-```
-PUT 
-```
-**URL**
-```
-http://localhost:8000/letters/6
-```
-**Request Body** <p>
-```
-{
-    "title": "surat izin",
-    "letter_type": "Other",
-    "content": ada acara di luar kota"
-}
-```
-
-**Response Body** <p>
-```
-{
-    "content": "ada acara di luar kota"
-    "id": 6,
-    "created_at": "2026-04-11T14:01:30.467232",
-    "letter_type": "Other",
-    "status": "draft",
-    "title": "surat izin",
-    "update_at": "2026-04-11T14:16:18.743361"
-}
-```
-
-### 5️⃣ GET /letters/{letter_id}
-Endpoint ini kembali dijalankan untuk mengambil data satu item tertentu berdasarkan ID dan melihat perubahan data yang telah diubah.
-
-**Method** <br>
-```
-GET 
-```
-**URL**
-```
-http://localhost:8000/letters/6
-```
-**Request Body** <p>
-```
-{
-    "content": "ada acara di luar kota"
-    "id": 6,
-    "created_at": "2026-04-11T14:01:30.467232",
-    "letter_type": "Other",
-    "status": "draft",
-    "title": "surat izin",
-    "update_at": "2026-04-11T14:16:18.743361"
-}
-```
-
-### 6️⃣ DELETE /letters/{letter_id}
-Endpoint ini digunakan untuk menghapus item tertentu dari sistem inventory berdasarkan ID.
-Ketika endpoint ini dipanggil, sistem akan mencari item yang memiliki ID sesuai dan kemudian menghapusnya dari database.
-
-**Method** <br>
-```
-DELETE 
-```
-**URL**
-```
-http://localhost:8000/letters/6
-```
-**Request Body** <p>
-Endpoint ini tidak memerlukan request body karena hanya membutuhkan ID item pada URL.
-
-**Response Body** <p>
-```
-{
-    "detail": "Letter deleted"
-}
-```
-
-### 7️⃣ GET /letters/{letter_id}
-Endpoint ini kembali dijalankan untuk mengambil data satu item tertentu berdasarkan ID dan melihat response data yang telah dihapus dengan menampilkan 404 Not Found.
-
-**Method** <br>
-```
-GET 
-```
-**URL**
-```
-http://localhost:8000/letters/6
-```
-**Request Body** <p>
-```
-{
-    "content": "ada acara di luar kota"
-    "id": 6,
-    "created_at": "2026-04-11T14:01:30.467232",
-    "letter_type": "Other",
-    "status": "draft",
-    "title": "surat izin",
-    "update_at": "2026-04-11T14:16:18.743361"
-}
-```
-
-**Response Body** <p>
-```
-{
-    "detail": "Letter not found"
-}
-```
----
-
-## 🔐 Authentication
-
-### 🌐 Public Endpoints <br>
-Public endpoints adalah endpoint yang dapat diakses tanpa autentikasi (tanpa token). Endpoint ini biasanya digunakan untuk proses awal seperti registrasi, login, atau pengecekan status API. <p>
-
-| Method | Endpoint       | Deskripsi                     |
-| ------ | -------------- | ----------------------------- |
-| GET    | /              | Root endpoint (cek API jalan) |
-| GET    | /health        | Cek status API                |
-| GET    | /team          | Informasi tim                 |
-
-
-### 🔐 Authentication Endpoints
-Authentication endpoints adalah endpoint yang digunakan untuk proses autentikasi pengguna seperti registrasi, login, dan pengelolaan token. Endpoint ini memungkinkan pengguna untuk mendapatkan akses ke sistem.
-| Method | Endpoint       | Deskripsi                   |
-| ------ | -------------- | --------------------------- |
-| POST   | /auth/register | Register user baru          |
-| POST   | /auth/login    | Login user                  |
-| POST   | /auth/refresh  | Refresh access token        |
-| GET    | /auth/me       | Mendapatkan data user login |
-
-### 💰 Finance Endpoints
-Finance endpoints adalah endpoint yang digunakan untuk mengelola data keuangan seperti transaksi dan ringkasan keuangan. Endpoint ini biasanya memerlukan autentikasi.
-| Method | Endpoint                               | Deskripsi                   |
-| ------ | -------------------------------------- | --------------------------- |
-| POST   | /finance/transactions                  | Membuat transaksi baru      |
-| GET    | /finance/transactions                  | Menampilkan semua transaksi |
-| GET    | /finance/transactions/{transaction_id} | Detail transaksi            |
-| PUT    | /finance/transactions/{transaction_id} | Update transaksi            |
-| DELETE | /finance/transactions/{transaction_id} | Hapus transaksi             |
-| GET    | /finance/summary                       | Ringkasan keuangan          |
-
-
-### 📄 Letters Endpoints
-Letters endpoints adalah endpoint yang digunakan untuk mengelola surat, termasuk proses pembuatan, pengeditan, serta alur persetujuan (workflow) seperti submit, approve, dan reject.
-| Method | Endpoint                     | Deskripsi               |
-| ------ | ---------------------------- | ----------------------- |
-| POST   | /letters                     | Membuat surat baru      |
-| GET    | /letters                     | Menampilkan semua surat |
-| GET    | /letters/{letter_id}         | Detail surat            |
-| PUT    | /letters/{letter_id}         | Update surat            |
-| DELETE | /letters/{letter_id}         | Hapus surat             |
-| POST   | /letters/{letter_id}/submit  | Submit surat            |
-| POST   | /letters/{letter_id}/approve | Approve surat           |
-| POST   | /letters/{letter_id}/reject  | Reject surat            |
-
-
-### 👥 Users Endpoints
-Users endpoints adalah endpoint yang digunakan untuk mengelola data pengguna, termasuk pembuatan, melihat, memperbarui, dan menghapus user dalam sistem.
-| Method | Endpoint         | Deskripsi                      |
-| ------ | ---------------- | ------------------------------ |
-| POST   | /users           | Membuat user baru (oleh ketua) |
-| GET    | /users           | Menampilkan semua user         |
-| GET    | /users/{user_id} | Detail user                    |
-| PUT    | /users/{user_id} | Update user                    |
-| DELETE | /users/{user_id} | Hapus user                     |
-
-### ⚠️ Error Handling
-| Status Code | Deskripsi                              |
-| ----------- | -------------------------------------- |
-| 200         | Berhasil                               |
-| 201         | Data berhasil dibuat                   |
-| 400         | Request tidak valid                    |
-| 401         | Unauthorized (token tidak ada / salah) |
-| 403         | Forbidden (tidak punya akses)          |
-| 404         | Data tidak ditemukan                   |
-| 500         | Internal server error                  |
+## 🔄 CI/CD
+Pipeline otomatis berjalan saat push ke main:
+1. ✅ Test backend (pytest).
+2. ✅ Test frontend (Vitest).
+3. ✅ Build Docker images.
+4. ✅ Deploy ke Railway.

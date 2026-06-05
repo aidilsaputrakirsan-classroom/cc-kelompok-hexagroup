@@ -63,11 +63,16 @@ ps:
 docker compose ps
 # --- Access ---
 shell-backend:
-docker compose exec backend bash
+	docker compose exec auth-service bash
+
 shell-db:
-docker compose exec db psql -U postgres -d sikasiapp
+	docker compose exec auth-db psql -U postgres -d auth_db
+
 seed:
-docker compose exec backend python scripts/seed_db.py
+	docker compose exec auth-service python scripts/seed_db.py
+
+lint:
+	docker compose exec auth-service flake8 .
 # --- Image Management ---
 build-backend:
 docker build -t backend-image ./backend
