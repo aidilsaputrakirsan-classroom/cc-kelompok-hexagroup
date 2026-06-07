@@ -39,7 +39,7 @@ def verify_token(token: str) -> dict:
             detail="Auth service circuit breaker OPEN. Try again later."
         )
 
-    last_exception = None
+    _ = None
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
