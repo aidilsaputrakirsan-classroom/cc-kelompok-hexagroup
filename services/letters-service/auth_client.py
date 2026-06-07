@@ -65,7 +65,7 @@ def verify_token(token: str) -> dict:
             # Retryable server errors
             if resp.status_code in RETRYABLE_STATUS_CODES:
                 logger.warning(f"Auth service returned {resp.status_code} (attempt {attempt}/{MAX_RETRIES})")
-                last_exception = HTTPException(status_code=resp.status_code, detail=f"Auth service error: {resp.status_code}")
+                _ = HTTPException(status_code=resp.status_code, detail=f"Auth service error: {resp.status_code}")
 
             else:
                 raise HTTPException(status_code=resp.status_code, detail=f"Unexpected auth response: {resp.status_code}")
