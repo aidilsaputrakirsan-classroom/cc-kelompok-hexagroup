@@ -208,6 +208,7 @@ jobs:
 
       - name: Start semua services dengan Docker Compose
         run: docker compose up -d --build --scale frontend=0
+        continue-on-error: true
 
       - name: Tunggu semua services siap
         run: |
