@@ -248,9 +248,9 @@ function Dashboard({ user }) {
         </div>
       )}
 
-      {/* =======================
+      {/* =========================================
           SERVICE UNAVAILABLE BANNER (502/503 ERROR)
-      ======================= */}
+      ============================================= */}
       {serviceUnavailable && !authDown && (
         <div
           style={{
