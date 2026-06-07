@@ -1,4 +1,10 @@
 import { useNavigate } from "react-router-dom";
+<<<<<<< feature/error-handling-ui
+import { useState, useEffect } from "react";
+import axios from "axios";
+=======
+import { useState } from "react";
+>>>>>>> main
 
 const styles = {
   container: {
@@ -42,9 +48,6 @@ const styles = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     margin: "0 0 0.5rem 0",
-    letterSpacing: "-0.05em",
-    lineHeight: "1.2",
-    width: "100%",
   },
 
   subtitle: {
@@ -59,21 +62,18 @@ const styles = {
     gap: "30px",
     width: "100%",
     maxWidth: "1400px",
-    margin: "0 auto",
-    boxSizing: "border-box",
   },
 
   menuCard: {
     borderRadius: "32px",
     padding: "40px 30px",
     cursor: "pointer",
-    transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    transition: "all 0.4s ease",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     textAlign: "center",
     minHeight: "450px",
-    boxSizing: "border-box",
     border: "2px solid transparent",
     backgroundColor: "var(--bg-card)",
     backgroundImage: `linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #0284c7, #0ea5e9)`,
@@ -93,20 +93,6 @@ const styles = {
     backgroundColor: "var(--bg-page)",
   },
 
-  cardTitle: {
-    fontSize: "1.7rem",
-    fontWeight: "800",
-    marginBottom: "1rem",
-    color: "var(--text-title)",
-  },
-
-  cardDescription: {
-    fontSize: "1.05rem",
-    lineHeight: "1.6",
-    marginBottom: "2rem",
-    color: "var(--text-main)",
-  },
-
   btnAction: {
     marginTop: "auto",
     padding: "0.9rem 1.5rem",
@@ -114,10 +100,8 @@ const styles = {
     backgroundColor: "var(--bg-page)",
     color: "#4f46e5",
     fontWeight: "700",
-    fontSize: "0.95rem",
-    transition: "all 0.3s ease",
-    border: "1px solid var(--border-color)",
     width: "100%",
+    border: "1px solid var(--border-color)",
     cursor: "pointer",
   },
 
@@ -131,6 +115,93 @@ const styles = {
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
+<<<<<<< feature/error-handling-ui
+  // =======================
+  // STATE (FIX TASK)
+  // =======================
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+  const [authDown, setAuthDown] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  // =======================
+  // API CALL (IMPORTANT FIX)
+  // =======================
+  const fetchDashboard = async () => {
+    try {
+      setLoading(true);
+      setServiceUnavailable(false);
+      setAuthDown(false);
+      setErrorMessage("");
+
+      // Via gateway (port 80) atau langsung backend (port 8000)
+      const apiUrl = window.location.origin.includes('3000') 
+        ? "http://localhost:8000/health"
+        : "http://localhost/health";
+      
+      await axios.get(apiUrl); 
+      // Docker backend (ubah kalau port kamu beda)
+
+    } catch (error) {
+      const status = error.response?.status;
+
+      if (status === 503 || status === 502) {
+        // Cek apakah error dari auth service
+        const errorData = error.response?.data;
+        if (
+          errorData?.detail?.includes("auth") ||
+          error.config?.url?.includes("auth") ||
+          errorData?.message?.includes("Authentication")
+        ) {
+          setAuthDown(true);
+          setErrorMessage("Authentication service is temporarily unavailable");
+        } else {
+          setServiceUnavailable(true);
+          setErrorMessage("Service temporarily unavailable. Please try again later.");
+        }
+      } else if (status === 500) {
+        setServiceUnavailable(true);
+        setErrorMessage("Server error occurred. Please try again.");
+      } else if (!error.response) {
+        setServiceUnavailable(true);
+        setErrorMessage("Unable to connect to server. Check your connection.");
+      }
+    } finally {
+      setLoading(false);
+      setIsRetrying(false);
+    }
+  };
+
+  // auto fetch
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  // retry FIX
+  const retryConnection = () => {
+    setIsRetrying(true);
+    fetchDashboard();
+  };
+
+  // role access
+=======
+  // SERVICE UNAVAILABLE HANDLER
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+
+  const retryConnection = () => {
+    setServiceUnavailable(false);
+
+    // simulasi retry API
+    setTimeout(() => {
+      alert("Retrying connection...");
+    }, 500);
+  };
+
+  // UBAH KE TRUE UNTUK TESTING
+  // const [serviceUnavailable, setServiceUnavailable] = useState(true);
+
+>>>>>>> main
   const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
   const canAccessFinance = allowedRoles.includes(user.role);
   const canAccessLetters = allowedRoles.includes(user.role);
@@ -139,67 +210,256 @@ function Dashboard({ user }) {
   const onHover = (e, accessible) => {
     if (accessible) {
       e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
-      e.currentTarget.style.boxShadow = "0 40px 60px rgba(56, 189, 248, 0.2)";
+<<<<<<< feature/error-handling-ui
+=======
+      e.currentTarget.style.boxShadow =
+        "0 40px 60px rgba(56, 189, 248, 0.2)";
+>>>>>>> main
     }
   };
 
   const onLeave = (e, accessible) => {
     if (accessible) {
-      e.currentTarget.style.transform = "translateY(0) scale(1)";
-      e.currentTarget.style.boxShadow = "none";
+      e.currentTarget.style.transform = "translateY(0)";
     }
   };
 
+  // =======================
+  // LOADING STATE
+  // =======================
+  if (loading) {
+    return <p style={{ textAlign: "center" }}>Loading...</p>;
+  }
+
   return (
     <div style={styles.container}>
+<<<<<<< feature/error-handling-ui
+
+      {/* =======================
+          AUTH DOWN BANNER
+      ======================= */}
+      {authDown && (
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "1400px",
+            backgroundColor: "#fee2e2",
+            color: "#991b1b",
+            padding: "16px 20px",
+            borderRadius: "16px",
+            marginBottom: "24px",
+            border: "1px solid #fca5a5",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontWeight: "600",
+          }}
+        >
+          <div>🔒 Some features temporarily unavailable</div>
+
+          <button
+            onClick={retryConnection}
+            disabled={isRetrying}
+            style={{
+              padding: "10px 18px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#dc2626",
+              color: "white",
+              fontWeight: "700",
+              cursor: isRetrying ? "not-allowed" : "pointer",
+              opacity: isRetrying ? 0.6 : 1,
+            }}
+          >
+            {isRetrying ? "Retrying..." : "Retry"}
+          </button>
+        </div>
+      )}
+
+      {/* =======================
+          SERVICE UNAVAILABLE BANNER (502/503 ERROR)
+      ======================= */}
+      {serviceUnavailable && !authDown && (
+=======
+      {serviceUnavailable && (
+>>>>>>> main
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "1400px",
+            backgroundColor: "#fef3c7",
+            color: "#92400e",
+            padding: "16px 20px",
+            borderRadius: "16px",
+            marginBottom: "24px",
+            border: "1px solid #facc15",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+<<<<<<< feature/error-handling-ui
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: "600" }}>⚠️ {errorMessage}</div>
+=======
+            gap: "20px",
+            flexWrap: "wrap",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "600",
+              fontSize: "0.95rem",
+            }}
+          >
+            ⚠️ Some features temporarily unavailable
+>>>>>>> main
+          </div>
+
+          <button
+            onClick={retryConnection}
+<<<<<<< feature/error-handling-ui
+            disabled={isRetrying}
+=======
+>>>>>>> main
+            style={{
+              padding: "10px 18px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#0284c7",
+              color: "white",
+              fontWeight: "700",
+<<<<<<< feature/error-handling-ui
+              cursor: isRetrying ? "not-allowed" : "pointer",
+              opacity: isRetrying ? 0.6 : 1,
+            }}
+          >
+            {isRetrying ? "Retrying..." : "Retry"}
+=======
+              cursor: "pointer",
+            }}
+          >
+            Retry
+>>>>>>> main
+          </button>
+        </div>
+      )}
+
+<<<<<<< feature/error-handling-ui
+      {/* HEADER */}
+=======
+>>>>>>> main
       <header style={styles.header}>
-        <div style={styles.roleBadge}>👑 {user.role.toUpperCase()} Access</div>
+        <div style={styles.roleBadge}>
+          👑 {user.role.toUpperCase()} Access
+        </div>
+
         <h1 style={styles.title}>SISTEM INFORMASI HMSI ITK</h1>
-        <p style={styles.subtitle}>Selamat Datang, <b>{user.full_name}</b></p>
+
+        <p style={styles.subtitle}>
+          Selamat Datang, <b>{user.full_name}</b>
+        </p>
       </header>
 
+      {/* MENU */}
       <div style={styles.menuGrid}>
+
         <div
-          style={{ ...styles.menuCard, ...(!canAccessFinance && styles.disabled) }}
+          style={{
+            ...styles.menuCard,
+            ...(!canAccessFinance && styles.disabled),
+          }}
+<<<<<<< feature/error-handling-ui
+          onClick={() => canAccessFinance && navigate("/finance")}
+        >
+          <div style={styles.iconBox}>💰</div>
+          <h2>Finance</h2>
+          <p>Manajemen keuangan organisasi</p>
+
+          {canAccessFinance && (
+            <button style={styles.btnAction}>Masuk Modul →</button>
+=======
           onMouseEnter={(e) => onHover(e, canAccessFinance)}
           onMouseLeave={(e) => onLeave(e, canAccessFinance)}
           onClick={() => canAccessFinance && navigate("/finance")}
         >
           <div style={styles.iconBox}>💰</div>
+
           <div style={styles.cardTitle}>Finance</div>
+
           <div style={styles.cardDescription}>
             Manajemen anggaran, pemasukan, dan laporan keuangan organisasi.
           </div>
-          {canAccessFinance && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
+
+          {canAccessFinance && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
+          )}
         </div>
 
         <div
-          style={{ ...styles.menuCard, ...(!canAccessLetters && styles.disabled) }}
+          style={{
+            ...styles.menuCard,
+            ...(!canAccessLetters && styles.disabled),
+          }}
+<<<<<<< feature/error-handling-ui
+          onClick={() => canAccessLetters && navigate("/letters")}
+        >
+          <div style={styles.iconBox}>📝</div>
+          <h2>Letters</h2>
+          <p>Manajemen surat menyurat</p>
+
+          {canAccessLetters && (
+            <button style={styles.btnAction}>Masuk Modul →</button>
+=======
           onMouseEnter={(e) => onHover(e, canAccessLetters)}
           onMouseLeave={(e) => onLeave(e, canAccessLetters)}
           onClick={() => canAccessLetters && navigate("/letters")}
         >
           <div style={styles.iconBox}>📝</div>
+
           <div style={styles.cardTitle}>Letters</div>
+
           <div style={styles.cardDescription}>
             Pengelolaan surat menyurat, nomor surat, dan arsip digital.
           </div>
-          {canAccessLetters && <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>}
+
+          {canAccessLetters && (
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
+          )}
         </div>
 
         {canAccessAdmin && (
           <div
             style={styles.menuCard}
-            onMouseEnter={(e) => onHover(e, true)}
-            onMouseLeave={(e) => onLeave(e, true)}
             onClick={() => navigate("/admin")}
           >
             <div style={styles.iconBox}>👥</div>
+<<<<<<< feature/error-handling-ui
+            <h2>Admin Panel</h2>
+            <p>Manajemen user & akses</p>
+
+            <button style={styles.btnAction}>Masuk Modul →</button>
+=======
+
             <div style={styles.cardTitle}>Admin Panel</div>
+
             <div style={styles.cardDescription}>
               Kontrol hak akses anggota, tambah user, dan konfigurasi sistem.
             </div>
-            <button className="action-btn" style={styles.btnAction}>Masuk Modul →</button>
+
+            <button className="action-btn" style={styles.btnAction}>
+              Masuk Modul →
+            </button>
+>>>>>>> main
           </div>
         )}
       </div>
