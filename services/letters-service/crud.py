@@ -1,42 +1,59 @@
 from sqlalchemy.orm import Session
-from models import Transaction
-from schemas import TransactionCreate
+from models import Letter, LetterStatus
+from schemas import LetterCreate
+from datetime import datetime
 
 
-# ── Transaction ──────────────────────────────────────────
-def create_transaction(db: Session, t: TransactionCreate):
-    obj = Transaction(type=t.type, category=t.category, amount=t.amount, description=t.description)
-    db.add(obj)
+# ── Letter CRUD ──────────────────────────────────────────
+def create_letter(db: Session, letter: LetterCreate):
+    db_letter = Letter(
+        title=letter.title,
+        letter_type=letter.letter_type,
+        content=letter.content,
+        status=LetterStatus.draft
+    )
+    db.add(db_letter)
     db.commit()
-    db.refresh(obj)
-    return obj
+    db.refresh(db_letter)
+    return db_letter
 
 
-def get_all_transactions(db: Session, skip: int = 0, limit: int = 10, category: str = None):
-    q = db.query(Transaction)
-    if category:
-        q = q.filter(Transaction.category.ilike(f"%{category}%"))
-    return q.offset(skip).limit(limit).all()
+def get_all_letters(db: Session, status: str = None, skip: int = 0, limit: int = 10):
+    query = db.query(Letter)
+    if status:
+        query = query.filter(Letter.status == status)
+    return query.offset(skip).limit(limit).all()
 
 
-def get_transaction_by_id(db: Session, tid: int):
-    return db.query(Transaction).filter(Transaction.id == tid).first()
+def get_letter_by_id(db: Session, letter_id: int):
+    return db.query(Letter).filter(Letter.id == letter_id).first()
 
 
-def update_transaction(db: Session, tid: int, data: dict):
-    t = get_transaction_by_id(db, tid)
-    if t:
-        for k, v in data.items():
-            if v is not None:
-                setattr(t, k, v)
+def update_letter(db: Session, letter_id: int, letter_data: dict):
+    letter = get_letter_by_id(db, letter_id)
+    if letter:
+        for key, value in letter_data.items():
+            if value is not None:
+                setattr(letter, key, value)
+        letter.updated_at = datetime.utcnow()
         db.commit()
-        db.refresh(t)
-    return t
+        db.refresh(letter)
+    return letter
 
 
-def delete_transaction(db: Session, tid: int):
-    t = get_transaction_by_id(db, tid)
-    if t:
-        db.delete(t)
+def update_letter_status(db: Session, letter_id: int, status: str):
+    letter = get_letter_by_id(db, letter_id)
+    if letter:
+        letter.status = status
+        letter.updated_at = datetime.utcnow()
         db.commit()
-    return t
+        db.refresh(letter)
+    return letter
+
+
+def delete_letter(db: Session, letter_id: int):
+    letter = get_letter_by_id(db, letter_id)
+    if letter:
+        db.delete(letter)
+        db.commit()
+    return letter
