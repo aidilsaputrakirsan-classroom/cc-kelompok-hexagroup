@@ -72,11 +72,11 @@ def verify_token(token: str) -> dict:
 
         except httpx.ConnectError as e:
             logger.warning(f"Cannot connect to auth-service (attempt {attempt}/{MAX_RETRIES}): {e}")
-            last_exception = e
+            _ = e
 
         except httpx.TimeoutException as e:
             logger.warning(f"Auth service timeout (attempt {attempt}/{MAX_RETRIES}): {e}")
-            last_exception = e
+            _ = e
 
         # Exponential backoff sebelum retry berikutnya
         if attempt < MAX_RETRIES:

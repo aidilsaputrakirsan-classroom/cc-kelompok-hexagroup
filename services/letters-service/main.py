@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
 from sqlalchemy import text
-from database import get_db
 from auth_client import auth_circuit
 
 from database import get_db, Base, engine
