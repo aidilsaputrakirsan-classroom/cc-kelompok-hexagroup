@@ -213,7 +213,7 @@ jobs:
       - name: Tunggu semua services siap
         run: |
           echo "Menunggu semua services siap..."
-          sleep 20
+          sleep 40
           curl --retry 5 --retry-delay 3 --retry-connrefused http://localhost/health
           echo "Gateway sudah siap!"
 
