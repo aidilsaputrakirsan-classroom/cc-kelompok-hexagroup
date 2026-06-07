@@ -9,20 +9,19 @@ Berikut adalah visualisasi aliran data dari pengguna melewati Nginx Reverse Prox
 
 ```mermaid
 graph TD
-    User([🌐 Web Browser / Client]) -->|HTTP Request| Gateway[⚡ Nginx API Gateway: Port 80]
-    
-    subgraph Microservices Backend
-        Gateway -->|/auth/*| AuthService[🔒 Auth Service: Port 8001]
-        Gateway -->|/finance/*| FinanceService[💰 Finance Service: Port 8002]
-        Gateway -->|/letters/*| LettersService[📄 Letters Service: Port 8003]
-        Gateway -->|/| FrontendService[🖥️ Frontend App: Port 80]
-    end
+    User([🌐 Web Browser / Client]) --> Gateway[⚡ Nginx API Gateway]
 
-    subgraph Database Layer
-        AuthService --> DB_Auth[(🗄️ DB Auth)]
-        FinanceService --> DB_Finance[(🗄️ DB Finance)]
-        LettersService --> DB_Letters[(🗄️ DB Letters)]
-    end
+    Gateway --> Auth[🔒 Auth Service : 8001]
+    Gateway --> Finance[💰 Finance Service : 8002]
+    Gateway --> Letters[📄 Letters Service : 8003]
+    Gateway --> Frontend[🖥️ Frontend : 80]
+
+    Finance -. Retry + Circuit Breaker .-> Auth
+    Letters -. Retry + Circuit Breaker .-> Auth
+
+    Auth --> DBAuth[(🗄️ Auth DB)]
+    Finance --> DBFinance[(🗄️ Finance DB)]
+    Letters --> DBLetters[(🗄️ Letters DB)]
 ```
 ---
 
