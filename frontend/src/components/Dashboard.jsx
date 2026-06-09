@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const styles = {
   container: {
@@ -43,9 +44,6 @@ const styles = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     margin: "0 0 0.5rem 0",
-    letterSpacing: "-0.05em",
-    lineHeight: "1.2",
-    width: "100%",
   },
 
   subtitle: {
@@ -60,21 +58,18 @@ const styles = {
     gap: "30px",
     width: "100%",
     maxWidth: "1400px",
-    margin: "0 auto",
-    boxSizing: "border-box",
   },
 
   menuCard: {
     borderRadius: "32px",
     padding: "40px 30px",
     cursor: "pointer",
-    transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    transition: "all 0.4s ease",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     textAlign: "center",
     minHeight: "450px",
-    boxSizing: "border-box",
     border: "2px solid transparent",
     backgroundColor: "var(--bg-card)",
     backgroundImage: `linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, #0284c7, #0ea5e9)`,
@@ -94,20 +89,6 @@ const styles = {
     backgroundColor: "var(--bg-page)",
   },
 
-  cardTitle: {
-    fontSize: "1.7rem",
-    fontWeight: "800",
-    marginBottom: "1rem",
-    color: "var(--text-title)",
-  },
-
-  cardDescription: {
-    fontSize: "1.05rem",
-    lineHeight: "1.6",
-    marginBottom: "2rem",
-    color: "var(--text-main)",
-  },
-
   btnAction: {
     marginTop: "auto",
     padding: "0.9rem 1.5rem",
@@ -115,10 +96,8 @@ const styles = {
     backgroundColor: "var(--bg-page)",
     color: "#4f46e5",
     fontWeight: "700",
-    fontSize: "0.95rem",
-    transition: "all 0.3s ease",
-    border: "1px solid var(--border-color)",
     width: "100%",
+    border: "1px solid var(--border-color)",
     cursor: "pointer",
   },
 
@@ -132,20 +111,64 @@ const styles = {
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
-  // SERVICE UNAVAILABLE HANDLER
+  // STATE
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
+  const [authDown, setAuthDown] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  const retryConnection = () => {
-    setServiceUnavailable(false);
+  // API CALL
+  const fetchDashboard = async () => {
+    try {
+      setLoading(true);
+      setServiceUnavailable(false);
+      setAuthDown(false);
+      setErrorMessage("");
 
-    // simulasi retry API
-    setTimeout(() => {
-      alert("Retrying connection...");
-    }, 500);
+      const apiUrl = window.location.origin.includes('3000') 
+        ? "http://localhost:8000/health"
+        : "http://localhost/health";
+      
+      await axios.get(apiUrl);
+
+    } catch (error) {
+      const status = error.response?.status;
+
+      if (status === 503 || status === 502) {
+        const errorData = error.response?.data;
+        if (
+          errorData?.detail?.includes("auth") ||
+          error.config?.url?.includes("auth") ||
+          errorData?.message?.includes("Authentication")
+        ) {
+          setAuthDown(true);
+          setErrorMessage("Authentication service is temporarily unavailable");
+        } else {
+          setServiceUnavailable(true);
+          setErrorMessage("Service temporarily unavailable. Please try again later.");
+        }
+      } else if (status === 500) {
+        setServiceUnavailable(true);
+        setErrorMessage("Server error occurred. Please try again.");
+      } else if (!error.response) {
+        setServiceUnavailable(true);
+        setErrorMessage("Unable to connect to server. Check your connection.");
+      }
+    } finally {
+      setLoading(false);
+      setIsRetrying(false);
+    }
   };
 
-  // UBAH KE TRUE UNTUK TESTING
-  // const [serviceUnavailable, setServiceUnavailable] = useState(true);
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const retryConnection = () => {
+    setIsRetrying(true);
+    fetchDashboard();
+  };
 
   const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
   const canAccessFinance = allowedRoles.includes(user.role);
@@ -155,21 +178,63 @@ function Dashboard({ user }) {
   const onHover = (e, accessible) => {
     if (accessible) {
       e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
-      e.currentTarget.style.boxShadow =
-        "0 40px 60px rgba(56, 189, 248, 0.2)";
     }
   };
 
   const onLeave = (e, accessible) => {
     if (accessible) {
-      e.currentTarget.style.transform = "translateY(0) scale(1)";
-      e.currentTarget.style.boxShadow = "none";
+      e.currentTarget.style.transform = "translateY(0)";
     }
   };
 
+  if (loading) {
+    return <p style={{ textAlign: "center" }}>Loading...</p>;
+  }
+
   return (
     <div style={styles.container}>
-      {serviceUnavailable && (
+
+      {/* AUTH DOWN BANNER */}
+      {authDown && (
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "1400px",
+            backgroundColor: "#fee2e2",
+            color: "#991b1b",
+            padding: "16px 20px",
+            borderRadius: "16px",
+            marginBottom: "24px",
+            border: "1px solid #fca5a5",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontWeight: "600",
+          }}
+        >
+          <div>🔒 Some features temporarily unavailable</div>
+
+          <button
+            onClick={retryConnection}
+            disabled={isRetrying}
+            style={{
+              padding: "10px 18px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#dc2626",
+              color: "white",
+              fontWeight: "700",
+              cursor: isRetrying ? "not-allowed" : "pointer",
+              opacity: isRetrying ? 0.6 : 1,
+            }}
+          >
+            {isRetrying ? "Retrying..." : "Retry"}
+          </button>
+        </div>
+      )}
+
+      {/* SERVICE UNAVAILABLE BANNER */}
+      {serviceUnavailable && !authDown && (
         <div
           style={{
             width: "100%",
@@ -183,22 +248,17 @@ function Dashboard({ user }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: "20px",
             flexWrap: "wrap",
-            boxSizing: "border-box",
+            gap: "12px",
           }}
         >
-          <div
-            style={{
-              fontWeight: "600",
-              fontSize: "0.95rem",
-            }}
-          >
-            ⚠️ Some features temporarily unavailable
+          <div>
+            <div style={{ fontWeight: "600" }}>⚠️ {errorMessage}</div>
           </div>
 
           <button
             onClick={retryConnection}
+            disabled={isRetrying}
             style={{
               padding: "10px 18px",
               borderRadius: "10px",
@@ -206,10 +266,11 @@ function Dashboard({ user }) {
               background: "#0284c7",
               color: "white",
               fontWeight: "700",
-              cursor: "pointer",
+              cursor: isRetrying ? "not-allowed" : "pointer",
+              opacity: isRetrying ? 0.6 : 1,
             }}
           >
-            Retry
+            {isRetrying ? "Retrying..." : "Retry"}
           </button>
         </div>
       )}
@@ -232,22 +293,14 @@ function Dashboard({ user }) {
             ...styles.menuCard,
             ...(!canAccessFinance && styles.disabled),
           }}
-          onMouseEnter={(e) => onHover(e, canAccessFinance)}
-          onMouseLeave={(e) => onLeave(e, canAccessFinance)}
           onClick={() => canAccessFinance && navigate("/finance")}
         >
           <div style={styles.iconBox}>💰</div>
-
-          <div style={styles.cardTitle}>Finance</div>
-
-          <div style={styles.cardDescription}>
-            Manajemen anggaran, pemasukan, dan laporan keuangan organisasi.
-          </div>
+          <h2>Finance</h2>
+          <p>Manajemen keuangan organisasi</p>
 
           {canAccessFinance && (
-            <button className="action-btn" style={styles.btnAction}>
-              Masuk Modul →
-            </button>
+            <button style={styles.btnAction}>Masuk Modul →</button>
           )}
         </div>
 
@@ -256,43 +309,27 @@ function Dashboard({ user }) {
             ...styles.menuCard,
             ...(!canAccessLetters && styles.disabled),
           }}
-          onMouseEnter={(e) => onHover(e, canAccessLetters)}
-          onMouseLeave={(e) => onLeave(e, canAccessLetters)}
           onClick={() => canAccessLetters && navigate("/letters")}
         >
           <div style={styles.iconBox}>📝</div>
-
-          <div style={styles.cardTitle}>Letters</div>
-
-          <div style={styles.cardDescription}>
-            Pengelolaan surat menyurat, nomor surat, dan arsip digital.
-          </div>
+          <h2>Letters</h2>
+          <p>Manajemen surat menyurat</p>
 
           {canAccessLetters && (
-            <button className="action-btn" style={styles.btnAction}>
-              Masuk Modul →
-            </button>
+            <button style={styles.btnAction}>Masuk Modul →</button>
           )}
         </div>
 
         {canAccessAdmin && (
           <div
             style={styles.menuCard}
-            onMouseEnter={(e) => onHover(e, true)}
-            onMouseLeave={(e) => onLeave(e, true)}
             onClick={() => navigate("/admin")}
           >
             <div style={styles.iconBox}>👥</div>
+            <h2>Admin Panel</h2>
+            <p>Manajemen user & akses</p>
 
-            <div style={styles.cardTitle}>Admin Panel</div>
-
-            <div style={styles.cardDescription}>
-              Kontrol hak akses anggota, tambah user, dan konfigurasi sistem.
-            </div>
-
-            <button className="action-btn" style={styles.btnAction}>
-              Masuk Modul →
-            </button>
+            <button style={styles.btnAction}>Masuk Modul →</button>
           </div>
         )}
       </div>
