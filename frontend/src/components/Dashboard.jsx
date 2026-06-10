@@ -131,10 +131,17 @@ const [loading, setLoading] = useState(true);
 const [isRetrying, setIsRetrying] = useState(false);
 const [apiConnected, setApiConnected] = useState(false);
 
-const [isDarkMode, setIsDarkMode] = useState(() => {
-  const savedTheme = localStorage.getItem("theme");
-  return savedTheme === "dark";
-});
+const onButtonHover = (e) => {
+  e.currentTarget.style.transform = "translateY(-3px)";
+  e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
+  e.currentTarget.style.backgroundColor = "var(--bg-card)";
+};
+
+const onButtonLeave = (e) => {
+  e.currentTarget.style.transform = "translateY(0)";
+  e.currentTarget.style.boxShadow = "none";
+  e.currentTarget.style.backgroundColor = "var(--bg-page)";
+};
 
   // API CALL
   const fetchDashboard = async () => {
@@ -186,27 +193,22 @@ const [isDarkMode, setIsDarkMode] = useState(() => {
   fetchDashboard();
 }, []);
 
-useEffect(() => {
-  localStorage.setItem(
-    "theme",
-    isDarkMode ? "dark" : "light"
-  );
-
-  document.documentElement.setAttribute(
-    "data-theme",
-    isDarkMode ? "dark" : "light"
-  );
-}, [isDarkMode]);
-
   const retryConnection = () => {
     setIsRetrying(true);
     fetchDashboard();
   };
 
-  const allowedRoles = ["ketua", "sekretaris", "bendahara", "anggota"];
-  const canAccessFinance = allowedRoles.includes(user.role);
-  const canAccessLetters = allowedRoles.includes(user.role);
-  const canAccessAdmin = user.role === "ketua";
+ const role = user.role;
+
+// ===== MENU ACCESS =====
+const canAccessFinance = ["ketua", "sekretaris", "bendahara", "anggota"].includes(role);
+const canAccessLetters = ["ketua", "sekretaris", "bendahara", "anggota"].includes(role);
+const canAccessAdmin = role === "ketua";
+
+// ===== CRUD ACCESS =====
+const canCrudFinance = role === "bendahara";
+const canCrudLetters = role === "sekretaris";
+const canCrudAdmin = role === "ketua";
 
 const onHover = (e, accessible) => {
   if (accessible) {
@@ -223,10 +225,6 @@ const onLeave = (e, accessible) => {
     e.currentTarget.style.transform = "translateY(0)";
     e.currentTarget.style.boxShadow = "none";
   }
-};
-
-  const toggleTheme = () => {
-  setIsDarkMode((prev) => !prev);
 };
 
 if (loading) {
@@ -362,29 +360,6 @@ if (loading) {
         transition: "all 0.3s ease",
       }}
     />
-
-    {/* Dark Mode Button */}
-    <button
-      onClick={toggleTheme}
-      style={{
-        border: "1px solid var(--border-color)",
-        padding: "10px 16px",
-        borderRadius: "12px",
-        cursor: "pointer",
-        background: "var(--bg-card)",
-        color: "var(--text-color)",
-        fontWeight: "600",
-        transition: "all 0.3s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-2px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
-    >
-      {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-    </button>
   </div>
 
   {/* Role */}
@@ -426,7 +401,13 @@ if (loading) {
 </p>
 
           {canAccessFinance && (
-            <button style={styles.btnAction}>Masuk Modul →</button>
+            <button
+  style={styles.btnAction}
+  onMouseEnter={onButtonHover}
+  onMouseLeave={onButtonLeave}
+>
+  Masuk Modul →
+</button>
           )}
         </div>
 <div
@@ -449,7 +430,11 @@ if (loading) {
 </p>
 
 {canAccessLetters && (
-  <button style={styles.btnAction}>
+  <button
+    style={styles.btnAction}
+    onMouseEnter={onButtonHover}
+    onMouseLeave={onButtonLeave}
+  >
     Masuk Modul →
   </button>
 )}
@@ -472,9 +457,13 @@ if (loading) {
   Manajemen user & akses
 </p>
 
-    <button style={styles.btnAction}>
-      Masuk Modul →
-    </button>
+    <button
+  style={styles.btnAction}
+  onMouseEnter={onButtonHover}
+  onMouseLeave={onButtonLeave}
+>
+  Masuk Modul →
+</button>
   </div>
 )}
       </div>

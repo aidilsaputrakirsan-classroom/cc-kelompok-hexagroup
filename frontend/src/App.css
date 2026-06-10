@@ -10,7 +10,7 @@
   --input-bg: #ffffff;
 }
 
-body.dark {
+[data-theme="dark"] {
   --bg-page: #0f172a;       /* Gelap pekat untuk luar */
   --bg-card: #1e293b;       /* Gelap sedikit terang untuk Card */
   --text-main: #cbd5e1;     /* Teks abu terang */
