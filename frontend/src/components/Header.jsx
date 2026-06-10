@@ -54,10 +54,10 @@ const styles = {
       ? "rgba(56, 189, 248, 0.15)"
       : "transparent",
     color: isActive
-      ? "#38bdf8"
-      : darkMode
-      ? "#cbd5e1"
-      : "#334155",
+  ? "#38bdf8"
+  : darkMode
+  ? "#f1f5f9"
+  : "#334155",
     border: "none",
     padding: "8px 18px",
     borderRadius: "10px",
@@ -175,6 +175,7 @@ const styles = {
 
 export default function Header({ user, setUser, darkMode, setDarkMode }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [logoHover, setLogoHover] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -205,35 +206,37 @@ export default function Header({ user, setUser, darkMode, setDarkMode }) {
 
   return (
     <header
-      style={{
-        ...styles.header,
-        background: darkMode
-          ? "rgba(2, 6, 23, 0.85)"
-          : "rgba(255, 255, 255, 0.9)",
-        borderBottom: darkMode
-          ? "1px solid rgba(255,255,255,0.08)"
-          : "1px solid rgba(0,0,0,0.08)",
-      }}
-    >
+  style={{
+    ...styles.header,
+    background: darkMode
+  ? "rgba(15, 23, 42, 0.9)"
+  : "rgba(255, 255, 255, 0.9)",
+backdropFilter: "blur(12px)",
+  }}
+>
       <div style={styles.container}>
         <div style={styles.leftSection}>
           <h1
-            style={{
-              ...styles.logo,
-              filter: darkMode ? "brightness(1.2)" : "none",
-            }}
-            onClick={() => navigate("/dashboard")}
-          >
-            SIKASI
-          </h1>
+  style={{
+    ...styles.logo,
+    filter: darkMode ? "brightness(1.2)" : "none",
+    transform: logoHover ? "scale(1.05)" : "scale(1)",
+    transition: "all 0.3s ease",
+  }}
+  onMouseEnter={() => setLogoHover(true)}
+  onMouseLeave={() => setLogoHover(false)}
+  onClick={() => navigate("/dashboard")}
+>
+  SIKASI
+</h1>
 
           {user && (
             <nav
               style={{
                 ...styles.nav,
                 backgroundColor: darkMode
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(15,23,42,0.05)",
+  ? "rgba(255,255,255,0.06)"
+  : "rgba(15,23,42,0.05)",
               }}
             >
               <button
@@ -288,7 +291,7 @@ export default function Header({ user, setUser, darkMode, setDarkMode }) {
               <span
                 style={{
                   ...styles.userName,
-                  color: darkMode ? "#f8fafc" : "#0f172a",
+                  color: darkMode ? "#ffffff" : "#0f172a",
                 }}
               >
                 {user.full_name}
@@ -297,12 +300,18 @@ export default function Header({ user, setUser, darkMode, setDarkMode }) {
               <span style={styles.userRole}>{user.role}</span>
             </div>
 
-            <button
-              onClick={handleLogoutClick}
-              style={styles.logoutBtn}
-            >
-              LOGOUT
-            </button>
+           <button
+  onClick={handleLogoutClick}
+  style={styles.logoutBtn}
+  onMouseEnter={(e) => {
+  e.currentTarget.style.transform = "translateY(-2px)";
+}}
+onMouseLeave={(e) => {
+  e.currentTarget.style.transform = "translateY(0)";
+}}
+>
+  LOGOUT
+</button>
           </div>
         )}
       </div>
