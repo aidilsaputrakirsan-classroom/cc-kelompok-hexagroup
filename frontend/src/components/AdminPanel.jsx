@@ -1,309 +1,362 @@
 import { useState, useEffect } from "react";
-import { userAPI, authAPI } from "../services/api";
+import { userAPI } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
-const formatDate = (dateString) => {
-  try {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "N/A";
-    return date.toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch (e) { return "N/A"; }
-};
-
-const styles = {
-  container: { 
-    minHeight: "100vh",
-    background: "var(--bg-page)", // Berubah otomatis
-    padding: "clamp(20px, 3vw, 40px)",
-    fontFamily: "'Inter', sans-serif",
-    transition: "background 0.3s ease"
-  },
-  content: { maxWidth: "1200px", margin: "0 auto" },
-  header: { 
-    display: "flex", 
-    justifyContent: "space-between", 
-    alignItems: "flex-end", 
-    marginBottom: "40px",
-    flexWrap: "wrap",
-    gap: "15px"
-  },
-  title: { fontSize: "clamp(24px, 5vw, 32px)", fontWeight: "900", margin: 0, color: "var(--text-title)", letterSpacing: "-1px" },
-  statsGrid: { 
-    display: "grid", 
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "clamp(15px, 2vw, 20px)", 
-    marginBottom: "30px" 
-  },
-  statCard: {
-    background: "var(--bg-card)", // Berubah otomatis
-    padding: "clamp(15px, 2vw, 25px)",
-    borderRadius: "20px",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-    textAlign: "center",
-    border: "1px solid var(--border-color)"
-  },
-  filterBar: { 
-    display: "flex", 
-    gap: "clamp(10px, 2vw, 15px)", 
-    marginBottom: "30px", 
-    padding: "clamp(12px, 2vw, 15px)", 
-    background: "var(--bg-card)", 
-    borderRadius: "18px", 
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-    border: "1px solid var(--border-color)",
-    flexWrap: "wrap"
-  },
-  input: { 
-    background: "var(--bg-page)", 
-    border: "1px solid var(--border-color)", 
-    padding: "clamp(10px, 1.5vw, 12px) clamp(12px, 2vw, 20px)", 
-    borderRadius: "12px", 
-    color: "var(--text-title)", 
-    flex: "1 1 auto",
-    minWidth: "150px",
-    outline: "none",
-    fontSize: "14px"
-  },
-  select: { 
-    background: "var(--bg-page)", 
-    border: "1px solid var(--border-color)", 
-    padding: "clamp(10px, 1.5vw, 12px)", 
-    borderRadius: "12px", 
-    color: "var(--text-title)", 
-    flex: "1 1 auto",
-    minWidth: "100px",
-    cursor: "pointer",
-    outline: "none"
-  },
-  tableWrapper: { 
-    background: "var(--bg-card)", 
-    borderRadius: "24px", 
-    overflow: "auto", 
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-    border: "1px solid var(--border-color)"
-  },
-  table: { width: "100%", borderCollapse: "collapse", minWidth: "500px" },
-  th: { 
-    padding: "clamp(12px, 2vw, 20px)", 
-    background: "var(--bg-page)", 
-    color: "var(--text-main)", 
-    textAlign: "left", 
-    fontSize: "12px", 
-    fontWeight: "800", 
-    textTransform: "uppercase", 
-    whiteSpace: "nowrap",
-    opacity: 0.8
-  },
-  td: { 
-    padding: "clamp(12px, 2vw, 20px)", 
-    borderBottom: "1px solid var(--border-color)", 
-    fontSize: "14px", 
-    color: "var(--text-title)" 
-  },
-  badge: (role) => {
-    // Badge tetap menggunakan warna cerah agar mudah dibedakan di dark mode
-    const configs = {
-      ketua: { bg: "rgba(79, 70, 229, 0.15)", color: "#818cf8" },
-      bendahara: { bg: "rgba(22, 163, 74, 0.15)", color: "#4ade80" },
-      sekretaris: { bg: "rgba(234, 179, 8, 0.15)", color: "#facc15" },
-      anggota: { bg: "rgba(148, 163, 184, 0.15)", color: "#94a3b8" }
-    };
-    const config = configs[role.toLowerCase()] || configs.anggota;
-    return { padding: "6px 14px", borderRadius: "10px", fontSize: "11px", fontWeight: "800", backgroundColor: config.bg, color: config.color, textTransform: "uppercase" };
-  },
-  createBtn: { background: "#4f46e5", color: "#fff", padding: "12px 24px", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer" },
+export default function AdminPanel({ user, showToast }) {
+  const navigate = useNavigate();
   
-  deleteBtn: { 
-    background: "none", 
-    border: "none", 
-    color: "#ef4444", 
-    fontWeight: "700", 
-    cursor: "pointer", 
-    fontSize: "13px",
-    padding: "5px 10px",
-    borderRadius: "8px",
-    transition: "background 0.2s"
-  },
+  useEffect(() => {
+    if (!user || user.role?.toLowerCase() !== "ketua") {
+      showToast("Akses ditolak! Hanya Ketua yang dapat mengakses Admin Panel.", "error");
+      navigate("/dashboard");
+    }
+  }, [user, navigate, showToast]);
 
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.7)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2000, backdropFilter: "blur(8px)" },
-  modalContent: { 
-    background: "var(--bg-card)", 
-    padding: "40px", 
-    borderRadius: "24px", 
-    width: "100%", 
-    maxWidth: "450px",
-    border: "1px solid var(--border-color)",
-    color: "var(--text-title)"
-  }
-};
-
-function AdminPanel() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [searchName, setSearchName] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
-  const [formData, setFormData] = useState({ email: "", full_name: "", password: "", role: "anggota" });
+  const [editingUser, setEditingUser] = useState(null);
 
-  useEffect(() => { loadUsers(); }, []);
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [filterRole, setFilterRole] = useState("");   
 
-  const loadUsers = async () => {
+  const [formData, setFormData] = useState({ fullName: "", email: "", password: "", role: "anggota" });
+  const [formErrors, setFormErrors] = useState({});
+
+  const fetchUsers = async () => {
+    setLoading(true);
     try {
-      const data = await userAPI.getAllUsers();
-      setUsers(data);
-    } catch (err) { console.error(err); }
+      const startTime = Date.now();
+      const response = await userAPI.getAllUsers(0, 100);
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
+      if (duration < 3000) {
+        await new Promise(resolve => setTimeout(resolve, 3000 - duration));
+      }
+
+      setUsers(Array.isArray(response) ? response : response.users || []);
+    } catch (err) {
+      showToast(err.response?.data?.message || "Gagal mengambil data pengguna", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = async (userId, name) => {
-    if (window.confirm(`Hapus akses untuk ${name}? Tindakan ini tidak bisa dibatalkan.`)) {
+  useEffect(() => {
+    if (user && user.role?.toLowerCase() === "ketua") {
+      fetchUsers();
+    }
+  }, [user]);
+
+  const handleResetSearch = () => {
+    setSearchQuery("");
+    setFilterRole("");
+  };
+
+  const filteredUsers = users.filter(u => {
+
+    const matchesText = searchQuery.trim() === "" || 
+      u.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesRole = filterRole === "" || u.role?.toLowerCase() === filterRole.toLowerCase();
+
+    return matchesText && matchesRole;
+  });
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.fullName.trim()) errors.fullName = "Nama lengkap wajib diisi";
+    if (!formData.email.trim()) {
+      errors.email = "Email wajib diisi";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Format email tidak valid";
+    }
+    if (!editingUser && !formData.password) {
+      errors.password = "Kata sandi wajib diisi";
+    } else if (formData.password && formData.password.length < 6) {
+      errors.password = "Kata sandi minimal harus 6 karakter";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      if (editingUser) {
+        await userAPI.updateUser(editingUser.id, {
+          full_name: formData.fullName,
+          email: formData.email,
+          role: formData.role,
+          ...(formData.password ? { password: formData.password } : {})
+        });
+        showToast(`Pengguna "${formData.fullName}" berhasil diperbarui!`, "success");
+      } else {
+        await userAPI.createUser(formData.email, formData.password, formData.fullName, formData.role);
+        showToast(`Pengguna "${formData.fullName}" berhasil ditambahkan!`, "success");
+      }
+      closeModal();
+      fetchUsers();
+    } catch (err) {
+      showToast(err.response?.data?.message || "Gagal memproses data pengguna", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (targetUser) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus "${targetUser.full_name}"?`)) {
+      setLoading(true);
       try {
-        await userAPI.deleteUser(userId);
-        alert("User berhasil dihapus.");
-        loadUsers();
+        await userAPI.deleteUser(targetUser.id);
+        showToast(`Pengguna "${targetUser.full_name}" berhasil dihapus.`, "success");
+        fetchUsers();
       } catch (err) {
-        alert("Gagal menghapus user: " + err.message);
+        showToast(err.response?.data?.message || "Gagal menghapus pengguna", "error");
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    try {
-      await authAPI.register(formData.email, formData.password, formData.full_name, formData.role);
-      alert("Member Berhasil Didaftarkan!");
-      setShowModal(false);
-      setFormData({ email: "", full_name: "", password: "", role: "anggota" });
-      loadUsers();
-    } catch (err) { alert("Gagal: " + err.message); }
+  const openModal = (targetUser = null) => {
+    if (targetUser) {
+      setEditingUser(targetUser);
+      setFormData({
+        fullName: targetUser.full_name || "",
+        email: targetUser.email || "",
+        password: "", 
+        role: targetUser.role?.toLowerCase() || "anggota"
+      });
+    } else {
+      setEditingUser(null);
+      setFormData({ fullName: "", email: "", password: "", role: "anggota" });
+    }
+    setFormErrors({});
+    setShowModal(true);
   };
 
-  const filteredUsers = users.filter((u) => {
-    const nameMatch = u.full_name.toLowerCase().includes(searchName.toLowerCase());
-    const roleMatch = filterRole === "all" || u.role.toLowerCase() === filterRole.toLowerCase();
-    return nameMatch && roleMatch;
-  });
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingUser(null);
+    setFormErrors({});
+  };
+
+  const styles = {
+    container: { minHeight: "100vh", backgroundColor: "var(--bg-page)", padding: "30px 20px", transition: "background-color 0.3s ease" },
+    wrapper: { maxWidth: "1140px", margin: "0 auto" },
+    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
+    title: { fontSize: "28px", fontWeight: "900", color: "var(--text-title)", margin: 0 },
+    addBtn: { padding: "12px 24px", borderRadius: "12px", backgroundColor: "#3b82f6", color: "#ffffff", border: "none", fontWeight: "700", fontSize: "14px", cursor: "pointer", boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)" },
+    
+    filterWrapper: { display: "flex", gap: "15px", marginBottom: "25px", flexWrap: "wrap", alignItems: "center" },
+    searchInput: { flex: "2", minWidth: "240px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none" },
+    roleSelect: { flex: "1", minWidth: "160px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none", cursor: "pointer" },
+    resetBtn: { padding: "12px 20px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "rgba(148, 163, 184, 0.1)", color: "var(--text-main)", fontWeight: "700", fontSize: "14px", cursor: "pointer" },
+    
+    tableCard: { backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.02)" },
+    table: { width: "100%", borderCollapse: "collapse", textAlign: "left" },
+    th: { padding: "16px 20px", backgroundColor: "rgba(0,0,0,0.02)", color: "var(--text-title)", fontWeight: "800", fontSize: "13px", borderBottom: "1px solid var(--border-color)", textTransform: "uppercase" },
+    tr: { borderBottom: "1px solid var(--border-color)" },
+    td: { padding: "16px 20px", color: "var(--text-main)", fontSize: "14px" },
+    badge: (role) => {
+      let bg = "rgba(148, 163, 184, 0.1)", color = "#64748b";
+      if (role === "ketua") { bg = "rgba(239, 68, 68, 0.1)"; color = "#ef4444"; }
+      else if (role === "sekretaris") { bg = "rgba(59, 130, 246, 0.1)"; color = "#3b82f6"; }
+      else if (role === "bendahara") { bg = "rgba(16, 185, 129, 0.1)"; color = "#10b981"; }
+      return { padding: "4px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", backgroundColor: bg, color, display: "inline-block" };
+    },
+    editActionBtn: { background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px" },
+    deleteActionBtn: { background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer" },
+    
+    emptyStateInitial: { padding: "80px 20px", textAlign: "center", color: "var(--text-main)", fontSize: "16px", fontWeight: "600" },
+    emptyStateSearch: { padding: "60px 20px", textAlign: "center", color: "#ef4444", fontSize: "15px", fontWeight: "600" },
+    
+    spinnerOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(4px)", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", zIndex: 11000, color: "#ffffff" },
+    spinner: { width: "45px", height: "45px", border: "4px solid rgba(255,255,255,0.3)", borderTop: "4px solid #ffffff", borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: "15px" },
+    modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1050, padding: "20px" },
+    modalContent: { backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", width: "100%", maxWidth: "460px", padding: "30px" },
+    modalTitle: { fontSize: "20px", fontWeight: "800", color: "var(--text-title)", margin: "0 0 20px 0" },
+    formGroup: { display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" },
+    label: { fontSize: "13px", fontWeight: "700", color: "var(--text-title)" },
+    input: { padding: "11px 14px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--input-bg, var(--bg-page))", color: "var(--text-title)", fontSize: "14px", outline: "none" },
+    select: { padding: "11px 14px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--input-bg, var(--bg-page))", color: "var(--text-title)", fontSize: "14px", outline: "none", cursor: "pointer" },
+    errorText: { color: "#ef4444", fontSize: "12px", fontWeight: "600", marginTop: "2px" },
+    modalFooter: { display: "flex", gap: "12px", marginTop: "25px" },
+    cancelBtn: { flex: 1, padding: "12px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "transparent", color: "var(--text-main)", fontWeight: "700", cursor: "pointer" },
+    submitBtn: { flex: 1, padding: "12px", borderRadius: "10px", border: "none", backgroundColor: "#3b82f6", color: "#ffffff", fontWeight: "700", cursor: "pointer" }
+  };
+
+  if (!user || user.role?.toLowerCase() !== "ketua") return null;
 
   return (
     <div style={styles.container}>
-      <div style={styles.content}>
-        <div style={styles.header}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <h2 style={{ 
-              ...styles.title, 
-              margin: 0, 
-              padding: 0,
-              lineHeight: '1.2',
-              transform: 'translateX(-2px)',
-            }}>
-              User Management
-            </h2>
-            <p style={{ 
-              color: "var(--text-main)", 
-              fontSize: "14px", 
-              margin: 0,
-              padding: 0,
-              marginTop: '4px',
-              lineHeight: '1',
-              opacity: 0.7
-            }}>
-              Kelola hak akses anggota SIKASI.
-            </p>
-          </div>
-          <button style={styles.createBtn} onClick={() => setShowModal(true)}>+ Add New User</button>
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+
+      {/* OVERLAY LOADING SPINNER 3 DETIK */}
+      {loading && (
+        <div style={styles.spinnerOverlay}>
+          <div style={styles.spinner}></div>
+          <span style={{ fontWeight: "700", fontSize: "14px" }}>Memproses Data Organisasi...</span>
+        </div>
+      )}
+
+      <div style={styles.wrapper}>
+        <div style={styles.headerRow}>
+          <h1 style={styles.title}>Manajemen Pengguna</h1>
+          <button style={styles.addBtn} onClick={() => openModal(null)}>
+            ➕ Tambah Anggota Baru
+          </button>
         </div>
 
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}>
-            <div style={{ color: "var(--text-main)", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", opacity: 0.6 }}>Registered Users</div>
-            <div style={{ fontSize: "32px", fontWeight: "900", marginTop: "5px", color: "var(--text-title)" }}>{users.length}</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={{ color: "var(--text-main)", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", opacity: 0.6 }}>Master Admin</div>
-            <div style={{ fontSize: "32px", fontWeight: "900", marginTop: "5px", color: "#f97316" }}>{users.filter(u => u.role === 'ketua').length}</div>
-          </div>
-        </div>
-
-        <div style={styles.filterBar}>
-          <input style={styles.input} placeholder="🔍 Cari nama..." value={searchName} onChange={(e) => setSearchName(e.target.value)} />
-          <select style={styles.select} value={filterRole} onChange={(e) => setFilterRole(e.target.value)}>
-            <option value="all">Semua Jabatan</option>
-            <option value="ketua">Ketua</option>
-            <option value="bendahara">Bendahara</option>
-            <option value="sekretaris">Sekretaris</option>
+        {}
+        <div style={styles.filterWrapper}>
+          <input
+            type="text"
+            placeholder="Ketik nama atau email..."
+            style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          
+          <select
+            style={styles.roleSelect}
+            value={filterRole}
+            onChange={(e) => setFilterRole(e.target.value)}
+          >
+            <option value="">Semua Jabatan</option>
             <option value="anggota">Anggota</option>
+            <option value="sekretaris">Sekretaris</option>
+            <option value="bendahara">Bendahara</option>
+            <option value="ketua">Ketua</option>
           </select>
+
+          {}
+          {(searchQuery || filterRole) && (
+            <button style={styles.resetBtn} onClick={handleResetSearch}>
+              🔄 Reset Filter
+            </button>
+          )}
         </div>
 
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Member Identity</th>
-                <th style={styles.th}>Position</th>
-                <th style={styles.th}>Created Date</th>
-                <th style={{ ...styles.th, textAlign: "right" }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((u) => (
-                <tr key={u.id}>
-                  <td style={styles.td}>
-                    <div style={{ fontWeight: "800", color: "var(--text-title)", fontSize: "15px" }}>{u.full_name}</div>
-                    <div style={{ fontSize: "12px", color: "var(--text-main)", opacity: 0.7 }}>{u.email}</div>
-                  </td>
-                  <td style={styles.td}><span style={styles.badge(u.role)}>{u.role}</span></td>
-                  <td style={styles.td}><span style={{color: "var(--text-main)", opacity: 0.8}}>{formatDate(u.created_at)}</span></td>
-                  <td style={{ ...styles.td, textAlign: "right" }}>
-                    {u.role !== 'ketua' ? (
-                      <button 
-                        style={styles.deleteBtn} 
-                        onClick={() => handleDelete(u.id, u.full_name)}
-                      >
-                        Delete
-                      </button>
-                    ) : (
-                      <span style={{ fontSize: "10px", color: "var(--text-main)", fontWeight: "800", opacity: 0.5 }}>PROTECTED</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {}
+        <div style={styles.tableCard}>
+          {users.length === 0 ? (
+            
+            <div style={styles.emptyStateInitial}>
+              📁 Tidak ada data anggota. Silakan klik tombol "Tambah Anggota Baru" untuk mengisi database organisasi.
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            
+            <div style={styles.emptyStateSearch}>
+              ❌ Data tidak ditemukan. Periksa kembali ketikan nama atau pilihan jabatan Anda.
+            </div>
+          ) : (
+           
+            <div style={{ overflowX: "auto" }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Nama Lengkap</th>
+                    <th style={styles.th}>Alamat Email</th>
+                    <th style={styles.th}>Jabatan / Peran</th>
+                    <th style={styles.th} style={{ textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((targetUser) => (
+                    <tr key={targetUser.id} style={styles.tr}>
+                      <td style={styles.td}>{targetUser.full_name}</td>
+                      <td style={styles.td}>{targetUser.email}</td>
+                      <td style={styles.td}>
+                        <span style={styles.badge(targetUser.role?.toLowerCase())}>
+                          {targetUser.role}
+                        </span>
+                      </td>
+                      <td style={styles.td} style={{ textAlign: "right", paddingRight: "20px" }}>
+                        <button style={styles.editActionBtn} onClick={() => openModal(targetUser)}>Edit</button>
+                        <button style={styles.deleteActionBtn} onClick={() => handleDeleteUser(targetUser)}>Hapus</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
+      {}
       {showModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h3 style={{ fontSize: "24px", fontWeight: "900", color: "var(--text-title)", marginBottom: "20px" }}>Add New User</h3>
-            <form onSubmit={handleCreate}>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Full Name</label>
-                <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="text" required onChange={e => setFormData({...formData, full_name: e.target.value})} />
+        <div style={styles.modalOverlay} onClick={closeModal}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2 style={styles.modalTitle}>
+              {editingUser ? "📝 Edit Data Pengguna" : "➕ Tambah Pengguna Baru"}
+            </h2>
+
+            <form onSubmit={handleFormSubmit}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Nama Lengkap</label>
+                <input
+                  type="text"
+                  style={styles.input}
+                  placeholder="Masukkan nama lengkap"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                />
+                {formErrors.fullName && <div style={styles.errorText}>{formErrors.fullName}</div>}
               </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Email Address</label>
-                <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="email" required onChange={e => setFormData({...formData, email: e.target.value})} />
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Alamat Email</label>
+                <input
+                  type="email"
+                  style={styles.input}
+                  placeholder="name@domain.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+                {formErrors.email && <div style={styles.errorText}>{formErrors.email}</div>}
               </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Password</label>
-                <input style={{...styles.input, width: "100%", boxSizing: "border-box"}} type="password" required onChange={e => setFormData({...formData, password: e.target.value})} />
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>
+                  Kata Sandi {editingUser && <span style={{ fontWeight: "normal", color: "#94a3b8" }}>(Kosongkan jika tidak diubah)</span>}
+                </label>
+                <input
+                  type="password"
+                  style={styles.input}
+                  placeholder={editingUser ? "••••••••" : "Masukkan kata sandi"}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                {formErrors.password && <div style={styles.errorText}>{formErrors.password}</div>}
               </div>
-              <div style={{ marginBottom: "30px" }}>
-                <label style={{ fontSize: "12px", color: "var(--text-main)", display: "block", marginBottom: "8px", fontWeight: "700" }}>Assign Role</label>
-                <select style={{...styles.select, width: "100%"}} onChange={e => setFormData({...formData, role: e.target.value})}>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Tentukan Jabatan (Role)</label>
+                <select
+                  style={styles.select}
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                >
                   <option value="anggota">Anggota</option>
                   <option value="sekretaris">Sekretaris</option>
                   <option value="bendahara">Bendahara</option>
                   <option value="ketua">Ketua</option>
                 </select>
               </div>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button type="submit" style={{ ...styles.createBtn, flex: 1 }}>Confirm</button>
-                <button type="button" onClick={() => setShowModal(false)} style={{ background: "var(--bg-page)", color: "var(--text-main)", border: "1px solid var(--border-color)", padding: "12px", borderRadius: "12px", flex: 1, fontWeight: "700", cursor: "pointer" }}>Cancel</button>
+
+              <div style={styles.modalFooter}>
+                <button type="button" style={styles.cancelBtn} onClick={closeModal}>Batal</button>
+                <button type="submit" style={styles.submitBtn}>
+                  {editingUser ? "Simpan" : "Buat Akun"}
+                </button>
               </div>
             </form>
           </div>
@@ -312,5 +365,3 @@ function AdminPanel() {
     </div>
   );
 }
-
-export default AdminPanel;
