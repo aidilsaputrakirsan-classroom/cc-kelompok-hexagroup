@@ -54,12 +54,24 @@ function App() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const showToast = (message, type = "success", title = "", icon = "") => {
-    setToast({ message, type, title, icon });
-    setTimeout(() => {
-      setToast({ message: "", type: "", title: "", icon: "" });
-    }, 3000);
-  };
+  const showToast = (
+  message,
+  type = "success",
+  title = "",
+  icon = "",
+  duration = 5000
+) => {
+  setToast({ message, type, title, icon });
+
+  // clear timeout lama biar tidak numpuk
+  if (window.toastTimeout) {
+    clearTimeout(window.toastTimeout);
+  }
+
+  window.toastTimeout = setTimeout(() => {
+    setToast({ message: "", type: "", title: "", icon: "" });
+  }, duration);
+};
 
   if (loading) {
     return <div className="loading-screen">Loading...</div>;

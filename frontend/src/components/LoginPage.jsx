@@ -10,6 +10,7 @@ export default function LoginPage({ setUser, showToast, theme, toggleTheme }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [hoverCard, setHoverCard] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -44,7 +45,14 @@ export default function LoginPage({ setUser, showToast, theme, toggleTheme }) {
       <div style={styles.bgBlob1}></div>
       <div style={styles.bgBlob2}></div>
 
-      <div style={styles.wrapper}>
+      <div
+  style={{
+    ...styles.wrapper,
+    ...(hoverCard ? styles.wrapperHover : {})
+  }}
+  onMouseEnter={() => setHoverCard(true)}
+  onMouseLeave={() => setHoverCard(false)}
+>
         {/* SISI KIRI: BRANDING */}
         <div style={styles.brandingSection}>
           <div style={styles.brandContent}>
@@ -139,14 +147,33 @@ export default function LoginPage({ setUser, showToast, theme, toggleTheme }) {
 
 const styles = {
   container: {
-    display: "flex", justifyContent: "center", alignItems: "center",
-    minHeight: "100vh", width: "100vw", background: "var(--bg-page)",
-    position: "relative", overflow: "hidden"
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    width: "100vw",
+    background: "var(--bg-page)",
+    position: "relative",
+    overflow: "hidden"
   },
+
   wrapper: {
-    display: "flex", width: "100%", maxWidth: "1000px", minHeight: "600px",
-    backgroundColor: "var(--bg-card)", borderRadius: "24px", overflow: "hidden",
-    boxShadow: "0 25px 50px rgba(0,0,0,0.2)", border: "1px solid var(--border-color)", zIndex: 1
+    display: "flex",
+    width: "100%",
+    maxWidth: "1000px",
+    minHeight: "600px",
+    backgroundColor: "var(--bg-card)",
+    borderRadius: "24px",
+    overflow: "hidden",
+    boxShadow: "0 25px 50px rgba(0,0,0,0.2)",
+    border: "1px solid var(--border-color)",
+    zIndex: 1,
+    transition: "all 0.3s ease"
+  },
+
+  wrapperHover: {
+    transform: "translateY(-8px)",
+    boxShadow: "0 35px 70px rgba(0,0,0,0.3)"
   },
   brandingSection: {
     width: "50%", background: "linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)",
@@ -164,11 +191,17 @@ const styles = {
   formContent: { width: "100%", maxWidth: "340px" },
   headerFlex: { display: "flex", justifyContent: "space-between", alignItems: "center" },
   cardTitle: { fontSize: "28px", fontWeight: "800", color: "var(--text-title)", margin: 0 },
-  inlineToggle: { 
-    background: "var(--bg-page)", border: "1px solid var(--border-color)", 
-    borderRadius: "10px", padding: "8px", cursor: "pointer", fontSize: "18px" 
-  },
-  cardSubtitle: { fontSize: "14px", color: "var(--text-main)", opacity: 0.5, marginBottom: "10px" },
+  inlineToggle: {
+  background: "var(--bg-card)",
+  color: "var(--text-main)",
+  border: "1px solid var(--border-color)",
+  borderRadius: "10px",
+  padding: "8px",
+  cursor: "pointer",
+  fontSize: "18px",
+  transition: "all 0.3s ease"
+},
+  cardSubtitle: { fontSize: "14px", color: "var(--text-main)", opacity: 0.8, marginBottom: "10px" },
   
   // AREA ERROR (Placeholder biar tidak geser)
   errorPlaceholder: {
@@ -177,15 +210,16 @@ const styles = {
     alignItems: "center",
     marginBottom: "10px"
   },
-  errorBox: { 
-    width: "100%",
-    padding: "10px", 
-    backgroundColor: "rgba(239, 68, 68, 0.1)", 
-    borderRadius: "10px", 
-    color: "#ef4444", 
-    fontSize: "13px",
-    border: "1px solid rgba(239, 68, 68, 0.2)"
-  },
+  errorBox: {
+  width: "100%",
+  padding: "12px 14px",
+  backgroundColor: "rgba(239,68,68,0.12)",
+  borderRadius: "10px",
+  color: "#ef4444",
+  fontSize: "14px",
+  fontWeight: "600",
+  border: "1px solid rgba(239,68,68,0.3)"
+},
 
   form: { display: "flex", flexDirection: "column", gap: "15px" },
   formGroup: { display: "flex", flexDirection: "column", gap: "5px" },
@@ -197,11 +231,23 @@ const styles = {
     border: "1px solid var(--border-color)", backgroundColor: "var(--bg-page)", 
     color: "var(--text-main)", outline: "none", boxSizing: "border-box"
   },
-  eyeBtn: { position: "absolute", right: "12px", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex" },
-  submitBtn: { 
-    width: "100%", padding: "14px", backgroundColor: "#4f46e5", color: "white", 
-    border: "none", borderRadius: "10px", fontWeight: "700", cursor: "pointer", marginTop: "10px" 
-  },
+  eyeBtn: {
+  position: "absolute",
+  right: "14px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  background: "transparent",
+  border: "none",
+  outline: "none",
+  padding: 0,
+  margin: 0,
+  cursor: "pointer",
+  color: "#94a3b8",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 2
+},
   toggleSection: { textAlign: "center", marginTop: "20px" },
   toggleBtn: { background: "none", border: "none", color: "#4f46e5", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
 
