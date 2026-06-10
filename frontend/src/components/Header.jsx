@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import DarkModeToggle from "./DarkModeToggle";
+import { useTheme } from "../context/ThemeContext";
+
 
 const styles = {
   header: {
@@ -55,9 +56,7 @@ const styles = {
       : "transparent",
     color: isActive
   ? "#38bdf8"
-  : darkMode
-  ? "#f1f5f9"
-  : "#334155",
+  : "var(--text-main)",
     border: "none",
     padding: "8px 18px",
     borderRadius: "10px",
@@ -173,9 +172,11 @@ const styles = {
   },
 };
 
-export default function Header({ user, setUser, darkMode, setDarkMode }) {
+export default function Header({ user, setUser}) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [logoHover, setLogoHover] = useState(false);
+  const { darkMode, toggleDarkMode } = useTheme();
+
+  const [apiConnected, setApiConnected] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -206,14 +207,12 @@ export default function Header({ user, setUser, darkMode, setDarkMode }) {
 
   return (
     <header
-  style={{
-    ...styles.header,
-    background: darkMode
-  ? "rgba(15, 23, 42, 0.9)"
-  : "rgba(255, 255, 255, 0.9)",
-backdropFilter: "blur(12px)",
-  }}
->
+      style={{
+        ...styles.header,
+        background: "var(--bg-card)",
+borderBottom: "1px solid var(--border-color)",
+      }}
+    >
       <div style={styles.container}>
         <div style={styles.leftSection}>
           <h1
@@ -239,109 +238,118 @@ backdropFilter: "blur(12px)",
   : "rgba(15,23,42,0.05)",
               }}
             >
-              <button
-                style={styles.navBtn(isActive("/dashboard"), darkMode)}
-                onClick={() => navigate("/dashboard")}
-              >
-                🏠 Dashboard
-              </button>
-
-              {canAccessFinance && (
-                <button
-                  style={styles.navBtn(isActive("/finance"), darkMode)}
-                  onClick={() => navigate("/finance")}
-                >
-                  💰 Finance
-                </button>
-              )}
-
-              {canAccessLetters && (
-                <button
-                  style={styles.navBtn(isActive("/letters"), darkMode)}
-                  onClick={() => navigate("/letters")}
-                >
-                  📝 Letters
-                </button>
-              )}
-
-              {canAccessAdmin && (
-                <button
-                  style={styles.navBtn(isActive("/admin"), darkMode)}
-                  onClick={() => navigate("/admin")}
-                >
-                  🛡️ Admin
-                </button>
-              )}
-            </nav>
-          )}
-        </div>
-
-        {user && (
-          <div style={styles.userInfo}>
-            <DarkModeToggle />
-
-            <div
-              style={{
-                ...styles.userDetails,
-                borderRight: darkMode
-                  ? "1px solid rgba(255,255,255,0.08)"
-                  : "1px solid rgba(0,0,0,0.1)",
-              }}
+               <button
+              style={styles.navBtn(isActive("/dashboard"), darkMode)}
+              onClick={() => navigate("/dashboard")}
             >
-              <span
-                style={{
-                  ...styles.userName,
-                  color: darkMode ? "#ffffff" : "#0f172a",
-                }}
+              🏠 Dashboard
+            </button>
+
+            {canAccessFinance && (
+              <button
+                style={styles.navBtn(isActive("/finance"), darkMode)}
+                onClick={() => navigate("/finance")}
               >
-                {user.full_name}
-              </span>
+                💰 Finance
+              </button>
+            )}
 
-              <span style={styles.userRole}>{user.role}</span>
-            </div>
+            {canAccessLetters && (
+              <button
+                style={styles.navBtn(isActive("/letters"), darkMode)}
+                onClick={() => navigate("/letters")}
+              >
+                📝 Letters
+              </button>
+            )}
 
-           <button
-  onClick={handleLogoutClick}
-  style={styles.logoutBtn}
-  onMouseEnter={(e) => {
-  e.currentTarget.style.transform = "translateY(-2px)";
-}}
-onMouseLeave={(e) => {
-  e.currentTarget.style.transform = "translateY(0)";
-}}
->
-  LOGOUT
-</button>
-          </div>
+            {canAccessAdmin && (
+              <button
+                style={styles.navBtn(isActive("/admin"), darkMode)}
+                onClick={() => navigate("/admin")}
+              >
+                🛡️ Admin
+              </button>
+            )}
+          </nav>
         )}
       </div>
 
-      {showLogoutModal && (
-        <div style={styles.modalOverlay} onClick={handleCancelLogout}>
-          <div
-            style={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
+      {user && (
+        <div style={styles.userInfo}>
+          <button
+            onClick={toggleDarkMode}
+            style={{
+              padding: "8px 12px",
+              borderRadius: "10px",
+              border: "1px solid var(--border-color)",
+              background: "var(--bg-card)",
+              color: "var(--text-main)",
+              fontWeight: "700",
+              cursor: "pointer",
+              fontSize: "12px",
+            }}
           >
-            <h2 style={styles.modalTitle}>
-              Apakah Anda Yakin Ingin Logout?
-            </h2>
+            {darkMode ? "☀️" : "🌙"}
+          </button>
 
-            <p style={styles.modalMessage}>
-              Anda akan diarahkan ke halaman Login dan sesi Anda akan berakhir.
-            </p>
+          <span style={{ fontSize: "18px" }}>
+            {apiConnected ? "🟢" : "🔴"}
+          </span>
 
-            <div style={styles.modalButtons}>
-              <button style={styles.cancelBtn} onClick={handleCancelLogout}>
-                ❌ Batal
-              </button>
+          <div
+            style={{
+              ...styles.userDetails,
+              borderRight: darkMode
+                ? "1px solid rgba(255,255,255,0.08)"
+                : "1px solid rgba(0,0,0,0.1)",
+            }}
+          >
+            <span
+              style={{
+                ...styles.userName,
+                color: darkMode ? "#f8fafc" : "#0f172a",
+              }}
+            >
+              {user.full_name}
+            </span>
 
-              <button style={styles.confirmBtn} onClick={handleConfirmLogout}>
-                ✓ Logout
-              </button>
-            </div>
+            <span style={styles.userRole}>{user.role}</span>
           </div>
+
+          <button onClick={handleLogoutClick} style={styles.logoutBtn}>
+            LOGOUT
+          </button>
         </div>
       )}
-    </header>
-  );
-}
+    </div>
+
+    {/* MODAL */}
+    {showLogoutModal && (
+      <div style={styles.modalOverlay} onClick={handleCancelLogout}>
+        <div
+          style={styles.modalContent}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 style={styles.modalTitle}>
+            Apakah Anda Yakin Ingin Logout?
+          </h2>
+
+          <p style={styles.modalMessage}>
+            Anda akan diarahkan ke halaman Login dan sesi Anda akan berakhir.
+          </p>
+
+          <div style={styles.modalButtons}>
+            <button style={styles.cancelBtn} onClick={handleCancelLogout}>
+              ❌ Batal
+            </button>
+
+            <button style={styles.confirmBtn} onClick={handleConfirmLogout}>
+              ✓ Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </header>
+)}

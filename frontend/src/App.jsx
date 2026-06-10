@@ -6,6 +6,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import { useTheme } from "../context/ThemeContext";
 import Header from "./components/Header";
 import LoginPage from "./components/LoginPage";
 import Dashboard from "./components/Dashboard";
@@ -15,14 +17,10 @@ import AdminPanel from "./components/AdminPanel";
 import "./App.css";
 
 function App() {
+  const { darkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [apiStatus, setApiStatus] = useState(null);
-
-  // DARK MODE STATE
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
 
   const [toast, setToast] = useState({
     message: "",
@@ -30,11 +28,6 @@ function App() {
     title: "",
     icon: ""
   });
-
-  // Fungsi Toggle untuk dikirim ke LoginPage & Header
-  const toggleTheme = () => {
-  setDarkMode(prev => !prev);
-};
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -50,7 +43,10 @@ function App() {
 
   // GLOBAL DARK MODE SYNC
   useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
+    document.documentElement.setAttribute(
+  "data-theme",
+  darkMode ? "dark" : "light"
+);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
@@ -105,8 +101,6 @@ function App() {
           <Header
             user={user}
             setUser={setUser}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
           />
         )}
 
@@ -129,7 +123,6 @@ function App() {
                   setUser={setUser} 
                   showToast={showToast} 
                   theme={darkMode ? "dark" : "light"} 
-                  toggleTheme={toggleTheme} 
                 />
               ) : (
                 <Navigate to="/dashboard" />
