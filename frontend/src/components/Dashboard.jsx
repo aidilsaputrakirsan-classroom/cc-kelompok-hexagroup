@@ -47,10 +47,10 @@ const styles = {
   },
 
   subtitle: {
-    fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
-    color: "#0284c7",
-    margin: "0",
-  },
+  fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+  color: "var(--text-secondary)",
+  margin: "0",
+},
 
   menuGrid: {
     display: "grid",
@@ -78,34 +78,46 @@ const styles = {
   },
 
   iconBox: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "24px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "36px",
-    marginBottom: "2rem",
-    backgroundColor: "var(--bg-page)",
-  },
+  width: "80px",
+  height: "80px",
+  borderRadius: "24px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "36px",
+  marginBottom: "2rem",
+  backgroundColor: "var(--bg-page)",
+},
 
-  btnAction: {
-    marginTop: "auto",
-    padding: "0.9rem 1.5rem",
-    borderRadius: "14px",
-    backgroundColor: "var(--bg-page)",
-    color: "#4f46e5",
-    fontWeight: "700",
-    width: "100%",
-    border: "1px solid var(--border-color)",
-    cursor: "pointer",
-  },
+btnAction: {
+  marginTop: "auto",
+  padding: "0.9rem 1.5rem",
+  borderRadius: "14px",
+  backgroundColor: "var(--bg-page)",
+  color: "var(--text-color)",
+  fontWeight: "700",
+  width: "100%",
+  border: "1px solid var(--border-color)",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+},
 
-  disabled: {
-    opacity: 0.4,
-    filter: "grayscale(100%)",
-    cursor: "not-allowed",
-  },
+cardTitle: {
+  color: "var(--text-color)",
+  fontWeight: "700",
+  marginBottom: "12px",
+},
+
+cardDescription: {
+  color: "var(--text-secondary)",
+  marginBottom: "24px",
+},
+
+disabled: {
+  opacity: 0.4,
+  filter: "grayscale(100%)",
+  cursor: "not-allowed",
+},
 };
 
 function Dashboard({ user }) {
@@ -113,10 +125,16 @@ function Dashboard({ user }) {
 
   // STATE
   const [serviceUnavailable, setServiceUnavailable] = useState(false);
-  const [authDown, setAuthDown] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isRetrying, setIsRetrying] = useState(false);
+const [authDown, setAuthDown] = useState(false);
+const [errorMessage, setErrorMessage] = useState("");
+const [loading, setLoading] = useState(true);
+const [isRetrying, setIsRetrying] = useState(false);
+const [apiConnected, setApiConnected] = useState(false);
+
+const [isDarkMode, setIsDarkMode] = useState(() => {
+  const savedTheme = localStorage.getItem("theme");
+  return savedTheme === "dark";
+});
 
   // API CALL
   const fetchDashboard = async () => {
@@ -126,14 +144,17 @@ function Dashboard({ user }) {
       setAuthDown(false);
       setErrorMessage("");
 
-      const apiUrl = window.location.origin.includes('3000') 
-        ? "http://localhost:8000/health"
-        : "http://localhost/health";
+      const apiUrl = `${import.meta.env.VITE_API_URL}/health`;
       
       await axios.get(apiUrl);
 
+      setApiConnected(true);
+
     } catch (error) {
-      const status = error.response?.status;
+
+    setApiConnected(false);
+
+    const status = error.response?.status;
 
       if (status === 503 || status === 502) {
         const errorData = error.response?.data;
@@ -162,8 +183,20 @@ function Dashboard({ user }) {
   };
 
   useEffect(() => {
-    fetchDashboard();
-  }, []);
+  fetchDashboard();
+}, []);
+
+useEffect(() => {
+  localStorage.setItem(
+    "theme",
+    isDarkMode ? "dark" : "light"
+  );
+
+  document.documentElement.setAttribute(
+    "data-theme",
+    isDarkMode ? "dark" : "light"
+  );
+}, [isDarkMode]);
 
   const retryConnection = () => {
     setIsRetrying(true);
@@ -175,21 +208,44 @@ function Dashboard({ user }) {
   const canAccessLetters = allowedRoles.includes(user.role);
   const canAccessAdmin = user.role === "ketua";
 
-  const onHover = (e, accessible) => {
-    if (accessible) {
-      e.currentTarget.style.transform = "translateY(-15px) scale(1.02)";
-    }
-  };
+const onHover = (e, accessible) => {
+  if (accessible) {
+    e.currentTarget.style.transform =
+      "translateY(-12px) scale(1.03)";
 
-  const onLeave = (e, accessible) => {
-    if (accessible) {
-      e.currentTarget.style.transform = "translateY(0)";
-    }
-  };
-
-  if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading...</p>;
+    e.currentTarget.style.boxShadow =
+      "0 20px 40px rgba(2,132,199,0.25)";
   }
+};
+
+const onLeave = (e, accessible) => {
+  if (accessible) {
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "none";
+  }
+};
+
+  const toggleTheme = () => {
+  setIsDarkMode((prev) => !prev);
+};
+
+if (loading) {
+  return (
+  <div
+    style={{
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      color: "var(--text-color)",
+      fontSize: "18px",
+      fontWeight: "600",
+    }}
+  >
+    ⏳ Loading Dashboard...
+  </div>
+  );
+}
 
   return (
     <div style={styles.container}>
@@ -275,63 +331,152 @@ function Dashboard({ user }) {
         </div>
       )}
 
-      <header style={styles.header}>
-        <div style={styles.roleBadge}>
-          👑 {user.role.toUpperCase()} Access
-        </div>
+    <header style={styles.header}>
+  {/* Backend Status + Theme Toggle */}
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: "15px",
+      marginBottom: "20px",
+    }}
+  >
+    {/* Backend Indicator */}
+    <div
+      title={
+        apiConnected
+          ? "Backend Online"
+          : "Backend Offline"
+      }
+      style={{
+        width: "14px",
+        height: "14px",
+        borderRadius: "50%",
+        backgroundColor:
+          apiConnected ? "#22c55e" : "#ef4444",
+        boxShadow:
+          apiConnected
+            ? "0 0 12px #22c55e"
+            : "0 0 12px #ef4444",
+        transition: "all 0.3s ease",
+      }}
+    />
 
-        <h1 style={styles.title}>SISTEM INFORMASI HMSI ITK</h1>
+    {/* Dark Mode Button */}
+    <button
+      onClick={toggleTheme}
+      style={{
+        border: "1px solid var(--border-color)",
+        padding: "10px 16px",
+        borderRadius: "12px",
+        cursor: "pointer",
+        background: "var(--bg-card)",
+        color: "var(--text-color)",
+        fontWeight: "600",
+        transition: "all 0.3s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+    </button>
+  </div>
 
-        <p style={styles.subtitle}>
-          Selamat Datang, <b>{user.full_name}</b>
-        </p>
-      </header>
+  {/* Role */}
+  <div style={styles.roleBadge}>
+    👑 {user.role.toUpperCase()} Access
+  </div>
+
+  {/* Title */}
+  <h1 style={styles.title}>
+    SISTEM INFORMASI HMSI ITK
+  </h1>
+
+  {/* Subtitle */}
+  <p style={styles.subtitle}>
+    Selamat Datang, <b>{user.full_name}</b>
+  </p>
+</header>
 
       <div style={styles.menuGrid}>
         <div
-          style={{
-            ...styles.menuCard,
-            ...(!canAccessFinance && styles.disabled),
-          }}
-          onClick={() => canAccessFinance && navigate("/finance")}
-        >
-          <div style={styles.iconBox}>💰</div>
-          <h2>Finance</h2>
-          <p>Manajemen keuangan organisasi</p>
+  style={{
+    ...styles.menuCard,
+    ...(!canAccessFinance && styles.disabled),
+  }}
+  onClick={() => canAccessFinance && navigate("/finance")}
+  onMouseEnter={(e) => onHover(e, canAccessFinance)}
+  onMouseLeave={(e) => onLeave(e, canAccessFinance)}
+>
+  <div style={styles.iconBox}>
+  💰
+</div>
+
+<h2 style={styles.cardTitle}>
+  Finance
+</h2>
+
+<p style={styles.cardDescription}>
+  Manajemen keuangan organisasi
+</p>
 
           {canAccessFinance && (
             <button style={styles.btnAction}>Masuk Modul →</button>
           )}
         </div>
+<div
+  style={{
+    ...styles.menuCard,
+    ...(!canAccessLetters && styles.disabled),
+  }}
+  onClick={() => canAccessLetters && navigate("/letters")}
+  onMouseEnter={(e) => onHover(e, canAccessLetters)}
+  onMouseLeave={(e) => onLeave(e, canAccessLetters)}
+>
+  <div style={styles.iconBox}>📝</div>
 
-        <div
-          style={{
-            ...styles.menuCard,
-            ...(!canAccessLetters && styles.disabled),
-          }}
-          onClick={() => canAccessLetters && navigate("/letters")}
-        >
-          <div style={styles.iconBox}>📝</div>
-          <h2>Letters</h2>
-          <p>Manajemen surat menyurat</p>
+<h2 style={styles.cardTitle}>
+  Letters
+</h2>
 
-          {canAccessLetters && (
-            <button style={styles.btnAction}>Masuk Modul →</button>
-          )}
+<p style={styles.cardDescription}>
+  Manajemen surat menyurat
+</p>
+
+{canAccessLetters && (
+  <button style={styles.btnAction}>
+    Masuk Modul →
+  </button>
+)}
         </div>
 
         {canAccessAdmin && (
-          <div
-            style={styles.menuCard}
-            onClick={() => navigate("/admin")}
-          >
-            <div style={styles.iconBox}>👥</div>
-            <h2>Admin Panel</h2>
-            <p>Manajemen user & akses</p>
+  <div
+    style={styles.menuCard}
+    onClick={() => navigate("/admin")}
+    onMouseEnter={(e) => onHover(e, true)}
+    onMouseLeave={(e) => onLeave(e, true)}
+  >
+    <div style={styles.iconBox}>👥</div>
 
-            <button style={styles.btnAction}>Masuk Modul →</button>
-          </div>
-        )}
+    <h2 style={styles.cardTitle}>
+  Admin Panel
+</h2>
+
+<p style={styles.cardDescription}>
+  Manajemen user & akses
+</p>
+
+    <button style={styles.btnAction}>
+      Masuk Modul →
+    </button>
+  </div>
+)}
       </div>
     </div>
   );
