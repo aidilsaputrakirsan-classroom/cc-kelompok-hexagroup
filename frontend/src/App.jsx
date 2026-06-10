@@ -33,8 +33,8 @@ function App() {
 
   // Fungsi Toggle untuk dikirim ke LoginPage & Header
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
+  setDarkMode(prev => !prev);
+};
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -74,25 +74,33 @@ function App() {
 };
 
   if (loading) {
-    return <div className="loading-screen">Loading...</div>;
+    return <div className="loading-screen">
+  <div className="api-indicator" style={{ color: "#3b82f6" }} />
+  Loading...
+</div>
   }
 
   return (
     <Router>
       <div className={`App ${darkMode ? "dark" : ""}`}>
         
-        {/* API STATUS ALERTS */}
-        {apiStatus === false && (
-          <div className="api-alert offline">
-            ⚠️ Backend API is offline — {import.meta.env.VITE_API_URL || "http://localhost:8000"}
-          </div>
-        )}
-        {apiStatus === true && (
-          <div className="api-alert online">
-            ✅ Backend API connected
-          </div>
-        )}
+        {/* API STATUS */}
+{apiStatus !== null && (
+  <div className={`api-alert ${apiStatus ? "online" : "offline"}`}>
+    
+    <span
+      className="api-indicator"
+      style={{
+        color: apiStatus ? "#22c55e" : "#ef4444"
+      }}
+    />
 
+    <span>
+      {apiStatus ? "Online" : "Offline"}
+    </span>
+
+  </div>
+)}
         {user && (
           <Header
             user={user}

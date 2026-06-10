@@ -10,6 +10,11 @@
   --input-bg: #ffffff;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body.dark {
   --bg-page: #0f172a;       /* Gelap pekat untuk luar */
   --bg-card: #1e293b;       /* Gelap sedikit terang untuk Card */
@@ -56,8 +61,13 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-color) !important;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 /* Form & Input di semua halaman */
@@ -73,12 +83,21 @@ input, textarea, select {
 /* 4. API & TOAST STYLES                     */
 /* ========================================= */
 .api-alert {
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
 }
-.api-alert.offline { background-color: #f8d7da; color: #721c24; }
-.api-alert.online { background-color: #d4edda; color: #155724; }
+
+.api-alert.offline {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.api-alert.online {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
 
 .custom-toast {
   position: fixed;
@@ -109,4 +128,38 @@ input, textarea, select {
 @keyframes fadeInScale {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* PULSE API INDICATOR */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.api-indicator {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.api-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+  opacity: 0.6;
+  background-color: currentColor;
 }
