@@ -50,33 +50,53 @@ function App() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const showToast = (message, type = "success", title = "", icon = "") => {
-    setToast({ message, type, title, icon });
-    setTimeout(() => {
-      setToast({ message: "", type: "", title: "", icon: "" });
-    }, 3000);
-  };
+  const showToast = (
+  message,
+  type = "success",
+  title = "",
+  icon = "",
+  duration = 5000
+) => {
+  setToast({ message, type, title, icon });
+
+  // clear timeout lama biar tidak numpuk
+  if (window.toastTimeout) {
+    clearTimeout(window.toastTimeout);
+  }
+
+  window.toastTimeout = setTimeout(() => {
+    setToast({ message: "", type: "", title: "", icon: "" });
+  }, duration);
+};
 
   if (loading) {
-    return <div className="loading-screen">Loading...</div>;
+    return <div className="loading-screen">
+  <div className="api-indicator" style={{ color: "#3b82f6" }} />
+  Loading...
+</div>
   }
 
   return (
     <Router>
       <div className={`App ${darkMode ? "dark" : ""}`}>
         
-        {/* API STATUS ALERTS */}
-        {apiStatus === false && (
-          <div className="api-alert offline">
-            ⚠️ Backend API is offline — {import.meta.env.VITE_API_URL || "http://localhost:8000"}
-          </div>
-        )}
-        {apiStatus === true && (
-          <div className="api-alert online">
-            ✅ Backend API connected
-          </div>
-        )}
+        {/* API STATUS */}
+{apiStatus !== null && (
+  <div className={`api-alert ${apiStatus ? "online" : "offline"}`}>
+    
+    <span
+      className="api-indicator"
+      style={{
+        color: apiStatus ? "#22c55e" : "#ef4444"
+      }}
+    />
 
+    <span>
+      {apiStatus ? "Online" : "Offline"}
+    </span>
+
+  </div>
+)}
         {user && (
           <Header
             user={user}

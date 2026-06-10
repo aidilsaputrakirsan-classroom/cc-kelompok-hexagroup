@@ -188,7 +188,7 @@ export const userAPI = {
 // FIX: /health → /auth/health (gateway tidak punya route /health)
 export const checkAPIConnection = async () => {
   try {
-    const res = await fetch(`${API_URL}/auth/health`, {
+    const res = await fetch(`${API_URL}/health`, {
       method: "GET",
     });
 

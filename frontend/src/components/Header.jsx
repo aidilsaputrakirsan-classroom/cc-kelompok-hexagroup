@@ -216,22 +216,26 @@ borderBottom: "1px solid var(--border-color)",
       <div style={styles.container}>
         <div style={styles.leftSection}>
           <h1
-            style={{
-              ...styles.logo,
-              filter: darkMode ? "brightness(1.2)" : "none",
-            }}
-            onClick={() => navigate("/dashboard")}
-          >
-            SIKASI
-          </h1>
+  style={{
+    ...styles.logo,
+    filter: darkMode ? "brightness(1.2)" : "none",
+    transform: logoHover ? "scale(1.05)" : "scale(1)",
+    transition: "all 0.3s ease",
+  }}
+  onMouseEnter={() => setLogoHover(true)}
+  onMouseLeave={() => setLogoHover(false)}
+  onClick={() => navigate("/dashboard")}
+>
+  SIKASI
+</h1>
 
           {user && (
             <nav
               style={{
                 ...styles.nav,
                 backgroundColor: darkMode
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(15,23,42,0.05)",
+  ? "rgba(255,255,255,0.06)"
+  : "rgba(15,23,42,0.05)",
               }}
             >
                <button
