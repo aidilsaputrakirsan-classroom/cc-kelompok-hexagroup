@@ -1,3 +1,4 @@
+/* 
 import { useTheme } from "../context/ThemeContext";
 
 function DarkModeToggle() {
@@ -49,3 +50,4 @@ function DarkModeToggle() {
 }
 
 export default DarkModeToggle;
+*/

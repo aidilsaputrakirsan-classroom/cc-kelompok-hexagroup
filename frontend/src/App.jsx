@@ -7,7 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "./context/ThemeContext";
 import Header from "./components/Header";
 import LoginPage from "./components/LoginPage";
 import Dashboard from "./components/Dashboard";
@@ -80,31 +80,15 @@ function App() {
     <Router>
       <div className={`App ${darkMode ? "dark" : ""}`}>
         
-        {/* API STATUS */}
-{apiStatus !== null && (
-  <div className={`api-alert ${apiStatus ? "online" : "offline"}`}>
-    
-    <span
-      className="api-indicator"
-      style={{
-        color: apiStatus ? "#22c55e" : "#ef4444"
-      }}
-    />
-
-    <span>
-      {apiStatus ? "Online" : "Offline"}
-    </span>
-
-  </div>
-)}
-        {user && (
+      {user && (
           <Header
             user={user}
             setUser={setUser}
+            apiConnected={apiStatus} 
           />
         )}
 
-        {/* TOAST NOTIFICATION */}
+        {/* CUSTOM TOAST NOTIFICATION */}
         {toast.message && (
           <div className="custom-toast">
             <div className="toast-icon">{toast.icon || (toast.type === "success" ? "✅" : "⚠️")}</div>
@@ -128,6 +112,8 @@ function App() {
                 <Navigate to="/dashboard" />
               )}
             />
+            
+            {/* Keamanan rute tetap terjaga berdasarkan state user */}
             <Route
               path="/dashboard"
               element={user ? <Dashboard user={user} showToast={showToast} /> : <Navigate to="/login" />}
@@ -142,8 +128,9 @@ function App() {
             />
             <Route
               path="/admin"
-              element={user && user.role === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
+              element={user && user.role?.toLowerCase() === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
             />
+            
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
           </Routes>
         </main>

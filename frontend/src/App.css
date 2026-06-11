@@ -1,27 +1,33 @@
 /* ========================================= */
-/* 1. VARIABEL TEMA (LIGHT & DARK)           */
+/* 1. VARIABEL TEMA (LIGHT & DARK REVISI)    */
 /* ========================================= */
 :root {
-  --bg-page: #f1f5f9;       /* Background luar halaman */
-  --bg-card: #ffffff;       /* Background kotak konten/card */
-  --text-main: #1e293b;     /* Warna teks isi */
-  --text-title: #0f172a;    /* Warna teks judul */
-  --border-color: #e2e8f0;  /* Warna garis pembatas */
+  --bg-page: #f8fafc;       /* Abu-abu sangat terang yang bersih untuk background luar */
+  --bg-card: #ffffff;       /* Putih bersih untuk efek kotak terpisah */
+  --text-main: #334155;     /* Warna teks isi/deskripsi yang nyaman dibaca */
+  --text-title: #0f172a;    /* Warna hitam pekat untuk judul utama */
+  --border-color: #e2e8f0;  /* Garis pembatas tipis elegan */
   --input-bg: #ffffff;
 }
 
 [data-theme="dark"] {
-  --bg-page: #0f172a;       /* Gelap pekat untuk luar */
-  --bg-card: #1e293b;       /* Gelap sedikit terang untuk Card */
-  --text-main: #cbd5e1;     /* Teks abu terang */
-  --text-title: #f8fafc;    /* Teks judul putih */
-  --border-color: #334155;  /* Garis pembatas gelap */
+  --bg-page: #0b111e;       /* Biru gelap pekat premium mewah untuk background luar */
+  --bg-card: #152033;       /* Biru dongker sedikit terang untuk efek kotak biar gak menyatu */
+  --text-main: #94a3b8;     /* Teks deskripsi abu-biru terang yang jelas dan kontras */
+  --text-title: #f8fafc;    /* Judul putih bersih bercahaya (kontras tinggi) */
+  --border-color: #24354f;  /* Garis pembatas kotak yang elegan saat mode gelap */
   --input-bg: #0f172a;
 }
 
 /* ========================================= */
 /* 2. PENGATURAN GLOBAL                      */
 /* ========================================= */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .App {
   min-height: 100vh;
   transition: all 0.3s ease;
@@ -44,7 +50,6 @@ h1, h2, h3, h4, h5, h6 {
 /* ========================================= */
 /* 3. CARD & CONTAINER (DASHBOARD, FINANCE, DLL) */
 /* ========================================= */
-/* Pakai class-class ini di komponen halamanmu */
 .card, 
 .container, 
 .finance-card, 
