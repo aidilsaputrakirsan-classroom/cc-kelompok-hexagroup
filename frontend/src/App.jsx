@@ -14,6 +14,7 @@ import Dashboard from "./components/Dashboard";
 import FinancePage from "./components/FinancePage";
 import LettersPage from "./components/LettersPage";
 import AdminPanel from "./components/AdminPanel";
+import StatusPage from "./pages/StatusPage";
 import "./App.css";
 
 function App() {
@@ -136,6 +137,10 @@ function App() {
             <Route
               path="/admin"
               element={user && user.role?.toLowerCase() === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
+            />
+            <Route
+              path="/status"
+              element={<StatusPage />}
             />
             
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
