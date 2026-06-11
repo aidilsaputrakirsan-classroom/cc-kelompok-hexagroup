@@ -121,10 +121,8 @@ def register(user_data: UserRegister, db=Depends(get_db)):
 def login(user_data: UserLogin, db=Depends(get_db)):
     """Login for all roles"""
     user = get_user_by_email(db, user_data.email)
-    if not user:
-        raise HTTPException(status_code=404, detail="Email tidak terdaftar")
-    if not verify_password(user_data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Password yang Anda masukkan salah")
+    if not user or not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_access_token(user.email)
     refresh_token = create_refresh_token(user.email)
