@@ -1,4 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost';
 
@@ -84,14 +92,59 @@ function ServiceCard({ name, icon, healthUrl, metricsUrl }) {
 }
 
 export default function StatusPage() {
+  const [lastChecked, setLastChecked] = useState(new Date());
+  const [countdown, setCountdown] = useState(10);
+
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      setLastChecked(new Date());
+      setCountdown(10);
+    }, 10000);
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 10));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const chartData = [
+  {
+    service: "Auth",
+    errorRate: 0
+  },
+  {
+    service: "Finance",
+    errorRate: 0
+  },
+  {
+    service: "Letters",
+    errorRate: 0
+  }
+];
+
   return (
-    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px' }}>
-      <h1>📊 System Status</h1>
+    <div style={{
+  maxWidth: "1200px",
+  margin: "40px auto",
+  padding: "0 20px"
+}}>
       <p style={{ color: '#64748b' }}>
         Real-time health monitoring — auto-refresh setiap 10 detik
       </p>
 
-      <div style={{ display: 'grid', gap: '16px', marginTop: '24px' }}>
+      <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))",
+    gap: "20px",
+    marginTop: "24px"
+  }}
+>
         <ServiceCard
           name="Auth Service"
           icon="🔐"
@@ -124,9 +177,31 @@ export default function StatusPage() {
         />
       </div>
 
-      <p style={{ marginTop: '24px', fontSize: '13px', color: '#94a3b8' }}>
-        Last checked: {new Date().toLocaleTimeString()}
-      </p>
+      <div style={{ marginTop: "30px" }}>
+  <h3>Error Rate Chart</h3>
+
+  <ResponsiveContainer width="100%" height={250}>
+    <BarChart data={chartData}>
+      <XAxis dataKey="service" />
+      <YAxis />
+      <Tooltip />
+      <Bar dataKey="errorRate" fill="#3b82f6" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+
+      <div
+  style={{
+    marginTop: "24px",
+    fontSize: "13px",
+    color: "#94a3b8",
+    lineHeight: "1.8"
+  }}
+>
+  🔄 Auto refresh every 10 seconds <br />
+  ⏰ Last checked: {lastChecked.toLocaleTimeString()} <br />
+  ⌛ Next refresh in {countdown}s
+</div>
     </div>
   );
 }
