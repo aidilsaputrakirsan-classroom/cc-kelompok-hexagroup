@@ -193,20 +193,22 @@ const onButtonLeave = (e) => {
   fetchDashboard();
 }, []);
 
-  const retryConnection = () => {
-    setIsRetrying(true);
-    fetchDashboard();
-  };
+const retryConnection = () => {
+  setIsRetrying(true);
+  fetchDashboard();
+};
 
- // 1. Hak Akses Melihat Modul (View Access)
-  const canAccessFinance = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
-  const canAccessLetters = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
-  const canAccessAdmin = currentRole === "ketua";
+const currentRole = user?.role?.toLowerCase() || "";
 
-  // 2. Hak Akses Mengelola Data (CRUD Access)
-  const canCrudFinance = currentRole === "bendahara";
-  const canCrudLetters = currentRole === "sekretaris";
-  const canCrudAdmin = currentRole === "ketua";
+// 1. Hak Akses Melihat Modul (View Access)
+const canAccessFinance = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
+const canAccessLetters = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
+const canAccessAdmin = currentRole === "ketua";
+
+// 2. Hak Akses Mengelola Data (CRUD Access)
+const canCrudFinance = currentRole === "bendahara";
+const canCrudLetters = currentRole === "sekretaris";
+const canCrudAdmin = currentRole === "ketua";
 
   const onHover = (e, accessible) => {
     if (accessible) {

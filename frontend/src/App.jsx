@@ -30,16 +30,23 @@ function App() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const userData = localStorage.getItem("user");
+  const token = localStorage.getItem("access_token");
+  const userData = localStorage.getItem("user");
 
+  try {
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
+  } catch (error) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    setUser(null);
+  }
 
-    setLoading(false);
-    checkAPIConnection().then(setApiStatus);
-  }, []);
+  setLoading(false);
+  checkAPIConnection().then(setApiStatus);
+}, []);
 
   // GLOBAL DARK MODE SYNC
   useEffect(() => {
@@ -99,12 +106,12 @@ function App() {
 
         {/* AREA KONTEN UTAMA */}
         <main className="theme-transition-wrapper">
-          <Routes>
+          s>
             <Route
               path="/login"
               element={!user ? (
                 <LoginPage 
-                  setUser={setUser} 
+                  setU<Routeser={setUser} 
                   showToast={showToast} 
                   theme={darkMode ? "dark" : "light"} 
                 />
