@@ -112,6 +112,8 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@auth-db:5432/auth_db
+      SERVICE_NAME: auth-service      # ← DITAMBAHKAN
+      LOG_LEVEL: INFO                 # ← DITAMBAHKAN
     networks:
       - sikasinet
     depends_on:
@@ -137,6 +139,12 @@ services:
         reservations:
           cpus: "0.1"
           memory: 128M
+    logging:                          # ← DITAMBAHKAN
+      driver: "json-file"
+      options:
+        max-size: "10m"               # Rotate setiap 10MB
+        max-file: "3"                 # Simpan 3 file lama
+        tag: "auth-service"
 
   finance-service:
     build:
@@ -149,6 +157,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@finance-db:5432/finance_db
       AUTH_SERVICE_URL: http://auth-service:8001
+      SERVICE_NAME: finance-service   # ← DITAMBAHKAN
+      LOG_LEVEL: INFO                 # ← DITAMBAHKAN
     networks:
       - sikasinet
     depends_on:
@@ -176,6 +186,12 @@ services:
         reservations:
           cpus: "0.1"
           memory: 128M
+    logging:                          # ← DITAMBAHKAN
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "finance-service"
 
   letters-service:
     build:
@@ -188,6 +204,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@letter-db:5432/letter_db
       AUTH_SERVICE_URL: http://auth-service:8001
+      SERVICE_NAME: letters-service   # ← DITAMBAHKAN
+      LOG_LEVEL: INFO                 # ← DITAMBAHKAN
     networks:
       - sikasinet
     depends_on:
@@ -215,6 +233,12 @@ services:
         reservations:
           cpus: "0.1"
           memory: 128M
+    logging:                          # ← DITAMBAHKAN
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "letters-service"
 
   # ==================== GATEWAY ====================
 
@@ -243,6 +267,12 @@ services:
         reservations:
           cpus: "0.05"
           memory: 64M
+    logging:                          # ← DITAMBAHKAN
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "gateway"
 
   # ==================== FRONTEND ====================
 
@@ -269,6 +299,12 @@ services:
         reservations:
           cpus: "0.05"
           memory: 64M
+    logging:                          # ← DITAMBAHKAN
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "frontend"
 
 # ==================== VOLUMES ====================
 

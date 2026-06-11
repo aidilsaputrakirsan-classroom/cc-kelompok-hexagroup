@@ -6,6 +6,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import { useTheme } from "./context/ThemeContext";
 import Header from "./components/Header";
 import LoginPage from "./components/LoginPage";
 import Dashboard from "./components/Dashboard";
@@ -15,14 +17,10 @@ import AdminPanel from "./components/AdminPanel";
 import "./App.css";
 
 function App() {
+  const { darkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [apiStatus, setApiStatus] = useState(null);
-
-  // DARK MODE STATE
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
 
   const [toast, setToast] = useState({
     message: "",
@@ -31,66 +29,73 @@ function App() {
     icon: ""
   });
 
-  // Fungsi Toggle untuk dikirim ke LoginPage & Header
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
-
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const userData = localStorage.getItem("user");
+  const token = localStorage.getItem("access_token");
+  const userData = localStorage.getItem("user");
 
+  try {
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
+  } catch (error) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    setUser(null);
+  }
 
-    setLoading(false);
-    checkAPIConnection().then(setApiStatus);
-  }, []);
+  setLoading(false);
+  checkAPIConnection().then(setApiStatus);
+}, []);
 
   // GLOBAL DARK MODE SYNC
   useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
+    document.documentElement.setAttribute(
+  "data-theme",
+  darkMode ? "dark" : "light"
+);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const showToast = (message, type = "success", title = "", icon = "") => {
-    setToast({ message, type, title, icon });
-    setTimeout(() => {
-      setToast({ message: "", type: "", title: "", icon: "" });
-    }, 3000);
-  };
+  const showToast = (
+  message,
+  type = "success",
+  title = "",
+  icon = "",
+  duration = 5000
+) => {
+  setToast({ message, type, title, icon });
+
+  // clear timeout lama biar tidak numpuk
+  if (window.toastTimeout) {
+    clearTimeout(window.toastTimeout);
+  }
+
+  window.toastTimeout = setTimeout(() => {
+    setToast({ message: "", type: "", title: "", icon: "" });
+  }, duration);
+};
 
   if (loading) {
-    return <div className="loading-screen">Loading...</div>;
+    return <div className="loading-screen">
+  <div className="api-indicator" style={{ color: "#3b82f6" }} />
+  Loading...
+</div>
   }
 
   return (
     <Router>
       <div className={`App ${darkMode ? "dark" : ""}`}>
         
-        {/* API STATUS ALERTS */}
-        {apiStatus === false && (
-          <div className="api-alert offline">
-            ⚠️ Backend API is offline — {import.meta.env.VITE_API_URL || "http://localhost:8000"}
-          </div>
-        )}
-        {apiStatus === true && (
-          <div className="api-alert online">
-            ✅ Backend API connected
-          </div>
-        )}
-
-        {user && (
+      {user && (
           <Header
             user={user}
             setUser={setUser}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
+            apiConnected={apiStatus} 
           />
         )}
 
-        {/* TOAST NOTIFICATION */}
+        {/* CUSTOM TOAST NOTIFICATION */}
         {toast.message && (
           <div className="custom-toast">
             <div className="toast-icon">{toast.icon || (toast.type === "success" ? "✅" : "⚠️")}</div>
@@ -109,12 +114,13 @@ function App() {
                   setUser={setUser} 
                   showToast={showToast} 
                   theme={darkMode ? "dark" : "light"} 
-                  toggleTheme={toggleTheme} 
                 />
               ) : (
                 <Navigate to="/dashboard" />
               )}
             />
+            
+            {/* Keamanan rute tetap terjaga berdasarkan state user */}
             <Route
               path="/dashboard"
               element={user ? <Dashboard user={user} showToast={showToast} /> : <Navigate to="/login" />}
@@ -129,8 +135,9 @@ function App() {
             />
             <Route
               path="/admin"
-              element={user && user.role === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
+              element={user && user.role?.toLowerCase() === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
             />
+            
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
           </Routes>
         </main>
