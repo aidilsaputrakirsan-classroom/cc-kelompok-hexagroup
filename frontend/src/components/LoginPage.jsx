@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "../services/api";
+import { authAPI, checkAPIConnection } from "../services/api";
 
 export default function LoginPage({ setUser, showToast, theme }) {
   const [email, setEmail] = useState("");
