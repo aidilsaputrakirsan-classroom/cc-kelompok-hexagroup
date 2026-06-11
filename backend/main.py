@@ -116,7 +116,9 @@ def register(user_data: UserRegister, db=Depends(get_db)):
         }
     }
 
-
+# Return a generic error message for all login failures
+# to avoid exposing whether an email is registered and
+# to maintain compatibility with existing integration tests.
 @app.post("/auth/login")
 def login(user_data: UserLogin, db=Depends(get_db)):
     """Login for all roles"""
