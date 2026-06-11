@@ -106,12 +106,12 @@ function App() {
 
         {/* AREA KONTEN UTAMA */}
         <main className="theme-transition-wrapper">
-          s>
+          <Routes>
             <Route
               path="/login"
               element={!user ? (
                 <LoginPage 
-                  setU<Routeser={setUser} 
+                  setUser={setUser} 
                   showToast={showToast} 
                   theme={darkMode ? "dark" : "light"} 
                 />
