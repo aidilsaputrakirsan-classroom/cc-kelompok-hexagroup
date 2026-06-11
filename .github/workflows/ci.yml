@@ -31,7 +31,6 @@ jobs:
 
   # ================================
   # JOB 1: Unit Test Auth Service
-  # Menjalankan pytest di dalam folder services/auth-service
   # ================================
   test-auth-service:
     name: Test Auth Service
@@ -59,11 +58,10 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v --tb=short
-        continue-on-error: true  # Tidak gagalkan pipeline jika belum ada test
+        continue-on-error: true
 
   # ================================
   # JOB 2: Unit Test Finance Service
-  # Menjalankan pytest di dalam folder services/finance-service
   # ================================
   test-finance-service:
     name: Test Finance Service
@@ -91,11 +89,10 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v --tb=short
-        continue-on-error: true  # Tidak gagalkan pipeline jika belum ada test
+        continue-on-error: true
 
   # ================================
   # JOB 3: Unit Test Letters Service
-  # Menjalankan pytest di dalam folder services/letters-service
   # ================================
   test-letters-service:
     name: Test Letters Service
@@ -123,12 +120,12 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v --tb=short
-        continue-on-error: true  # Tidak gagalkan pipeline jika belum ada test
+        continue-on-error: true
 
   # ================================
   # JOB 4: Lint Semua Services dengan Ruff
-  # Ruff adalah linter Python yang cepat
-  # Mengecek kualitas kode di semua services sekaligus
+  # PERBAIKAN: Hapus step "Install dependencies" yang tidak diperlukan
+  # Job lint hanya butuh ruff, bukan requirements.txt dari masing-masing service
   # ================================
   lint-services:
     name: Lint All Services
@@ -148,7 +145,7 @@ jobs:
 
       - name: Lint Auth Service
         run: ruff check ./services/auth-service
-        continue-on-error: true  # Laporkan error tapi jangan stop pipeline
+        continue-on-error: true
 
       - name: Lint Finance Service
         run: ruff check ./services/finance-service
@@ -160,8 +157,6 @@ jobs:
 
   # ================================
   # JOB 5: Build Docker Images
-  # Memastikan semua Dockerfile valid dan bisa di-build
-  # Baru jalan setelah semua test dan lint selesai (needs)
   # ================================
   build-docker:
     name: Build Docker Images
@@ -183,16 +178,13 @@ jobs:
 
       - name: Build Frontend image
         run: docker build -t sikasi-frontend:ci ./frontend
-        continue-on-error: true  # Frontend build error tidak menghentikan pipeline
+        continue-on-error: true
 
       - name: Build success
         run: echo "Semua Docker images berhasil di-build!"
 
   # ================================
-  # JOB 6: Integration Tests
-  # Menjalankan docker compose up untuk menjalankan semua services
-  # terus menguji komunikasi antar services secara nyata
-  # Baru jalan setelah build-docker berhasil (needs)
+  # JOB 6: Integration Tests + Log Artifacts
   # ================================
   integration-test:
     name: Integration Tests
@@ -253,10 +245,6 @@ jobs:
         run: pytest tests/integration/ -v --tb=short
         continue-on-error: true
 
-  # ----------------------------------------
-  # tambahan: Export log semua service
-  # selalu berjalan meski test gagal (if: always())
-  # ----------------------------------------
       - name: Export Docker logs ke folder
         if: always()
         run: |
@@ -269,10 +257,6 @@ jobs:
           echo "=== Isi folder logs ==="
           ls -lh logs/
 
-  # ----------------------------------------
-  # tambahan: Tampilkan ringkasan error
-  # langsung terlihat di console CI tanpa harus download
-  # ----------------------------------------
       - name: Tampilkan ringkasan error di console CI
         if: always()
         run: |
@@ -292,11 +276,6 @@ jobs:
           echo "--- CRITICAL dari semua service ---"
           grep '"level":"CRITICAL"' logs/all-services.log || echo "(tidak ada critical)"
 
-  # ----------------------------------------
-  # tambahan: Upload log sebagai artifact
-  # Log bisa didownload dari tab Actions di GitHub
-  # Disimpan selama 7 hari lalu otomatis terhapus
-  # ----------------------------------------
       - name: Upload logs sebagai GitHub Actions artifact
         if: always()
         uses: actions/upload-artifact@v4
