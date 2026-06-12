@@ -49,14 +49,6 @@ function App() {
   checkAPIConnection().then(setApiStatus);
 }, []);
 
-  // GLOBAL DARK MODE SYNC
-  useEffect(() => {
-    document.documentElement.setAttribute(
-  "data-theme",
-  darkMode ? "dark" : "light"
-);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
 
   const showToast = (
   message,

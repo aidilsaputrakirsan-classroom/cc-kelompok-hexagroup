@@ -7,8 +7,12 @@ export default function AdminPanel({ user, showToast }) {
   
   useEffect(() => {
     if (!user || user.role?.toLowerCase() !== "ketua") {
-      showToast("Akses ditolak! Hanya Ketua yang dapat mengakses Admin Panel.", "error");
-      navigate("/dashboard");
+      // Gunakan setTimeout agar navigasi tidak konflik dengan render cycle
+      const timer = setTimeout(() => {
+        showToast("Akses ditolak! Hanya Ketua yang dapat mengakses Admin Panel.", "error");
+        navigate("/dashboard");
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [user, navigate, showToast]);
 
@@ -35,9 +39,22 @@ export default function AdminPanel({ user, showToast }) {
         await new Promise(resolve => setTimeout(resolve, 3000 - duration));
       }
 
-      setUsers(Array.isArray(response) ? response : response.users || []);
+      // Handle berbagai format response dari API
+      let userData = [];
+      if (Array.isArray(response)) {
+        userData = response;
+      } else if (response && Array.isArray(response.users)) {
+        userData = response.users;
+      } else if (response && Array.isArray(response.data)) {
+        userData = response.data;
+      }
+      setUsers(userData);
     } catch (err) {
-      showToast(err.response?.data?.message || "Gagal mengambil data pengguna", "error");
+      const errMsg = err?.message || "Gagal mengambil data pengguna";
+      // Hanya tampilkan error jika bukan error autentikasi (sudah ditangani redirect)
+      if (!errMsg.includes("401") && !errMsg.includes("403")) {
+        showToast(errMsg, "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +120,8 @@ export default function AdminPanel({ user, showToast }) {
       closeModal();
       fetchUsers();
     } catch (err) {
-      showToast(err.response?.data?.message || "Gagal memproses data pengguna", "error");
+      const errMsg = err?.message || err?.response?.data?.message || "Gagal memproses data pengguna";
+      showToast(errMsg, "error");
     } finally {
       setLoading(false);
     }
@@ -117,7 +135,8 @@ export default function AdminPanel({ user, showToast }) {
         showToast(`Pengguna "${targetUser.full_name}" berhasil dihapus.`, "success");
         fetchUsers();
       } catch (err) {
-        showToast(err.response?.data?.message || "Gagal menghapus pengguna", "error");
+        const errMsg = err?.message || err?.response?.data?.message || "Gagal menghapus pengguna";
+        showToast(errMsg, "error");
       } finally {
         setLoading(false);
       }
@@ -152,7 +171,7 @@ export default function AdminPanel({ user, showToast }) {
     wrapper: { maxWidth: "1140px", margin: "0 auto" },
     headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
     title: { fontSize: "28px", fontWeight: "900", color: "var(--text-title)", margin: 0 },
-    addBtn: { padding: "12px 24px", borderRadius: "12px", backgroundColor: "#3b82f6", color: "#ffffff", border: "none", fontWeight: "700", fontSize: "14px", cursor: "pointer", boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)" },
+    addBtn: { padding: "12px 24px", borderRadius: "12px", backgroundColor: "#2563eb", color: "#ffffff", border: "2px solid #1d4ed8", fontWeight: "700", fontSize: "14px", cursor: "pointer", boxShadow: "0 4px 14px rgba(37, 99, 235, 0.45)", transition: "all 0.2s ease" },
     
     filterWrapper: { display: "flex", gap: "15px", marginBottom: "25px", flexWrap: "wrap", alignItems: "center" },
     searchInput: { flex: "2", minWidth: "240px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none" },
@@ -171,8 +190,8 @@ export default function AdminPanel({ user, showToast }) {
       else if (role === "bendahara") { bg = "rgba(16, 185, 129, 0.1)"; color = "#10b981"; }
       return { padding: "4px 10px", borderRadius: "8px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", backgroundColor: bg, color, display: "inline-block" };
     },
-    editActionBtn: { background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px" },
-    deleteActionBtn: { background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer" },
+    editActionBtn: { padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" },
+    deleteActionBtn: { padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" },
     
     emptyStateInitial: { padding: "80px 20px", textAlign: "center", color: "var(--text-main)", fontSize: "16px", fontWeight: "600" },
     emptyStateSearch: { padding: "60px 20px", textAlign: "center", color: "#ef4444", fontSize: "15px", fontWeight: "600" },

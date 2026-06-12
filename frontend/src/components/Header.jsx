@@ -271,11 +271,11 @@ export default function Header({ user, setUser, apiConnected }) {
               )}
 
               <button
-  style={styles.navBtn(isActive("/status"))}
-  onClick={() => navigate("/status")}
->
-  📊 Status
-</button>
+                style={styles.navBtn(isActive("/status"))}
+                onClick={() => navigate("/status")}
+              >
+                Status
+              </button>
 
               {canAccessAdmin && (
                 <button
