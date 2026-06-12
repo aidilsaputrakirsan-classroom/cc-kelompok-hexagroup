@@ -271,3 +271,32 @@ Layanan Berstatus `unhealthy`
         docker compose restart <db-service-name>
         ```
     - Periksa kapasitas disk host dengan perintah df -h. Hapus data yang tidak terpakai jika disk space penuh ($>95%$).
+
+## Escalation Path
+Escalation path atau alur eskalasi adalah tahapan penanganan masalah ketika kendala yang ditemukan tidak dapat diselesaikan hanya melalui pengecekan awal. Dalam proses monitoring, Lead QA & Docs bertugas melakukan pemeriksaan pertama melalui health check, log service, metrics, dan correlation ID. Jika dari hasil pengecekan ditemukan masalah yang membutuhkan perbaikan teknis lebih lanjut, maka masalah tersebut perlu diteruskan kepada role yang sesuai dengan bidang tanggung jawabnya.
+
+|Masalah|Eskalasi ke|
+|-------|-----------|
+|Error pada endpoint backend|`Lead Backend`|
+|Error pada UI atau status page|`Lead Frontend`|
+|Error Docker, gateway, dan port|`Lead DevOps`|
+|Error Deployment dan workflow CI/CD|`Lead CI/CD`|
+|Dokumentasi monitoring atau hasil testing tidak jelas|`Lead QA & Docs`|
+
+Alur eskalasi:
+1. Lead QA & Docs melakukan pengecekan awal melalui health check, logs, metrics, dan correlation ID.
+2. Jika masalah berasal dari backend, laporkan ke Lead Backend dengan bukti endpoint, response, dan log error.
+3. Jika masalah berasal dari frontend atau status page, laporkan ke Lead Frontend.
+4. Jika masalah berasal dari gateway, Docker, dan port, laporkan ke Lead DevOps dengan hasil docker compose ps, log gateway, dan pesan error yang muncul.
+5. Jika masalah berasal dari Deployment atau workflow GitHub, Laporkan ke Lead CI/CD.
+6. Setelah masalah diperbaiki, Lead QA & Docs melakukan verifikasi ulang.
+
+## Checklist Operasional
+Gunakan checklist berikut untuk memverifikasi kesiapan sistem SIKASI:
+- [✓] Backend monolith FastAPI aktif berjalan di port 8000/80
+- [✓] Frontend React aktif berjalan di port 5173/3000
+- [✓] Koneksi database PostgreSQL sukses dan berstatus `healthy`
+- [✓] API endpoint `/health` dapat merespons dengan status "`healthy`"
+- [✓] Endpoint metrik `/metrics` dapat mengembalikan data JSON metrik
+- [✓] Header respons memiliki `x-correlation-id`
+- [✓] Log service dapat dibaca
