@@ -47,10 +47,10 @@ const styles = {
   },
 
   subtitle: {
-  fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
-  color: "var(--text-secondary)",
-  margin: "0",
-},
+    fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+    color: "var(--text-secondary)",
+    margin: "0",
+  },
 
   menuGrid: {
     display: "grid",
@@ -78,70 +78,70 @@ const styles = {
   },
 
   iconBox: {
-  width: "80px",
-  height: "80px",
-  borderRadius: "24px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "36px",
-  marginBottom: "2rem",
-  backgroundColor: "var(--bg-page)",
-},
+    width: "80px",
+    height: "80px",
+    borderRadius: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "36px",
+    marginBottom: "2rem",
+    backgroundColor: "var(--bg-page)",
+  },
 
-btnAction: {
-  marginTop: "auto",
-  padding: "0.9rem 1.5rem",
-  borderRadius: "14px",
-  backgroundColor: "var(--bg-page)",
-  color: "var(--text-color)",
-  fontWeight: "700",
-  width: "100%",
-  border: "1px solid var(--border-color)",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-},
+  btnAction: {
+    marginTop: "auto",
+    padding: "0.9rem 1.5rem",
+    borderRadius: "14px",
+    backgroundColor: "var(--bg-page)",
+    color: "var(--text-color)",
+    fontWeight: "700",
+    width: "100%",
+    border: "1px solid var(--border-color)",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+  },
 
-cardTitle: {
-  color: "var(--text-color)",
-  fontWeight: "700",
-  marginBottom: "12px",
-},
+  cardTitle: {
+    color: "var(--text-color)",
+    fontWeight: "700",
+    marginBottom: "12px",
+  },
 
-cardDescription: {
-  color: "var(--text-secondary)",
-  marginBottom: "24px",
-},
+  cardDescription: {
+    color: "var(--text-secondary)",
+    marginBottom: "24px",
+  },
 
-disabled: {
-  opacity: 0.4,
-  filter: "grayscale(100%)",
-  cursor: "not-allowed",
-},
+  disabled: {
+    opacity: 0.4,
+    filter: "grayscale(100%)",
+    cursor: "not-allowed",
+  },
 };
 
 function Dashboard({ user }) {
   const navigate = useNavigate();
 
   // STATE
-const [serviceUnavailable, setServiceUnavailable] = useState(false);
-const [authDown, setAuthDown] = useState(false);
-const [errorMessage, setErrorMessage] = useState("");
-const [loading, setLoading] = useState(true);
-const [isRetrying, setIsRetrying] = useState(false);
-const [apiConnected, setApiConnected] = useState(false);
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
+  const [authDown, setAuthDown] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [apiConnected, setApiConnected] = useState(false);
 
-const onButtonHover = (e) => {
-  e.currentTarget.style.transform = "translateY(-3px)";
-  e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
-  e.currentTarget.style.backgroundColor = "var(--bg-card)";
-};
+  const onButtonHover = (e) => {
+    e.currentTarget.style.transform = "translateY(-3px)";
+    e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
+    e.currentTarget.style.backgroundColor = "var(--bg-card)";
+  };
 
-const onButtonLeave = (e) => {
-  e.currentTarget.style.transform = "translateY(0)";
-  e.currentTarget.style.boxShadow = "none";
-  e.currentTarget.style.backgroundColor = "var(--bg-page)";
-};
+  const onButtonLeave = (e) => {
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "none";
+    e.currentTarget.style.backgroundColor = "var(--bg-page)";
+  };
 
   // API CALL
   const fetchDashboard = async () => {
@@ -152,16 +152,16 @@ const onButtonLeave = (e) => {
       setErrorMessage("");
 
       const apiUrl = `${import.meta.env.VITE_API_URL}/health`;
-      
+
       await axios.get(apiUrl);
 
       setApiConnected(true);
 
     } catch (error) {
 
-    setApiConnected(false);
+      setApiConnected(false);
 
-    const status = error.response?.status;
+      const status = error.response?.status;
 
       if (status === 503 || status === 502) {
         const errorData = error.response?.data;
@@ -190,25 +190,25 @@ const onButtonLeave = (e) => {
   };
 
   useEffect(() => {
-  fetchDashboard();
-}, []);
+    fetchDashboard();
+  }, []);
 
-const retryConnection = () => {
-  setIsRetrying(true);
-  fetchDashboard();
-};
+  const retryConnection = () => {
+    setIsRetrying(true);
+    fetchDashboard();
+  };
 
-const currentRole = user?.role?.toLowerCase() || "";
+  const currentRole = user?.role?.toLowerCase() || "";
 
-// 1. Hak Akses Melihat Modul (View Access)
-const canAccessFinance = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
-const canAccessLetters = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
-const canAccessAdmin = currentRole === "ketua";
+  // 1. Hak Akses Melihat Modul (View Access)
+  const canAccessFinance = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
+  const canAccessLetters = ["ketua", "sekretaris", "bendahara", "anggota"].includes(currentRole);
+  const canAccessAdmin = currentRole === "ketua";
 
-// 2. Hak Akses Mengelola Data (CRUD Access)
-const canCrudFinance = currentRole === "bendahara";
-const canCrudLetters = currentRole === "sekretaris";
-const canCrudAdmin = currentRole === "ketua";
+  // 2. Hak Akses Mengelola Data (CRUD Access)
+  const canCrudFinance = currentRole === "bendahara";
+  const canCrudLetters = currentRole === "sekretaris";
+  const canCrudAdmin = currentRole === "ketua";
 
   const onHover = (e, accessible) => {
     if (accessible) {
@@ -234,7 +234,7 @@ const canCrudAdmin = currentRole === "ketua";
 
   return (
     <div style={styles.container}>
-      
+
       {/* AUTH DOWN BANNER */}
       {authDown && (
         <div style={{ width: "100%", maxWidth: "1400px", backgroundColor: "#fee2e2", color: "#991b1b", padding: "16px 20px", borderRadius: "16px", marginBottom: "24px", border: "1px solid #fca5a5", display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: "600" }}>
@@ -267,7 +267,7 @@ const canCrudAdmin = currentRole === "ketua";
       </header>
 
       <div style={styles.menuGrid}>
-        
+
         {/* MODUL FINANCE */}
         <div
           style={{ ...styles.menuCard, ...(!canAccessFinance && styles.disabled) }}
@@ -332,6 +332,5 @@ export default Dashboard;
 
 
 
-  
 
-      
+
