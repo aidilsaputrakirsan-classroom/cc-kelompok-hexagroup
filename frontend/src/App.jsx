@@ -6,23 +6,22 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+import { useTheme } from "./context/ThemeContext";
 import Header from "./components/Header";
 import LoginPage from "./components/LoginPage";
 import Dashboard from "./components/Dashboard";
 import FinancePage from "./components/FinancePage";
 import LettersPage from "./components/LettersPage";
 import AdminPanel from "./components/AdminPanel";
+import StatusPage from "./pages/StatusPage";
 import "./App.css";
 
 function App() {
+  const { darkMode, toggleDarkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [apiStatus, setApiStatus] = useState(null);
-
-  // DARK MODE STATE
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
 
   const [toast, setToast] = useState({
     message: "",
@@ -31,26 +30,31 @@ function App() {
     icon: ""
   });
 
-  // Fungsi Toggle untuk dikirim ke LoginPage & Header
-  const toggleTheme = () => {
-  setDarkMode(prev => !prev);
-};
-
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const userData = localStorage.getItem("user");
+  const token = localStorage.getItem("access_token");
+  const userData = localStorage.getItem("user");
 
+  try {
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
+  } catch (error) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    setUser(null);
+  }
 
-    setLoading(false);
-    checkAPIConnection().then(setApiStatus);
-  }, []);
+  setLoading(false);
+  checkAPIConnection().then(setApiStatus);
+}, []);
 
   // GLOBAL DARK MODE SYNC
   useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
+    document.documentElement.setAttribute(
+  "data-theme",
+  darkMode ? "dark" : "light"
+);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
@@ -84,33 +88,15 @@ function App() {
     <Router>
       <div className={`App ${darkMode ? "dark" : ""}`}>
         
-        {/* API STATUS */}
-{apiStatus !== null && (
-  <div className={`api-alert ${apiStatus ? "online" : "offline"}`}>
-    
-    <span
-      className="api-indicator"
-      style={{
-        color: apiStatus ? "#22c55e" : "#ef4444"
-      }}
-    />
-
-    <span>
-      {apiStatus ? "Online" : "Offline"}
-    </span>
-
-  </div>
-)}
-        {user && (
+      {user && (
           <Header
             user={user}
             setUser={setUser}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
+            apiConnected={apiStatus} 
           />
         )}
 
-        {/* TOAST NOTIFICATION */}
+        {/* CUSTOM TOAST NOTIFICATION */}
         {toast.message && (
           <div className="custom-toast">
             <div className="toast-icon">{toast.icon || (toast.type === "success" ? "✅" : "⚠️")}</div>
@@ -128,13 +114,15 @@ function App() {
                 <LoginPage 
                   setUser={setUser} 
                   showToast={showToast} 
-                  theme={darkMode ? "dark" : "light"} 
-                  toggleTheme={toggleTheme} 
+                  theme={darkMode ? "dark" : "light"}
+                  toggleTheme={toggleDarkMode}
                 />
               ) : (
                 <Navigate to="/dashboard" />
               )}
             />
+            
+            {/* Keamanan rute tetap terjaga berdasarkan state user */}
             <Route
               path="/dashboard"
               element={user ? <Dashboard user={user} showToast={showToast} /> : <Navigate to="/login" />}
@@ -149,8 +137,13 @@ function App() {
             />
             <Route
               path="/admin"
-              element={user && user.role === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
+              element={user && user.role?.toLowerCase() === "ketua" ? <AdminPanel user={user} showToast={showToast} /> : <Navigate to="/dashboard" />}
             />
+            <Route
+              path="/status"
+              element={<StatusPage />}
+            />
+            
             <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
           </Routes>
         </main>

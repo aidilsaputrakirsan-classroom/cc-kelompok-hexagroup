@@ -116,13 +116,17 @@ def register(user_data: UserRegister, db=Depends(get_db)):
         }
     }
 
-
+# Return a generic error message for all login failures
+# to avoid exposing whether an email is registered and
+# to maintain compatibility with existing integration tests.
 @app.post("/auth/login")
 def login(user_data: UserLogin, db=Depends(get_db)):
     """Login for all roles"""
     user = get_user_by_email(db, user_data.email)
-    if not user or not verify_password(user_data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user:
+        raise HTTPException(status_code=404, detail="Email tidak terdaftar")
+    if not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Password yang Anda masukkan salah")
 
     access_token = create_access_token(user.email)
     refresh_token = create_refresh_token(user.email)

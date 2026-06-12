@@ -10,7 +10,7 @@ body {
 
 /* Heading colors mengikuti variabel */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--text-h);
+  color: var(--text-title);
   margin-top: 0;
   transition: color 0.3s ease;
 }
@@ -22,7 +22,7 @@ h1 {
 
 p {
   line-height: 1.6;
-  color: var(--text);
+  color: var(--main);
 }
 
 /* Link styling */
@@ -41,12 +41,11 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: var(--bg-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
+  background: var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb:hover {
