@@ -169,7 +169,7 @@ export default function FinancePage({ user, showToast }) {
   const styles = {
     container: { minHeight: "100vh", backgroundColor: "var(--bg-page)", padding: "30px 20px", transition: "all 0.3s ease" },
     wrapper: { maxWidth: "1140px", margin: "0 auto" },
-    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
+    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px", position: "sticky", top: "84px", zIndex: 100, backgroundColor: "var(--bg-page)", paddingTop: "10px", paddingBottom: "10px" },
     title: { fontSize: "28px", fontWeight: "900", color: "var(--text-title)", margin: 0 },
     
     addBtn: { 
@@ -336,7 +336,7 @@ export default function FinancePage({ user, showToast }) {
                     <th style={styles.th}>Kategori</th>
                     <th style={styles.th}>Jenis</th>
                     <th style={styles.th}>Nominal</th>
-                    <th style={styles.th} style={{ textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -351,7 +351,7 @@ export default function FinancePage({ user, showToast }) {
                       <td style={{ ...styles.td, fontWeight: "800", color: t.type === "income" ? "#10b981" : "var(--text-title)" }}>
                         {t.type === "income" ? "+ " : "- "}Rp {t.amount?.toLocaleString("id-ID")}
                       </td>
-                      <td style={styles.td} style={{ textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
+                      <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
                         {isBendahara ? (
                           <>
                             <button style={{ background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px" }} onClick={() => openModal(t)}>Edit</button>
@@ -414,7 +414,7 @@ export default function FinancePage({ user, showToast }) {
                 {formErrors.date && <div style={styles.errorText}>{formErrors.date}</div>}
               </div>
 
-              <div style={styles.modalFooter} style={{ display: "flex", gap: "12px", marginTop: "25px" }}>
+              <div style={{ ...styles.modalFooter, display: "flex", gap: "12px", marginTop: "25px" }}>
                 <button type="button" style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "transparent", color: "var(--text-main)", fontWeight: "700", cursor: "pointer" }} onClick={closeModal}>Batal</button>
                 <button type="submit" style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "none", backgroundColor: "#10b981", color: "#ffffff", fontWeight: "700", cursor: "pointer" }}>{editingTransaction ? "Simpan Perubahan" : "Simpan Transaksi"}</button>
               </div>
