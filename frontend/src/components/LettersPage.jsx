@@ -138,9 +138,9 @@ export default function LettersPage({ user, showToast }) {
   };
 
   const styles = {
-    container: { minHeight: "100vh", backgroundColor: "var(--bg-page)", padding: "30px 20px", transition: "background-color 0.3s ease" },
+    container: { minHeight: "100vh", backgroundColor: "var(--bg-page)", padding: "30px 20px", paddingTop: "104px", transition: "background-color 0.3s ease" },
     wrapper: { maxWidth: "1140px", margin: "0 auto" },
-    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px", position: "sticky", top: "84px", zIndex: 100, backgroundColor: "var(--bg-page)", paddingTop: "10px", paddingBottom: "10px" },
+    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
     title: { fontSize: "28px", fontWeight: "900", color: "var(--text-title)", margin: 0 },
     
     addBtn: { 

@@ -10,6 +10,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     padding: "clamp(20px, 5vw, 60px) 20px",
+    paddingTop: "104px",
     boxSizing: "border-box",
     background: "var(--bg-page)",
     transition: "background 0.3s ease",
@@ -19,12 +20,6 @@ const styles = {
     textAlign: "center",
     marginBottom: "clamp(30px, 8vh, 60px)",
     width: "100%",
-    position: "sticky",
-    top: "84px",
-    zIndex: 100,
-    backgroundColor: "var(--bg-page)",
-    paddingTop: "16px",
-    paddingBottom: "16px",
   },
 
   roleBadge: {
