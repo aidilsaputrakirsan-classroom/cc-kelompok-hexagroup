@@ -263,8 +263,9 @@ export default function LettersPage({ user, showToast }) {
                   <tr>
                     <th style={styles.th}>Informasi Surat</th>
                     <th style={styles.th}>Kategori Jenis</th>
-                    {}
-                    <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    {isSekretaris && (
+                      <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -281,15 +282,12 @@ export default function LettersPage({ user, showToast }) {
                           {letter.letter_type}
                         </span>
                       </td>
-                      {}
-                      <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
-                        {isSekretaris && (
-                          <>
-                            <button style={styles.actionBtn} onClick={() => openModal(letter)}>Edit</button>
-                            <button style={styles.deleteActionBtn} onClick={() => handleDeleteLetter(letter)}>Hapus</button>
-                          </>
-                        )}
-                      </td>
+                      {isSekretaris && (
+                        <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
+                          <button style={styles.actionBtn} onClick={() => openModal(letter)}>Edit</button>
+                          <button style={styles.deleteActionBtn} onClick={() => handleDeleteLetter(letter)}>Hapus</button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
