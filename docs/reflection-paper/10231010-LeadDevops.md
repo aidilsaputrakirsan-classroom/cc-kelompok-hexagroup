@@ -24,9 +24,9 @@ Beberapa tantangan utama yang saya hadapi selama pengerjaan proyek:
   * **Tantangan:** Setelah commit, CI pipeline menunjukkan kegagalan pada *Lint Backend* bukan karena perubahan Docker Compose saya, melainkan karena file `conftest.py` yang ikut ter-commit saat resolve conflict mengandung import yang tidak terpakai (`hash_password` dan `UserRole`).
   * **Penyelesaian:** Saya melakukan `git revert` khusus untuk file tersebut dan melakukan push ulang. Pengalaman ini mengajarkan bahwa dalam kolaborasi tim, setiap anggota harus sangat berhati-hati dengan file di luar scope tugasnya saat menyelesaikan conflict.
 
-* **Kekhawatiran Mengubah nginx.conf di Dekat UAS:**
-  * **Tantangan:** Saat mengerjakan tugas Modul 15 (rate limiting gateway), saya dihadapkan pada dilema — menambahkan rate limiting ke `nginx.conf` yang sudah berjalan di production berisiko merusak sistem menjelang UAS.
-  * **Penyelesaian:** Saya memilih pendekatan konservatif: membuat PR yang menambahkan rate limiting tanpa mengubah routing yang sudah ada, kemudian menahan merge hingga setelah UAS. Keputusan ini menjaga stabilitas sistem sambil tetap menyelesaikan deliverable tugas. Saya juga mendokumentasikan bahwa Railway memiliki fitur *Redeploy* untuk rollback cepat jika terjadi masalah.
+* **Risiko Mengubah nginx.conf di Sistem yang Sudah Berjalan:**
+  * **Tantangan:** Saat mengerjakan tugas Modul 15 (rate limiting gateway), saya dihadapkan pada dilema — menambahkan rate limiting ke `nginx.conf` yang sudah berjalan di production berisiko merusak sistem yang sedang aktif digunakan tim.
+  * **Penyelesaian:** Saya memilih pendekatan konservatif: menambahkan rate limiting tanpa mengubah routing yang sudah ada sama sekali, hanya menambahkan blok `limit_req_zone` dan `limit_req` di atas konfigurasi yang sudah berjalan. Saya juga mendokumentasikan prosedur rollback menggunakan fitur *Redeploy* Railway sebagai antisipasi jika terjadi masalah. Pendekatan ini mengajarkan pentingnya prinsip *backward compatible changes* dalam pengelolaan infrastruktur production.
 
 ## Pelajaran yang Diperoleh
 
