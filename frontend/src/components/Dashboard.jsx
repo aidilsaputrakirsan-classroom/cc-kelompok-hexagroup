@@ -9,7 +9,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "clamp(20px, 5vw, 60px) 20px",
+    padding: "clamp(16px, 5vw, 60px) clamp(12px, 3vw, 20px)",
     paddingTop: "104px",
     boxSizing: "border-box",
     background: "var(--bg-page)",
@@ -55,8 +55,8 @@ const styles = {
 
   menuGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: "30px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "clamp(16px, 3vw, 30px)",
     width: "100%",
     maxWidth: "1400px",
   },

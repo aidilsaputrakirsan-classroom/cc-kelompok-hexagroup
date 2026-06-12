@@ -288,7 +288,7 @@ export default function LoginPage({ setUser, showToast, theme, toggleTheme }) {
       maxWidth: "440px",
       backgroundColor: "var(--bg-card)",
       borderRadius: "24px",
-      padding: "40px 35px",
+      padding: "clamp(24px, 6vw, 40px) clamp(20px, 6vw, 35px)",
       border: "1px solid var(--border-color)",
       boxShadow: hoverCard ? "0 20px 40px rgba(0,0,0,0.12)" : "0 10px 25px rgba(0,0,0,0.05)",
       transition: "all 0.3s ease",

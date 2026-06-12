@@ -21,7 +21,6 @@ function ServiceCard({ name, icon, healthUrl, metricsUrl, onMetricsFetched }) {
         const metricsRes = await fetch(metricsUrl);
         const metricsData = await metricsRes.json();
         setMetrics(metricsData);
-        // Kirim data error rate ke komponen utama untuk di-render di chart
         if (onMetricsFetched) {
           onMetricsFetched(name, metricsData.error_rate_percent || 0);
         }
@@ -51,42 +50,56 @@ function ServiceCard({ name, icon, healthUrl, metricsUrl, onMetricsFetched }) {
 
   return (
     <div style={{
-      border: '1px solid #e2e8f0',
+      border: '1px solid var(--border-color)',
       borderRadius: '12px',
       padding: '20px',
       borderLeft: `4px solid ${statusColor[status] || '#6b7280'}`,
-      background: '#fff',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      background: 'var(--bg-card)',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      transition: 'background 0.3s ease',
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: '18px' }}>{icon} {name}</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        <h3 style={{ margin: 0, fontSize: '16px', color: 'var(--text-title)', fontWeight: '700' }}>
+          {icon} {name}
+        </h3>
         <span style={{
           background: statusColor[status],
           color: '#fff',
           padding: '4px 12px',
           borderRadius: '20px',
           fontSize: '12px',
-          fontWeight: '600',
+          fontWeight: '700',
           textTransform: 'uppercase',
+          flexShrink: 0,
         }}>
           {loading ? '...' : status}
         </span>
       </div>
 
-      {metrics && (
-        <div style={{ marginTop: '16px', fontSize: '14px', color: '#64748b' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <div>Requests: <strong>{metrics.total_requests}</strong></div>
-            <div>Errors: <strong style={{ color: metrics.total_errors > 0 ? '#ef4444' : 'inherit' }}>
-              {metrics.total_errors}
-            </strong></div>
-            <div>Error Rate: <strong>{metrics.error_rate_percent}%</strong></div>
-            <div>Avg Latency: <strong>{metrics.latency?.avg_ms || 0}ms</strong></div>
-            <div>p95 Latency: <strong>{metrics.latency?.p95_ms || 0}ms</strong></div>
-            <div>Uptime: <strong>{Math.round((metrics.uptime_seconds || 0) / 60)}min</strong></div>
+      <div style={{ marginTop: '16px', fontSize: '14px', color: 'var(--text-main)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <div style={{ color: 'var(--text-main)' }}>
+            Requests: <strong style={{ color: 'var(--text-title)' }}>{metrics ? metrics.total_requests : '-'}</strong>
+          </div>
+          <div style={{ color: 'var(--text-main)' }}>
+            Errors: <strong style={{ color: metrics?.total_errors > 0 ? '#ef4444' : 'var(--text-title)' }}>
+              {metrics ? metrics.total_errors : '-'}
+            </strong>
+          </div>
+          <div style={{ color: 'var(--text-main)' }}>
+            Error Rate: <strong style={{ color: 'var(--text-title)' }}>{metrics ? `${metrics.error_rate_percent}%` : '-%'}</strong>
+          </div>
+          <div style={{ color: 'var(--text-main)' }}>
+            Avg Latency: <strong style={{ color: 'var(--text-title)' }}>{metrics ? `${metrics.latency?.avg_ms || 0}ms` : '0ms'}</strong>
+          </div>
+          <div style={{ color: 'var(--text-main)' }}>
+            p95 Latency: <strong style={{ color: 'var(--text-title)' }}>{metrics ? `${metrics.latency?.p95_ms || 0}ms` : '0ms'}</strong>
+          </div>
+          <div style={{ color: 'var(--text-main)' }}>
+            Uptime: <strong style={{ color: 'var(--text-title)' }}>{metrics ? `${Math.round((metrics.uptime_seconds || 0) / 60)}min` : '0min'}</strong>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -101,135 +114,158 @@ export default function StatusPage() {
     "Letters Service": 0
   });
 
-  // Fungsi untuk mencatat data error rate terbaru dari tiap service card
   const handleMetricsFetched = useCallback((serviceName, rate) => {
     setErrorRates(prev => ({ ...prev, [serviceName]: rate }));
   }, []);
 
-  // Timer Efek untuk Auto-Refresh Indicator (Countdown)
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           setLastChecked(new Date());
-          return 10; // Reset ke 10 detik
+          return 10;
         }
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', marginTop: '104px', padding: '0 20px', textAlign: 'left' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+    <div style={{
+      maxWidth: '1000px',
+      margin: '0 auto',
+      marginTop: '104px',
+      padding: '0 16px 40px',
+      textAlign: 'left',
+      boxSizing: 'border-box',
+    }}>
+
+      {/* HEADER ROW */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        gap: '16px',
+        marginBottom: '24px',
+      }}>
         <div>
-          <h1 style={{ margin: 0 }}>📊 System Status</h1>
-          <p style={{ color: '#64748b', marginTop: '4px' }}>Real-time health monitoring</p>
+          <h1 style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 28px)', color: 'var(--text-title)' }}>
+            📊 System Status
+          </h1>
+          <p style={{ color: 'var(--text-main)', marginTop: '4px', margin: '4px 0 0 0' }}>
+            Real-time health monitoring
+          </p>
         </div>
-        
-        {/* REFRESH INDICATOR & TIMESTAMP */}
-        <div style={{ 
-          background: '#f8fafc', 
-          padding: '10px 16px', 
-          borderRadius: '8px', 
-          border: '1px solid #e2e8f0',
+
+        {/* REFRESH INDICATOR */}
+        <div style={{
+          background: 'var(--bg-card)',
+          padding: '10px 16px',
+          borderRadius: '10px',
+          border: '1px solid var(--border-color)',
           fontSize: '13px',
-          color: '#64748b'
+          color: 'var(--text-main)',
+          flexShrink: 0,
+          transition: 'background 0.3s ease',
         }}>
-          <div>⏰ Last checked: <strong>{lastChecked.toLocaleTimeString()}</strong></div>
+          <div style={{ color: 'var(--text-main)' }}>
+            ⏰ Last checked:{' '}
+            <strong style={{ color: 'var(--text-title)' }}>{lastChecked.toLocaleTimeString()}</strong>
+          </div>
           <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span className="refresh-spinner" style={{
+            <span style={{
               display: 'inline-block',
               width: '8px',
               height: '8px',
               background: '#3b82f6',
               borderRadius: '50%',
-              animation: 'pulse 1.5s infinite alternate'
-            }}></span>
-            ⌛ Next refresh in: <strong style={{ color: '#3b82f6' }}>{countdown}s</strong>
+              animation: 'statusPulse 1.5s infinite alternate',
+              flexShrink: 0,
+            }} />
+            <span style={{ color: 'var(--text-main)' }}>
+              ⌛ Next refresh in:{' '}
+              <strong style={{ color: '#3b82f6' }}>{countdown}s</strong>
+            </span>
           </div>
         </div>
       </div>
 
-      {/* RESPONSIVE GRID DESIGN */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-        gap: '16px', 
-        marginTop: '24px' 
+      {/* SERVICE CARDS GRID */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: '16px',
       }}>
-        <ServiceCard
-          name="Auth Service"
-          icon="🔐"
-          healthUrl={`${API_URL}/auth/health`}
-          metricsUrl={`${API_URL}/auth/metrics`}
-          onMetricsFetched={handleMetricsFetched}
-        />
-        <ServiceCard
-          name="Item Service"
-          icon="📦"
-          healthUrl={`${API_URL}/items/health`}
-          metricsUrl={`${API_URL}/items/metrics`}
-          onMetricsFetched={handleMetricsFetched}
-        />
-        <ServiceCard
-          name="Finance Service"
-          icon="💰"
-          healthUrl={`${API_URL}/finance/health`}
-          metricsUrl={`${API_URL}/finance/metrics`}
-          onMetricsFetched={handleMetricsFetched}
-        />
-        <ServiceCard
-          name="Letters Service"
-          icon="📧"
-          healthUrl={`${API_URL}/letters/health`}
-          metricsUrl={`${API_URL}/letters/metrics`}
-          onMetricsFetched={handleMetricsFetched}
-        />
-        <ServiceCard
-          name="API Gateway"
-          icon="🚪"
-          healthUrl={`${API_URL}/health`}
-          metricsUrl={null}
-        />
+        <ServiceCard name="Auth Service"    icon="🔐" healthUrl={`${API_URL}/auth/health`}    metricsUrl={`${API_URL}/auth/metrics`}    onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Item Service"    icon="📦" healthUrl={`${API_URL}/items/health`}   metricsUrl={`${API_URL}/items/metrics`}   onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Finance Service" icon="💰" healthUrl={`${API_URL}/finance/health`} metricsUrl={`${API_URL}/finance/metrics`} onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Letters Service" icon="📧" healthUrl={`${API_URL}/letters/health`} metricsUrl={`${API_URL}/letters/metrics`} onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="API Gateway"     icon="🚪" healthUrl={`${API_URL}/health`}          metricsUrl={null} />
       </div>
 
-      {/* VISUAL CHART SEDERHANA (BAR CHART ERROR RATE) */}
-      <div style={{ 
-        marginTop: '32px', 
-        background: '#fff', 
-        padding: '24px', 
-        borderRadius: '12px', 
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      {/* ERROR RATE CHART */}
+      <div style={{
+        marginTop: '32px',
+        background: 'var(--bg-card)',
+        padding: '24px',
+        borderRadius: '12px',
+        border: '1px solid var(--border-color)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        transition: 'background 0.3s ease',
       }}>
-        <h3 style={{ margin: '0 0 20px 0', fontSize: '16px' }}>📉 Error Rate Chart (%)</h3>
+        <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: 'var(--text-title)', fontWeight: '800' }}>
+          📉 Error Rate Chart (%)
+        </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {Object.entries(errorRates).map(([service, rate]) => (
-            <div key={service} style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <div style={{ width: '120px', fontSize: '14px', fontWeight: '500' }}>{service}</div>
-              <div style={{ flex: 1, minWidth: '150px', background: '#f1f5f9', height: '16px', borderRadius: '8px', overflow: 'hidden' }}>
-                <div style={{ 
-                  width: `${Math.min(Math.max(rate, 0), 100)}%`, 
-                  background: rate > 5 ? '#ef4444' : '#3b82f6', 
-                  height: '100%', 
+            <div key={service} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '120px',
+                minWidth: '100px',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: 'var(--text-title)',
+                flexShrink: 0,
+              }}>
+                {service}
+              </div>
+              <div style={{
+                flex: 1,
+                background: 'var(--border-color)',
+                height: '16px',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                minWidth: '60px',
+              }}>
+                <div style={{
+                  width: `${Math.min(Math.max(rate, 0), 100)}%`,
+                  background: rate > 5 ? '#ef4444' : '#3b82f6',
+                  height: '100%',
                   borderRadius: '8px',
-                  transition: 'width 0.5s ease-in-out'
+                  transition: 'width 0.5s ease-in-out',
                 }} />
               </div>
-              <div style={{ width: '40px', fontSize: '14px', textAlign: 'right', fontWeight: '600' }}>{rate}%</div>
+              <div style={{
+                width: '42px',
+                fontSize: '14px',
+                textAlign: 'right',
+                fontWeight: '700',
+                color: 'var(--text-title)',
+                flexShrink: 0,
+              }}>
+                {rate}%
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Style Tambahan untuk Efek Pulse Indikator */}
       <style>{`
-        @keyframes pulse {
+        @keyframes statusPulse {
           from { opacity: 0.4; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1.1); }
+          to   { opacity: 1;   transform: scale(1.1); }
         }
       `}</style>
     </div>
