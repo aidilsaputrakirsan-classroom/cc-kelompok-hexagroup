@@ -18,7 +18,7 @@ import StatusPage from "./pages/StatusPage";
 import "./App.css";
 
 function App() {
-  const { darkMode } = useTheme();
+  const { darkMode, toggleDarkMode } = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [apiStatus, setApiStatus] = useState(null);
@@ -114,7 +114,8 @@ function App() {
                 <LoginPage 
                   setUser={setUser} 
                   showToast={showToast} 
-                  theme={darkMode ? "dark" : "light"} 
+                  theme={darkMode ? "dark" : "light"}
+                  toggleTheme={toggleDarkMode}
                 />
               ) : (
                 <Navigate to="/dashboard" />

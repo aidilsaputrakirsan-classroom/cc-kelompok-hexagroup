@@ -55,7 +55,7 @@ const validateFullName = (name) => {
   return "";
 };
 
-export default function LoginPage({ setUser, showToast, theme }) {
+export default function LoginPage({ setUser, showToast, theme, toggleTheme }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -280,6 +280,8 @@ export default function LoginPage({ setUser, showToast, theme }) {
       fontSize: "12px",
       fontWeight: "700",
       color: "var(--text-main)",
+      cursor: toggleTheme ? "pointer" : "default",
+      userSelect: "none",
     },
     card: {
       width: "100%",
@@ -478,7 +480,11 @@ export default function LoginPage({ setUser, showToast, theme }) {
       {/* HEADER KANAN ATAS: INDIKATOR ONLINE & TEMA */}
       <div style={styles.topBar}>
         <div style={styles.onlineIndicator} title={apiConnected ? "Gateway Connected" : "Gateway Disconnected"} />
-        <span style={styles.themeText}>
+        <span
+          style={styles.themeText}
+          onClick={toggleTheme}
+          title={theme === "dark" ? "Klik untuk Light Mode" : "Klik untuk Dark Mode"}
+        >
           {theme === "dark" ? "🌙 Dark Mode Active" : "☀️ Light Mode Active"}
         </span>
       </div>
