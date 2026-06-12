@@ -16,11 +16,10 @@ export default function FinancePage({ user, showToast }) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [formData, setFormData] = useState({
-    title: "",
+    description: "",
     type: "income",
     category: "iuran",
     amount: "",
-    date: new Date().toISOString().split("T")[0]
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -58,14 +57,14 @@ export default function FinancePage({ user, showToast }) {
 
   const filteredTransactions = transactions.filter((t) => {
     const matchesSearch = searchQuery.trim() === "" ||
-      t.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.category?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = filterType === "" || t.type?.toLowerCase() === filterType.toLowerCase();
     const matchesCategory = filterCategory === "" || t.category?.toLowerCase() === filterCategory.toLowerCase();
     
     let matchesYear = true;
     if (filterYear !== "") {
-      const txYear = t.date ? new Date(t.date).getFullYear().toString() : "";
+      const txYear = t.created_at ? new Date(t.created_at).getFullYear().toString() : "";
       matchesYear = txYear === filterYear;
     }
 
@@ -88,9 +87,8 @@ export default function FinancePage({ user, showToast }) {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.title.trim()) errors.title = "Keterangan transaksi wajib diisi";
+    if (!formData.description.trim()) errors.description = "Keterangan transaksi wajib diisi";
     if (!formData.amount || Number(formData.amount) <= 0) errors.amount = "Nominal harus lebih besar dari 0";
-    if (!formData.date) errors.date = "Tanggal transaksi wajib dipilih";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -104,22 +102,20 @@ export default function FinancePage({ user, showToast }) {
     try {
       if (editingTransaction) {
         await financeAPI.updateTransaction(editingTransaction.id, {
-          title: formData.title,
+          description: formData.description,
           type: formData.type,
           category: formData.category,
           amount: Number(formData.amount),
-          date: formData.date
         });
-        showToast(`Transaksi "${formData.title}" berhasil diperbarui!`, "success");
+        showToast(`Transaksi berhasil diperbarui!`, "success");
       } else {
         await financeAPI.createTransaction(
-          formData.title,
+          formData.description,
           formData.type,
           formData.category,
-          Number(formData.amount),
-          formData.date
+          Number(formData.amount)
         );
-        showToast(`Transaksi "${formData.title}" berhasil dicatat!`, "success");
+        showToast(`Transaksi berhasil dicatat!`, "success");
       }
       closeModal();
       fetchTransactions();
@@ -130,9 +126,9 @@ export default function FinancePage({ user, showToast }) {
     }
   };
 
-  const handleDeleteTransaction = async (id, title) => {
+  const handleDeleteTransaction = async (id, description) => {
     if (!isBendahara) return;
-    if (window.confirm(`Apakah Anda yakin ingin menghapus catatan keuangan"${title}"?`)) {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus catatan keuangan "${description}"?`)) {
       setLoading(true);
       try {
         await financeAPI.deleteTransaction(id);
@@ -151,15 +147,14 @@ export default function FinancePage({ user, showToast }) {
     if (target) {
       setEditingTransaction(target);
       setFormData({
-        title: target.title || "",
+        description: target.description || "",
         type: target.type?.toLowerCase() || "income",
         category: target.category?.toLowerCase() || "iuran",
         amount: target.amount || "",
-        date: target.date ? target.date.split("T")[0] : new Date().toISOString().split("T")[0]
       });
     } else {
       setEditingTransaction(null);
-      setFormData({ title: "", type: "income", category: "iuran", amount: "", date: new Date().toISOString().split("T")[0] });
+      setFormData({ description: "", type: "income", category: "iuran", amount: "" });
     }
     setFormErrors({});
     setShowModal(true);
@@ -360,8 +355,8 @@ export default function FinancePage({ user, showToast }) {
                 <tbody>
                   {filteredTransactions.map((t) => (
                     <tr key={t.id} style={styles.tr}>
-                      <td style={styles.td}>{t.date ? new Date(t.date).toLocaleDateString("id-ID") : "-"}</td>
-                      <td style={{ ...styles.td, fontWeight: "700", color: "var(--text-title)" }}>{t.title}</td>
+                      <td style={styles.td}>{t.created_at ? new Date(t.created_at).toLocaleDateString("id-ID") : "-"}</td>
+                      <td style={{ ...styles.td, fontWeight: "700", color: "var(--text-title)" }}>{t.description}</td>
                       <td style={{ ...styles.td, textTransform: "capitalize" }}>{t.category}</td>
                       <td style={styles.td}>
                         <span style={styles.badge(t.type?.toLowerCase())}>{t.type}</span>
@@ -372,7 +367,7 @@ export default function FinancePage({ user, showToast }) {
                       {isBendahara && (
                         <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
                           <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => openModal(t)}>Edit</button>
-                          <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => handleDeleteTransaction(t.id, t.title)}>Hapus</button>
+                          <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => handleDeleteTransaction(t.id, t.description)}>Hapus</button>
                         </td>
                       )}
                     </tr>
@@ -391,9 +386,9 @@ export default function FinancePage({ user, showToast }) {
             <h2 style={styles.modalTitle}>{editingTransaction ? "📝 Edit Catatan Keuangan" : "➕ Tambah Catatan Keuangan"}</h2>
             <form onSubmit={handleFormSubmit}>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Keterangan Transaksi</label>
-                <input type="text" style={styles.input} placeholder="Contoh: Pembelian Printer Sekretariat" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-                {formErrors.title && <div style={styles.errorText}>{formErrors.title}</div>}
+                <label style={styles.label}>Keterangan / Keperluan Transaksi</label>
+                <input type="text" style={styles.input} placeholder="Contoh: Pembelian Printer Sekretariat" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                {formErrors.description && <div style={styles.errorText}>{formErrors.description}</div>}
               </div>
 
               <div style={styles.formGroup}>
@@ -420,12 +415,6 @@ export default function FinancePage({ user, showToast }) {
                 <label style={styles.label}>Nominal Transaksi (Rp)</label>
                 <input type="number" style={styles.input} placeholder="Masukkan angka tanpa titik/koma" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} />
                 {formErrors.amount && <div style={styles.errorText}>{formErrors.amount}</div>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Tanggal Transaksi</label>
-                <input type="date" style={styles.input} value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
-                {formErrors.date && <div style={styles.errorText}>{formErrors.date}</div>}
               </div>
 
               <div style={{ ...styles.modalFooter, display: "flex", gap: "12px", marginTop: "25px" }}>
