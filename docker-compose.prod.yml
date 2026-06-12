@@ -2,19 +2,25 @@
 # Docker Compose Override — Production
 # ============================================================
 # Jalankan dengan:
+#   make prod
+#   atau:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 #
 # Perbedaan dari base:
 #   - restart: always (lebih agresif dari unless-stopped)
 #   - Port database tidak dibuka ke host
-#   - Resource limits lebih ketat
+#   - Port frontend ditutup (akses via gateway port 80 saja)
+#   - Production environment variables
 # ============================================================
 
 services:
 
+  # ==================== DATABASES ====================
+  # Port DB tidak dibuka ke host di production
+
   auth-db:
     restart: always
-    ports: !reset []        # Tidak expose port DB ke host di production
+    ports: !reset []
 
   finance-db:
     restart: always
@@ -24,23 +30,38 @@ services:
     restart: always
     ports: !reset []
 
+  # ==================== BACKEND SERVICES ====================
+
   auth-service:
     restart: always
     environment:
       DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      SERVICE_NAME: "auth-service"
 
   finance-service:
     restart: always
     environment:
       DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      SERVICE_NAME: "finance-service"
 
   letters-service:
     restart: always
     environment:
       DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      SERVICE_NAME: "letters-service"
+
+  # ==================== GATEWAY ====================
+  # Satu-satunya pintu masuk dari luar (port 80)
 
   gateway:
     restart: always
 
+  # ==================== FRONTEND ====================
+  # Akses via gateway (port 80) — port 3000 ditutup
+
   frontend:
     restart: always
+    ports: !reset []

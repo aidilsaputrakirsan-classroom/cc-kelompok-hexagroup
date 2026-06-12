@@ -16,7 +16,7 @@ RUN npm ci
 COPY . .
 
 # Build React app → output di /app/dist/
-ARG VITE_API_URL=https://sikasi-backend-production-a11c.up.railway.app
+ARG VITE_API_URL=https://sikasi-backend-production-7407.up.railway.app
 ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 

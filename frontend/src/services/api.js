@@ -1,17 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Helper to make fetch requests with auth
 async function apiCall(
   endpoint,
   method = "GET",
   body = null,
-  isRefresh = false,
+  isRefresh = false
 ) {
   const headers = {
     "Content-Type": "application/json",
   };
 
-  // auth token
   if (!isRefresh) {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -29,16 +27,14 @@ async function apiCall(
     options.body = JSON.stringify(body);
   }
 
-  
-let response;
+  let response;
 
-try {
-  response = await fetch(`${API_URL}${endpoint}`, options);
-} catch (err) {
-  throw new Error("Service temporarily unavailable");
-}
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, options);
+  } catch (err) {
+    throw new Error("Service temporarily unavailable");
+  }
 
-  // ===== AUTO REFRESH TOKEN =====
   if (response.status === 401 && !isRefresh) {
     const refreshToken = localStorage.getItem("refresh_token");
 
@@ -48,11 +44,11 @@ try {
           "/auth/refresh",
           "POST",
           { refresh_token: refreshToken },
-          true,
+          true
         );
 
         localStorage.setItem("access_token", refreshRes.access_token);
-
+        
         return apiCall(endpoint, method, body);
       } catch (err) {
         localStorage.removeItem("access_token");
@@ -69,13 +65,13 @@ try {
     }
   }
 
-  // ===== ERROR HANDLING =====
   if (!response.ok) {
     let errorMsg = `HTTP ${response.status}`;
-
+    
     try {
+     
       const errorData = await response.json();
-
+      
       if (errorData?.detail) {
         if (typeof errorData.detail === "string") {
           errorMsg = errorData.detail;
@@ -85,7 +81,9 @@ try {
             .join(", ");
         }
       }
-    } catch (e) {}
+    } catch (e) {
+     
+    }
 
     throw new Error(errorMsg);
   }
@@ -93,7 +91,6 @@ try {
   return await response.json();
 }
 
-// ================= AUTH =================
 export const authAPI = {
   register: (email, password, fullName) =>
     apiCall("/auth/register", "POST", {
@@ -114,17 +111,27 @@ export const authAPI = {
     apiCall("/auth/refresh", "POST", { refresh_token: refreshToken }),
 };
 
-// ================= FINANCE =================
 export const financeAPI = {
-  createTransaction: (type, category, amount, description) =>
-    apiCall("/finance/transactions", "POST", {
-      type,
-      category,
-      amount: parseFloat(amount),
-      description,
-    }),
+  
+  createTransaction: (typeOrTitle, categoryOrType, amountOrCategory, descriptionOrAmount, dateOrNull) => {
+    if (dateOrNull !== undefined || typeof descriptionOrAmount === "number") {
+      return apiCall("/finance/transactions", "POST", {
+        title: typeOrTitle,
+        type: categoryOrType,
+        category: amountOrCategory,
+        amount: parseFloat(descriptionOrAmount),
+        date: dateOrNull,
+      });
+    }
+    return apiCall("/finance/transactions", "POST", {
+      type: typeOrTitle,
+      category: categoryOrType,
+      amount: parseFloat(amountOrCategory),
+      description: descriptionOrAmount,
+    });
+  },
 
-  getTransactions: (skip = 0, limit = 10) =>
+  getTransactions: (skip = 0, limit = 100) =>
     apiCall(`/finance/transactions?skip=${skip}&limit=${limit}`, "GET"),
 
   getTransaction: (id) => apiCall(`/finance/transactions/${id}`, "GET"),
@@ -137,7 +144,6 @@ export const financeAPI = {
   getSummary: () => apiCall("/finance/summary", "GET"),
 };
 
-// ================= LETTERS =================
 export const letterAPI = {
   createLetter: (title, letterType, content) =>
     apiCall("/letters", "POST", {
@@ -146,7 +152,7 @@ export const letterAPI = {
       content,
     }),
 
-  getLetters: (status = null, skip = 0, limit = 10) => {
+  getLetters: (status = null, skip = 0, limit = 100) => {
     let url = `/letters?skip=${skip}&limit=${limit}`;
     if (status) url += `&status=${status}`;
     return apiCall(url, "GET");
@@ -165,10 +171,8 @@ export const letterAPI = {
   rejectLetter: (id) => apiCall(`/letters/${id}/reject`, "POST"),
 };
 
-// ================= USER =================
-// FIX: /users → /auth/users (sesuai path di auth-service)
 export const userAPI = {
-  getAllUsers: (skip = 0, limit = 10) =>
+  getAllUsers: (skip = 0, limit = 100) =>
     apiCall(`/auth/users?skip=${skip}&limit=${limit}`, "GET"),
 
   createUser: (email, password, fullName, role) =>
@@ -184,14 +188,11 @@ export const userAPI = {
   deleteUser: (id) => apiCall(`/auth/users/${id}`, "DELETE"),
 };
 
-// ================= HEALTH =================
-// FIX: /health → /auth/health (gateway tidak punya route /health)
 export const checkAPIConnection = async () => {
   try {
-    const res = await fetch(`${API_URL}/auth/health`, {
+    const res = await fetch(`${API_URL}/health`, {
       method: "GET",
     });
-
     return res.ok;
   } catch {
     return false;

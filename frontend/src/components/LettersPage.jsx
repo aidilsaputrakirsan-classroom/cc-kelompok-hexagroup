@@ -1,374 +1,364 @@
 import { useState, useEffect } from "react";
 import { letterAPI } from "../services/api";
 
-const styles = {
-  wrapper: { backgroundColor: "var(--bg-page)", minHeight: "100vh", position: "relative" },
-  container: { padding: "clamp(20px, 3vw, 40px)", maxWidth: "1000px", margin: "0 auto", fontFamily: "'Inter', sans-serif" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
-  title: { fontSize: "clamp(22px, 5vw, 28px)", fontWeight: "900", color: "var(--text-title)", margin: 0 },
+export default function LettersPage({ user, showToast }) {
   
-  toastContainer: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10001,
-    pointerEvents: "none"
-  },
-  toast: {
-    backgroundColor: "var(--bg-card)",
-    borderRadius: "24px",
-    padding: "clamp(30px, 4vw, 50px)",
-    maxWidth: "500px",
-    width: "90%",
-    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
-    textAlign: "center",
-    pointerEvents: "auto",
-    border: "1px solid var(--border-color)",
-    animation: "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
-  },
-  toastIcon: {
-    fontSize: "48px",
-    marginBottom: "16px"
-  },
-  toastTitle: {
-    fontSize: "clamp(20px, 3vw, 24px)",
-    fontWeight: "900",
-    color: "var(--text-title)",
-    margin: "0 0 8px 0"
-  },
-  toastMessage: {
-    fontSize: "14px",
-    color: "var(--text-main)",
-    margin: 0,
-    lineHeight: "1.5"
-  },
-
-  formCard: {
-    backgroundColor: "var(--bg-card)", padding: "clamp(20px, 3vw, 30px)", borderRadius: "20px",
-    border: "2px solid var(--border-color)", marginBottom: "30px", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)"
-  },
-  formInput: {
-    width: "100%", padding: "clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 15px)", borderRadius: "12px", border: "2px solid var(--border-color)",
-    marginBottom: "15px", fontSize: "14px", outline: "none", display: "block",
-    boxSizing: "border-box", backgroundColor: "var(--bg-page)", color: "var(--text-main)"
-  },
-
-  controlsRow: { 
-    display: "flex", gap: "clamp(10px, 2vw, 15px)", marginBottom: "25px", backgroundColor: "var(--bg-card)", 
-    padding: "clamp(12px, 2vw, 15px)", borderRadius: "16px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", border: "1px solid var(--border-color)",
-    flexWrap: "wrap"
-  },
-  searchBar: { flex: "2 1 auto", minWidth: "150px", padding: "clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 20px)", borderRadius: "12px", border: "2px solid var(--border-color)", backgroundColor: "var(--bg-page)", color: "var(--text-main)", outline: "none" },
-  filterDropdown: { flex: "1 1 auto", minWidth: "100px", padding: "clamp(10px, 1.5vw, 14px)", borderRadius: "12px", border: "2px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-main)", fontWeight: "600", outline: "none", cursor: "pointer" },
-  
-  btnPrimary: { backgroundColor: "#4f46e5", color: "#fff", padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer", fontSize: "clamp(12px, 1.5vw, 14px)", whiteSpace: "nowrap" },
-  btnCancel: { backgroundColor: "var(--bg-page)", color: "var(--text-main)", padding: "clamp(10px, 1.5vw, 12px) clamp(16px, 2vw, 24px)", borderRadius: "12px", border: "none", fontWeight: "800", cursor: "pointer", fontSize: "clamp(12px, 1.5vw, 14px)", whiteSpace: "nowrap" },
-  btnEdit: { backgroundColor: "#fef9c3", color: "#a16207", border: "none", padding: "6px 12px", borderRadius: "8px", fontWeight: "700", cursor: "pointer", marginRight: "5px" },
-  btnDelete: { backgroundColor: "#fee2e2", color: "#b91c1c", border: "none", padding: "6px 12px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" },
-  
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10000
-  },
-  modalContent: {
-    backgroundColor: "var(--bg-card)",
-    borderRadius: "24px",
-    padding: "clamp(20px, 3vw, 40px)",
-    maxWidth: "500px",
-    width: "90%",
-    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
-    textAlign: "center",
-    border: "1px solid var(--border-color)"
-  },
-  modalTitle: {
-    fontSize: "clamp(18px, 3vw, 22px)",
-    fontWeight: "900",
-    color: "var(--text-title)",
-    margin: "0 0 12px 0"
-  },
-  modalText: {
-    fontSize: "14px",
-    color: "var(--text-main)",
-    margin: "0 0 24px 0",
-    lineHeight: "1.5"
-  },
-  modalButtons: {
-    display: "flex",
-    gap: "12px",
-    justifyContent: "center"
-  },
-  modalBtnCancel: {
-    backgroundColor: "var(--bg-page)",
-    color: "var(--text-main)",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.3s ease"
-  },
-  modalBtnDelete: {
-    backgroundColor: "#ef4444",
-    color: "#fff",
-    border: "none",
-    padding: "10px 24px",
-    borderRadius: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.3s ease"
-  }
-};
-
-function LettersPage({ user }) {
   const [letters, setLetters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingLetter, setEditingLetter] = useState(null); 
+
+  const isSekretaris = user?.role?.toLowerCase() === "sekretaris";
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [formData, setFormData] = useState({ title: "", letter_type: "", content: "" });
-  const [editingId, setEditingId] = useState(null);
-  const [alert, setAlert] = useState({ show: false, message: "", type: "success", title: "", icon: "" });
-  const [confirmModal, setConfirmModal] = useState({ show: false, title: "", message: "", action: null, actionId: null });
+  const [filterType, setFilterType] = useState(""); 
 
-  const canCRUD = user?.role?.toLowerCase() === "sekretaris" || user?.role?.toLowerCase() === "ketua";
+  const [formData, setFormData] = useState({
+    title: "",
+    letterType: "undangan", 
+    content: ""
+  });
+  const [formErrors, setFormErrors] = useState({});
 
-  const triggerAlert = (message, type = "success", title = "", icon = "") => {
-    setAlert({ show: true, message, type, title, icon });
-    setTimeout(() => {
-      setAlert(prev => ({ ...prev, show: false }));
-    }, 3000);
-  };
-
-  const openConfirmModal = (title, message, action, actionId = null) => {
-    setConfirmModal({ show: true, title, message, action, actionId });
-  };
-
-  const closeConfirmModal = () => {
-    setConfirmModal({ show: false, title: "", message: "", action: null, actionId: null });
-  };
-
-  const handleConfirmAction = async () => {
-    if (confirmModal.action === "delete") {
-      try {
-        await letterAPI.deleteLetter(confirmModal.actionId);
-        triggerAlert("Surat berhasil dihapus dari sistem", "success", "Terhapus!", "🗑️");
-        loadLetters();
-      } catch (e) { 
-        triggerAlert(e.response?.data?.detail || "Gagal menghapus surat", "error", "Oops!", "⚠️"); 
-      }
-    }
-    closeConfirmModal();
-  };
-
-  useEffect(() => { loadLetters(); }, []);
-
-  const loadLetters = async () => {
+  const fetchLetters = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await letterAPI.getLetters();
-      setLetters(data || []);
-    } catch (err) { triggerAlert("Gagal memuat data surat", "error", "Gagal", "⚠️"); } finally { setLoading(false); }
-  };
+      const startTime = Date.now();
+      
+      const response = await letterAPI.getLetters();
+      const endTime = Date.now();
+      const duration = endTime - startTime;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canCRUD) return;
-
-    try {
-      if (editingId) {
-        const updatePayload = {
-          title: formData.title,
-          letter_type: formData.letter_type,
-          content: formData.content
-        };
-        await letterAPI.updateLetter(editingId, updatePayload);
-        triggerAlert("Surat berhasil diperbarui", "success", "Berhasil!", "✨");
-      } else {
-        await letterAPI.createLetter(formData.title, formData.letter_type, formData.content);
-        triggerAlert("Surat baru telah dibuat", "success", "Berhasil!", "✅");
+      if (duration < 3000) {
+        await new Promise((resolve) => setTimeout(resolve, 3000 - duration));
       }
-      resetForm();
-      loadLetters();
+
+      setLetters(Array.isArray(response) ? response : response.letters || []);
     } catch (err) {
-      triggerAlert(err.response?.data?.detail || "Terjadi kesalahan sistem", "error", "Oops!", "⚠️");
+      showToast(err.message || "Gagal mengambil data surat", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!canCRUD) return;
-    openConfirmModal(
-      "Hapus Surat?",
-      "Surat akan dihapus secara permanen dan tidak dapat dikembalikan.",
-      "delete",
-      id
-    );
+  useEffect(() => {
+    fetchLetters();
+  }, []);
+
+  const handleResetSearch = () => {
+    setSearchQuery("");
+    setFilterType("");
   };
 
-  const startEdit = (letter) => {
-    setFormData({ 
-      title: letter.title || "", 
-      letter_type: letter.letter_type || "", 
-      content: letter.content || "" 
-    });
-    setEditingId(letter.id);
-    setShowForm(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const filteredLetters = letters.filter((l) => {
+    const matchesText = searchQuery.trim() === "" || 
+      l.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      l.content?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesType = filterType === "" || l.letter_type?.toLowerCase() === filterType.toLowerCase();
+
+    return matchesText && matchesType;
+  });
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.title.trim()) errors.title = "Judul surat wajib diisi";
+    if (!formData.content.trim()) errors.content = "Isi atau konten surat tidak boleh kosong";
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  const resetForm = () => {
-    setFormData({ title: "", letter_type: "", content: "" });
-    setEditingId(null);
-    setShowForm(false);
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!isSekretaris) {
+      showToast("Akses ditolak! Hanya Sekretaris yang dapat mengelola surat.", "error");
+      return;
+    }
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      if (editingLetter) {
+        await letterAPI.updateLetter(editingLetter.id, {
+          title: formData.title,
+          letter_type: formData.letterType,
+          content: formData.content
+        });
+        showToast(`Surat "${formData.title}" berhasil diperbarui!`, "success");
+      } else {
+        await letterAPI.createLetter(formData.title, formData.letterType, formData.content);
+        showToast(`Surat "${formData.title}" berhasil dibuat!`, "success");
+      }
+      closeModal();
+      fetchLetters();
+    } catch (err) {
+      showToast(err.message || "Gagal memproses data surat", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredLetters = letters.filter(l => 
-    (l.title || "").toLowerCase().includes(searchQuery.toLowerCase()) && 
-    (typeFilter === "all" || l.letter_type === typeFilter)
-  );
+  const handleDeleteLetter = async (targetLetter) => {
+    if (!isSekretaris) return;
+    if (window.confirm(`Apakah Anda yakin ingin menghapus surat "${targetLetter.title}"?`)) {
+      setLoading(true);
+      try {
+        await letterAPI.deleteLetter(targetLetter.id);
+        showToast(`Surat "${targetLetter.title}" berhasil dihapus.`, "success");
+        fetchLetters();
+      } catch (err) {
+        showToast(err.message || "Gagal menghapus surat", "error");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const openModal = (targetLetter = null) => {
+    if (!isSekretaris) return;
+    if (targetLetter) {
+      setEditingLetter(targetLetter);
+      setFormData({
+        title: targetLetter.title || "",
+        letterType: targetLetter.letter_type?.toLowerCase() || "undangan",
+        content: targetLetter.content || ""
+      });
+    } else {
+      setEditingLetter(null);
+      setFormData({ title: "", letterType: "undangan", content: "" });
+    }
+    setFormErrors({});
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingLetter(null);
+    setFormErrors({});
+  };
+
+  const styles = {
+    container: { minHeight: "100vh", backgroundColor: "var(--bg-page)", padding: "30px 20px", paddingTop: "104px", transition: "background-color 0.3s ease" },
+    wrapper: { maxWidth: "1140px", margin: "0 auto" },
+    headerRow: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "15px" },
+    title: { fontSize: "28px", fontWeight: "900", color: "var(--text-title)", margin: 0 },
+    
+    addBtn: { 
+      padding: "12px 24px", borderRadius: "12px", 
+      backgroundColor: isSekretaris ? "#3b82f6" : "#64748b", 
+      color: "#ffffff", border: "none", fontWeight: "700", fontSize: "14px", 
+      cursor: isSekretaris ? "pointer" : "not-allowed", 
+      boxShadow: isSekretaris ? "0 4px 12px rgba(59, 130, 246, 0.25)" : "none",
+      opacity: isSekretaris ? 1 : 0.6
+    },
+    
+    filterWrapper: { display: "flex", gap: "15px", marginBottom: "25px", flexWrap: "wrap", alignItems: "center" },
+    searchInput: { flex: "2", minWidth: "240px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none" },
+    typeSelect: { flex: "1", minWidth: "180px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none", cursor: "pointer" },
+    resetBtn: { padding: "12px 20px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "rgba(148, 163, 184, 0.1)", color: "var(--text-main)", fontWeight: "700", fontSize: "14px", cursor: "pointer" },
+    
+    tableCard: { backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.02)" },
+    table: { width: "100%", borderCollapse: "collapse", textAlign: "left" },
+    th: { padding: "16px 20px", backgroundColor: "rgba(0,0,0,0.02)", color: "var(--text-title)", fontWeight: "800", fontSize: "13px", borderBottom: "1px solid var(--border-color)", textTransform: "uppercase" },
+    tr: { borderBottom: "1px solid var(--border-color)" },
+    td: { padding: "16px 20px", color: "var(--text-main)", fontSize: "14px" },
+    
+    typeBadge: (type) => {
+      let bg = "rgba(148, 163, 184, 0.15)", color = "#94a3b8";
+      if (type === "undangan") { bg = "rgba(79, 70, 229, 0.15)"; color = "#818cf8"; }
+      else if (type === "permohonan") { bg = "rgba(234, 179, 8, 0.15)"; color = "#facc15"; }
+      else if (type === "izin") { bg = "rgba(16, 185, 129, 0.15)"; color = "#4ade80"; }
+      else if (type === "pemberitahuan") { bg = "rgba(249, 115, 22, 0.15)"; color = "#fb923c"; }
+      return { padding: "5px 12px", borderRadius: "10px", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", backgroundColor: bg, color, display: "inline-block" };
+    },
+
+    actionBtn: { background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px", fontSize: "13px" },
+    deleteActionBtn: { background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px" },
+    
+    emptyStateInitial: { padding: "80px 20px", textAlign: "center", color: "var(--text-main)", fontSize: "16px", fontWeight: "600" },
+    emptyStateSearch: { padding: "60px 20px", textAlign: "center", color: "#ef4444", fontSize: "15px", fontWeight: "600" },
+    
+    spinnerOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(4px)", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", zIndex: 11000, color: "#ffffff" },
+    spinner: { width: "45px", height: "45px", border: "4px solid rgba(255,255,255,0.3)", borderTop: "4px solid #ffffff", borderRadius: "50%", animation: "spin 1s linear infinite", marginBottom: "15px" },
+    modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2000, padding: "16px", overflowY: "auto" },
+    modalContent: { backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", width: "100%", maxWidth: "500px", padding: "clamp(20px, 5vw, 30px)", maxHeight: "90vh", overflowY: "auto" },
+    modalTitle: { fontSize: "20px", fontWeight: "800", color: "var(--text-title)", margin: "0 0 20px 0" },
+    formGroup: { display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" },
+    label: { fontSize: "13px", fontWeight: "700", color: "var(--text-title)" },
+    input: { padding: "11px 14px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--input-bg, var(--bg-page))", color: "var(--text-title)", fontSize: "14px", outline: "none" },
+    textarea: { padding: "11px 14px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--input-bg, var(--bg-page))", color: "var(--text-title)", fontSize: "14px", outline: "none", minHeight: "120px", resize: "vertical", fontFamily: "inherit" },
+    select: { padding: "11px 14px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "var(--input-bg, var(--bg-page))", color: "var(--text-title)", fontSize: "14px", outline: "none", cursor: "pointer" },
+    errorText: { color: "#ef4444", fontSize: "12px", fontWeight: "600", marginTop: "2px" },
+    modalFooter: { display: "flex", gap: "12px", marginTop: "25px" },
+    cancelBtn: { flex: 1, padding: "12px", borderRadius: "10px", border: "1px solid var(--border-color)", backgroundColor: "transparent", color: "var(--text-main)", fontWeight: "700", cursor: "pointer" },
+    submitBtn: { flex: 1, padding: "12px", borderRadius: "10px", border: "none", backgroundColor: "#3b82f6", color: "#ffffff", fontWeight: "700", cursor: "pointer" }
+  };
 
   return (
-    <div style={styles.wrapper}>
-      <div style={{ ...styles.toastContainer, pointerEvents: alert.show ? "auto" : "none" }}>
-        {alert.show && (
-          <div style={styles.toast}>
-            <div style={styles.toastIcon}>{alert.icon}</div>
-            <h3 style={styles.toastTitle}>{alert.title}</h3>
-            <p style={styles.toastMessage}>{alert.message}</p>
-          </div>
-        )}
-      </div>
+    <div style={styles.container}>
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
 
-      {confirmModal.show && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h2 style={styles.modalTitle}>{confirmModal.title}</h2>
-            <p style={styles.modalText}>{confirmModal.message}</p>
-            <div style={styles.modalButtons}>
-              <button style={styles.modalBtnCancel} onClick={closeConfirmModal}>
-                ✕ Batal
-              </button>
-              <button 
-                style={styles.modalBtnDelete}
-                onClick={handleConfirmAction}
-              >
-                ✓ Hapus
-              </button>
-            </div>
-          </div>
+      {/* OVERLAY LOADING SPINNER 3 DETIK */}
+      {loading && (
+        <div style={styles.spinnerOverlay}>
+          <div style={styles.spinner}></div>
+          <span style={{ fontWeight: "700", fontSize: "14px" }}>Memproses Dokumen Surat...</span>
         </div>
       )}
 
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <h2 style={{ 
-              ...styles.title, 
-              margin: 0, 
-              padding: 0,
-              lineHeight: '1.2',
-              transform: 'translateX(-1.5px)', 
-            }}>
-              Manajemen Surat 📩
-            </h2>
-            <p style={{ 
-              color: "var(--text-main)", 
-              opacity: 0.7,
-              fontSize: "14px", 
-              margin: 0,
-              padding: 0,
-              paddingTop: "5px" 
-            }}>
-              Kelola surat dan dokumen resmi HMSI ITK.
-            </p>
-          </div>
-          {canCRUD && (
-            <button style={showForm ? styles.btnCancel : styles.btnPrimary} onClick={showForm ? resetForm : () => setShowForm(true)}>
-              {showForm ? "✕ Batal" : "+ Buat Surat"}
+      <div style={styles.wrapper}>
+        <div style={styles.headerRow}>
+          <h1 style={styles.title}>Arsip & Pengajuan Surat</h1>
+          <button 
+            style={styles.addBtn} 
+            onClick={() => isSekretaris && openModal(null)}
+            disabled={!isSekretaris}
+            title={!isSekretaris ? "Hanya Sekretaris yang bisa menambah surat" : ""}
+          >
+            ➕ Buat Surat Baru
+          </button>
+        </div>
+
+        <div style={styles.filterWrapper}>
+          <input
+            type="text"
+            placeholder="Ketik judul atau kata kunci surat..."
+            style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          
+          <select
+            style={styles.typeSelect}
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+          >
+            <option value="">Semua Jenis Surat</option>
+            <option value="undangan">✉️ Undangan</option>
+            <option value="permohonan">📝 Permohonan</option>
+            <option value="izin">🙋 Izin</option>
+            <option value="pemberitahuan">📢 Pemberitahuan</option>
+          </select>
+
+          {(searchQuery || filterType) && (
+            <button style={styles.resetBtn} onClick={handleResetSearch}>
+              🔄 Reset Filter
             </button>
           )}
         </div>
 
-        {showForm && canCRUD && (
-          <div style={styles.formCard}>
-            <h3 style={{ textAlign: "center", marginBottom: "25px", color: "var(--text-title)" }}>
-               {editingId ? "✏️ Edit Surat" : "✨ Surat Baru"}
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <input style={styles.formInput} placeholder="Judul Surat" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-              <select style={styles.formInput} value={formData.letter_type} onChange={(e) => setFormData({ ...formData, letter_type: e.target.value })} required>
-                <option value="">-- Pilih Jenis --</option>
-                <option value="Undangan">Undangan</option>
-                <option value="Permohonan">Permohonan</option>
-                <option value="Izin">Izin</option>
-                <option value="Pemberitahuan">Pemberitahuan</option>
-              </select>
-              <textarea style={{ ...styles.formInput, minHeight: "120px", resize: "none" }} placeholder="Isi surat..." value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} required />
-              <div style={{ textAlign: "center" }}>
-                <button type="submit" style={{ ...styles.btnPrimary, width: "100%" }}>
-                  {editingId ? "Simpan Perubahan" : "Buat Surat"}
+        <div style={styles.tableCard}>
+          {letters.length === 0 ? (
+            <div style={styles.emptyStateInitial}>
+              🗄️ Belum ada arsip surat organisasi yang terdaftar di sistem.
+            </div>
+          ) : filteredLetters.length === 0 ? (
+            <div style={styles.emptyStateSearch}>
+              ❌ Surat tidak ditemukan. Periksa kembali ketikan kata kunci atau filter kategori jenis surat Anda.
+            </div>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Informasi Surat</th>
+                    <th style={styles.th}>Kategori Jenis</th>
+                    {}
+                    <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLetters.map((letter) => (
+                    <tr key={letter.id} style={styles.tr}>
+                      <td style={styles.td}>
+                        <div style={{ fontWeight: "800", color: "var(--text-title)", fontSize: "15px" }}>{letter.title}</div>
+                        <div style={{ fontSize: "12px", color: "var(--text-main)", opacity: 0.7, marginTop: "4px", maxWidth: "450px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {letter.content}
+                        </div>
+                      </td>
+                      <td style={styles.td}>
+                        <span style={styles.typeBadge(letter.letter_type?.toLowerCase())}>
+                          {letter.letter_type}
+                        </span>
+                      </td>
+                      {}
+                      <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
+                        {isSekretaris ? (
+                          <>
+                            <button style={styles.actionBtn} onClick={() => openModal(letter)}>Edit</button>
+                            <button style={styles.deleteActionBtn} onClick={() => handleDeleteLetter(letter)}>Hapus</button>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: "11px", color: "var(--text-main)", fontWeight: "800", opacity: 0.5, textTransform: "uppercase" }}>
+                            👁️ Viewer Only
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showModal && isSekretaris && (
+        <div style={styles.modalOverlay} onClick={closeModal}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2 style={styles.modalTitle}>
+              {}
+              {editingLetter ? "📝 Edit Dokumen Surat" : "➕ Tambah Dokumen Surat"}
+            </h2>
+
+            <form onSubmit={handleFormSubmit}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Judul Dokumen Surat</label>
+                <input
+                  type="text"
+                  style={styles.input}
+                  placeholder="Contoh: Surat Undangan Rapat Pleno I"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                />
+                {formErrors.title && <div style={styles.errorText}>{formErrors.title}</div>}
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Kategori Jenis Surat</label>
+                <select
+                  style={styles.select}
+                  value={formData.letterType}
+                  onChange={(e) => setFormData({ ...formData, letterType: e.target.value })}
+                >
+                  <option value="undangan">Undangan</option>
+                  <option value="permohonan">Permohonan</option>
+                  <option value="izin">Izin</option>
+                  <option value="pemberitahuan">Pemberitahuan</option>
+                </select>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Isi / Ringkasan Konten Surat</label>
+                <textarea
+                  style={styles.textarea}
+                  placeholder="Tuliskan isi ringkasan atau detail isi dari surat di sini..."
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                />
+                {formErrors.content && <div style={styles.errorText}>{formErrors.content}</div>}
+              </div>
+
+              <div style={styles.modalFooter}>
+                <button type="button" style={styles.cancelBtn} onClick={closeModal}>Batal</button>
+                <button type="submit" style={styles.submitBtn}>
+                  {editingLetter ? "Perbarui" : "Simpan Surat"}
                 </button>
               </div>
             </form>
           </div>
-        )}
-
-        <div style={styles.controlsRow}>
-          <input style={styles.searchBar} placeholder="🔍 Cari judul surat..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-          <select style={styles.filterDropdown} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="all">📂 Semua Jenis</option>
-            <option value="Undangan">Undangan</option>
-            <option value="Permohonan">Permohonan</option>
-            <option value="Izin">Izin</option>
-            <option value="Pemberitahuan">Pemberitahuan</option>
-          </select>
         </div>
-
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "var(--text-main)" }}>Memuat...</div>
-        ) : filteredLetters.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "50px", color: "var(--text-main)", opacity: 0.6 }}>Data tidak ditemukan</div>
-        ) : (
-          filteredLetters.map((l) => (
-            <div key={l.id} style={{ backgroundColor: "var(--bg-card)", padding: "24px", borderRadius: "20px", border: "1px solid var(--border-color)", marginBottom: "15px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                <span style={{ color: "#4f46e5", backgroundColor: "rgba(79, 70, 229, 0.1)", padding: "4px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: "700" }}>{l.letter_type}</span>
-                {canCRUD && (
-                  <div>
-                    <button style={styles.btnEdit} onClick={() => startEdit(l)}>Edit</button>
-                    <button style={styles.btnDelete} onClick={() => handleDelete(l.id)}>Hapus</button>
-                  </div>
-                )}
-              </div>
-              <h4 style={{ margin: "0 0 10px 0", color: "var(--text-title)", fontSize: "18px" }}>{l.title}</h4>
-              <p style={{ color: "var(--text-main)", opacity: 0.8, fontSize: "14px", margin: 0 }}>{l.content}</p>
-            </div>
-          ))
-        )}
-      </div>
-
-      <style>{`
-        @keyframes fadeInScale {
-          from { opacity: 0; transform: scale(0.8); }
-          to { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
+      )}
     </div>
   );
 }
-
-export default LettersPage;
