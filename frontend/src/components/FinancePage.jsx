@@ -352,7 +352,9 @@ export default function FinancePage({ user, showToast }) {
                     <th style={styles.th}>Kategori</th>
                     <th style={styles.th}>Jenis</th>
                     <th style={styles.th}>Nominal</th>
-                    <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    {isBendahara && (
+                      <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -367,14 +369,12 @@ export default function FinancePage({ user, showToast }) {
                       <td style={{ ...styles.td, fontWeight: "800", color: t.type === "income" ? "#10b981" : "var(--text-title)" }}>
                         {t.type === "income" ? "+ " : "- "}Rp {t.amount?.toLocaleString("id-ID")}
                       </td>
-                      <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
-                        {isBendahara && (
-                          <>
-                            <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => openModal(t)}>Edit</button>
-                            <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => handleDeleteTransaction(t.id, t.title)}>Hapus</button>
-                          </>
-                        )}
-                      </td>
+                      {isBendahara && (
+                        <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
+                          <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => openModal(t)}>Edit</button>
+                          <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => handleDeleteTransaction(t.id, t.title)}>Hapus</button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

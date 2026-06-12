@@ -7,8 +7,12 @@ export default function AdminPanel({ user, showToast }) {
   
   useEffect(() => {
     if (!user || user.role?.toLowerCase() !== "ketua") {
-      showToast("Akses ditolak! Hanya Ketua yang dapat mengakses Admin Panel.", "error");
-      navigate("/dashboard");
+      // Gunakan setTimeout agar navigasi tidak konflik dengan render cycle
+      const timer = setTimeout(() => {
+        showToast("Akses ditolak! Hanya Ketua yang dapat mengakses Admin Panel.", "error");
+        navigate("/dashboard");
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [user, navigate, showToast]);
 
@@ -35,9 +39,22 @@ export default function AdminPanel({ user, showToast }) {
         await new Promise(resolve => setTimeout(resolve, 3000 - duration));
       }
 
-      setUsers(Array.isArray(response) ? response : response.users || []);
+      // Handle berbagai format response dari API
+      let userData = [];
+      if (Array.isArray(response)) {
+        userData = response;
+      } else if (response && Array.isArray(response.users)) {
+        userData = response.users;
+      } else if (response && Array.isArray(response.data)) {
+        userData = response.data;
+      }
+      setUsers(userData);
     } catch (err) {
-      showToast(err.response?.data?.message || "Gagal mengambil data pengguna", "error");
+      const errMsg = err?.message || "Gagal mengambil data pengguna";
+      // Hanya tampilkan error jika bukan error autentikasi (sudah ditangani redirect)
+      if (!errMsg.includes("401") && !errMsg.includes("403")) {
+        showToast(errMsg, "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +120,8 @@ export default function AdminPanel({ user, showToast }) {
       closeModal();
       fetchUsers();
     } catch (err) {
-      showToast(err.response?.data?.message || "Gagal memproses data pengguna", "error");
+      const errMsg = err?.message || err?.response?.data?.message || "Gagal memproses data pengguna";
+      showToast(errMsg, "error");
     } finally {
       setLoading(false);
     }
@@ -117,7 +135,8 @@ export default function AdminPanel({ user, showToast }) {
         showToast(`Pengguna "${targetUser.full_name}" berhasil dihapus.`, "success");
         fetchUsers();
       } catch (err) {
-        showToast(err.response?.data?.message || "Gagal menghapus pengguna", "error");
+        const errMsg = err?.message || err?.response?.data?.message || "Gagal menghapus pengguna";
+        showToast(errMsg, "error");
       } finally {
         setLoading(false);
       }

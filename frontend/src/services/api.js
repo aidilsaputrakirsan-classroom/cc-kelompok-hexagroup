@@ -113,21 +113,13 @@ export const authAPI = {
 
 export const financeAPI = {
   
-  createTransaction: (typeOrTitle, categoryOrType, amountOrCategory, descriptionOrAmount, dateOrNull) => {
-    if (dateOrNull !== undefined || typeof descriptionOrAmount === "number") {
-      return apiCall("/finance/transactions", "POST", {
-        title: typeOrTitle,
-        type: categoryOrType,
-        category: amountOrCategory,
-        amount: parseFloat(descriptionOrAmount),
-        date: dateOrNull,
-      });
-    }
+  createTransaction: (title, type, category, amount, date) => {
     return apiCall("/finance/transactions", "POST", {
-      type: typeOrTitle,
-      category: categoryOrType,
-      amount: parseFloat(amountOrCategory),
-      description: descriptionOrAmount,
+      title,
+      type,
+      category,
+      amount: parseFloat(amount),
+      date,
     });
   },
 
