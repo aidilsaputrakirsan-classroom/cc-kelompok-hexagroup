@@ -122,7 +122,7 @@ export default function StatusPage() {
   }, []);
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px', textAlign: 'left' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', marginTop: '104px', padding: '0 20px', textAlign: 'left' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ margin: 0 }}>📊 System Status</h1>
