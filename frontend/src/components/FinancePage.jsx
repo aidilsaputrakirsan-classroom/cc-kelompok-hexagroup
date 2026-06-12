@@ -13,6 +13,7 @@ export default function FinancePage({ user, showToast }) {
   const [filterType, setFilterType] = useState("");     
   const [filterCategory, setFilterCategory] = useState(""); 
   const [filterYear, setFilterYear] = useState("");     
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -52,9 +53,13 @@ export default function FinancePage({ user, showToast }) {
     setFilterType("");
     setFilterCategory("");
     setFilterYear("");
+    setSearchQuery("");
   };
 
   const filteredTransactions = transactions.filter((t) => {
+    const matchesSearch = searchQuery.trim() === "" ||
+      t.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.category?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = filterType === "" || t.type?.toLowerCase() === filterType.toLowerCase();
     const matchesCategory = filterCategory === "" || t.category?.toLowerCase() === filterCategory.toLowerCase();
     
@@ -64,7 +69,7 @@ export default function FinancePage({ user, showToast }) {
       matchesYear = txYear === filterYear;
     }
 
-    return matchesType && matchesCategory && matchesYear;
+    return matchesSearch && matchesType && matchesCategory && matchesYear;
   });
 
   const totalIncome = transactions
@@ -174,16 +179,16 @@ export default function FinancePage({ user, showToast }) {
     
     addBtn: { 
       padding: "12px 24px", borderRadius: "12px", 
-      backgroundColor: isBendahara ? "#3b82f6" : "#64748b", 
-      color: "#ffffff", border: "none", fontWeight: "700", fontSize: "14px", 
-      cursor: isBendahara ? "pointer" : "not-allowed", 
-      boxShadow: isBendahara ? "0 4px 12px rgba(59, 130, 246, 0.3)" : "none",
-      opacity: isBendahara ? 1 : 0.6
+      backgroundColor: "#2563eb", 
+      color: "#ffffff", border: "2px solid #1d4ed8", fontWeight: "700", fontSize: "14px", 
+      cursor: "pointer", 
+      boxShadow: "0 4px 14px rgba(37, 99, 235, 0.45)",
+      transition: "all 0.2s ease"
     },
 
     summaryGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginBottom: "30px" },
     card: { backgroundColor: "var(--bg-card)", padding: "24px", borderRadius: "20px", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "6px" },
-    cardLabel: { fontSize: "13px", fontWeight: "700", color: "var(--text-main)", opacity: 0.7, textTransform: "uppercase" },
+    cardLabel: { fontSize: "13px", fontWeight: "700", color: "var(--text-title)", textTransform: "uppercase", letterSpacing: "0.05em" },
     cardValue: (color) => ({ fontSize: "24px", fontWeight: "900", color: color || "var(--text-title)" }),
 
     chartCard: { backgroundColor: "var(--bg-card)", padding: "24px", borderRadius: "20px", border: "1px solid var(--border-color)", marginBottom: "30px" },
@@ -192,6 +197,7 @@ export default function FinancePage({ user, showToast }) {
     chartExpenseBar: { height: "100%", backgroundColor: "#ef4444", transition: "width 0.5s ease" },
 
     filterWrapper: { display: "flex", gap: "12px", marginBottom: "25px", flexWrap: "wrap", alignItems: "center" },
+    searchInput: { flex: "2", minWidth: "200px", padding: "12px 16px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none" },
     selectFilter: { flex: "1", minWidth: "150px", padding: "12px 14px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "var(--bg-card)", color: "var(--text-title)", fontSize: "14px", outline: "none", cursor: "pointer" },
     resetBtn: { padding: "12px 18px", borderRadius: "12px", border: "1px solid var(--border-color)", backgroundColor: "rgba(148, 163, 184, 0.1)", color: "var(--text-main)", fontWeight: "700", fontSize: "14px", cursor: "pointer" },
 
@@ -234,9 +240,11 @@ export default function FinancePage({ user, showToast }) {
       <div style={styles.wrapper}>
         <div style={styles.headerRow}>
           <h1 style={styles.title}>Arus Kas Organisasi</h1>
-          <button style={styles.addBtn} onClick={() => isBendahara && openModal(null)} disabled={!isBendahara}>
-            ➕ Catat Transaksi Baru
-          </button>
+          {isBendahara && (
+            <button style={styles.addBtn} onClick={() => openModal(null)}>
+              ➕ Catat Transaksi Baru
+            </button>
+          )}
         </div>
 
         {}
@@ -280,8 +288,16 @@ export default function FinancePage({ user, showToast }) {
           </div>
         </div>
 
-        {}
+        {/* FILTER & SEARCHBAR */}
         <div style={styles.filterWrapper}>
+          <input
+            type="text"
+            placeholder="🔍 Cari keterangan atau kategori..."
+            style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+
           <select style={styles.selectFilter} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <option value="">Semua Jenis Arus</option>
             <option value="income">📈 Pemasukan (Income)</option>
@@ -309,7 +325,7 @@ export default function FinancePage({ user, showToast }) {
             <option value="2026">2026</option>
           </select>
 
-          {(filterType || filterCategory || filterYear) && (
+          {(searchQuery || filterType || filterCategory || filterYear) && (
             <button style={styles.resetBtn} onClick={handleResetFilters}>
               🔄 Reset Filter
             </button>
@@ -352,13 +368,11 @@ export default function FinancePage({ user, showToast }) {
                         {t.type === "income" ? "+ " : "- "}Rp {t.amount?.toLocaleString("id-ID")}
                       </td>
                       <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
-                        {isBendahara ? (
+                        {isBendahara && (
                           <>
-                            <button style={{ background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px" }} onClick={() => openModal(t)}>Edit</button>
-                            <button style={{ background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer" }} onClick={() => handleDeleteTransaction(t.id, t.title)}>Hapus</button>
+                            <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => openModal(t)}>Edit</button>
+                            <button style={{ padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" }} onClick={() => handleDeleteTransaction(t.id, t.title)}>Hapus</button>
                           </>
-                        ) : (
-                          <span style={{ fontSize: "11px", color: "var(--text-main)", fontWeight: "800", opacity: 0.5, textTransform: "uppercase" }}>👁️ Viewer Only</span>
                         )}
                       </td>
                     </tr>

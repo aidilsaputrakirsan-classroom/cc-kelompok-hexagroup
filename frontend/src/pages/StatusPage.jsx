@@ -152,7 +152,7 @@ export default function StatusPage() {
       }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 28px)', color: 'var(--text-title)' }}>
-            📊 System Status
+            System Status
           </h1>
           <p style={{ color: 'var(--text-main)', marginTop: '4px', margin: '4px 0 0 0' }}>
             Real-time health monitoring
@@ -198,11 +198,11 @@ export default function StatusPage() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
         gap: '16px',
       }}>
-        <ServiceCard name="Auth Service"    icon="🔐" healthUrl={`${API_URL}/auth/health`}    metricsUrl={`${API_URL}/auth/metrics`}    onMetricsFetched={handleMetricsFetched} />
-        <ServiceCard name="Item Service"    icon="📦" healthUrl={`${API_URL}/items/health`}   metricsUrl={`${API_URL}/items/metrics`}   onMetricsFetched={handleMetricsFetched} />
-        <ServiceCard name="Finance Service" icon="💰" healthUrl={`${API_URL}/finance/health`} metricsUrl={`${API_URL}/finance/metrics`} onMetricsFetched={handleMetricsFetched} />
-        <ServiceCard name="Letters Service" icon="📧" healthUrl={`${API_URL}/letters/health`} metricsUrl={`${API_URL}/letters/metrics`} onMetricsFetched={handleMetricsFetched} />
-        <ServiceCard name="API Gateway"     icon="🚪" healthUrl={`${API_URL}/health`}          metricsUrl={null} />
+        <ServiceCard name="Auth Service"    icon="" healthUrl={`${API_URL}/auth/health`}    metricsUrl={`${API_URL}/auth/metrics`}    onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Item Service"    icon="" healthUrl={`${API_URL}/items/health`}   metricsUrl={`${API_URL}/items/metrics`}   onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Finance Service" icon="" healthUrl={`${API_URL}/finance/health`} metricsUrl={`${API_URL}/finance/metrics`} onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="Letters Service" icon="" healthUrl={`${API_URL}/letters/health`} metricsUrl={`${API_URL}/letters/metrics`} onMetricsFetched={handleMetricsFetched} />
+        <ServiceCard name="API Gateway"     icon="" healthUrl={`${API_URL}/health`}          metricsUrl={null} />
       </div>
 
       {/* ERROR RATE CHART */}
@@ -216,7 +216,7 @@ export default function StatusPage() {
         transition: 'background 0.3s ease',
       }}>
         <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: 'var(--text-title)', fontWeight: '800' }}>
-          📉 Error Rate Chart (%)
+          Error Rate Chart (%)
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {Object.entries(errorRates).map(([service, rate]) => (
