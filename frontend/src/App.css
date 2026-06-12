@@ -189,3 +189,109 @@ select {
   opacity: 0.6;
   background-color: currentColor;
 }
+
+/* ========================================= */
+/* 5. RESPONSIVE — MOBILE & SPLIT VIEW       */
+/* ========================================= */
+
+/* Pastikan semua halaman tidak overflow horizontal */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Wrapper utama lebih ramping di layar sempit */
+@media (max-width: 768px) {
+  .theme-transition-wrapper {
+    padding: 12px;
+  }
+
+  /* Tabel dapat di-scroll horizontal */
+  table {
+    min-width: 480px;
+  }
+
+  /* Semua filter wrapper jadi kolom */
+  div[style*="filterWrapper"],
+  div[style*="display: flex"][style*="gap"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Summary card grid 1 kolom */
+  div[style*="summaryGrid"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Split view / layar sangat sempit */
+@media (max-width: 480px) {
+  /* Judul halaman lebih kecil */
+  h1 {
+    font-size: clamp(18px, 5vw, 24px) !important;
+  }
+
+  /* Button full-width di HP */
+  button[style*="addBtn"],
+  button[style*="borderRadius: \"12px\""] {
+    width: 100%;
+  }
+
+  /* Modal overlay — pastikan tidak terpotong */
+  div[style*="modalOverlay"] {
+    align-items: flex-start !important;
+    padding-top: 16px !important;
+  }
+}
+
+/* ========================================= */
+/* 6. HEADER RESPONSIVE                      */
+/* ========================================= */
+@media (max-width: 900px) {
+  /* Header container wrap ke bawah */
+  header > div {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  /* Nav button font lebih kecil */
+  nav button {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* Left & right card shrink */
+  header > div > div:first-child,
+  header > div > div:last-child {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Header padding kecilkan */
+  header {
+    padding: 10px 0 !important;
+  }
+
+  /* Logo font lebih kecil */
+  header h1 {
+    font-size: 18px !important;
+  }
+
+  /* Nav hide text, tapi tetap bisa klik */
+  header > div > div:first-child {
+    padding: 8px 14px !important;
+    gap: 8px !important;
+  }
+
+  /* Right card wrap full */
+  header > div > div:last-child {
+    padding: 8px 14px !important;
+    gap: 8px !important;
+    justify-content: flex-end;
+  }
+
+  /* User details hide di layar sangat sempit */
+  header [style*="userDetails"] {
+    display: none !important;
+  }
+}
