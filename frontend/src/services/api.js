@@ -112,22 +112,15 @@ export const authAPI = {
 };
 
 export const financeAPI = {
-  
-  createTransaction: (typeOrTitle, categoryOrType, amountOrCategory, descriptionOrAmount, dateOrNull) => {
-    if (dateOrNull !== undefined || typeof descriptionOrAmount === "number") {
-      return apiCall("/finance/transactions", "POST", {
-        title: typeOrTitle,
-        type: categoryOrType,
-        category: amountOrCategory,
-        amount: parseFloat(descriptionOrAmount),
-        date: dateOrNull,
-      });
-    }
+
+  // Backend schema: { type, category, amount, description }
+  // 'description' adalah keterangan/keperluan transaksi (bukan title, tidak ada date di backend)
+  createTransaction: (description, type, category, amount) => {
     return apiCall("/finance/transactions", "POST", {
-      type: typeOrTitle,
-      category: categoryOrType,
-      amount: parseFloat(amountOrCategory),
-      description: descriptionOrAmount,
+      description,
+      type,
+      category,
+      amount: parseFloat(amount),
     });
   },
 
@@ -136,8 +129,16 @@ export const financeAPI = {
 
   getTransaction: (id) => apiCall(`/finance/transactions/${id}`, "GET"),
 
-  updateTransaction: (id, data) =>
-    apiCall(`/finance/transactions/${id}`, "PUT", data),
+  // Update juga hanya kirim field yang diterima backend
+  updateTransaction: (id, data) => {
+    const { description, type, category, amount } = data;
+    return apiCall(`/finance/transactions/${id}`, "PUT", {
+      description,
+      type,
+      category,
+      amount: parseFloat(amount),
+    });
+  },
 
   deleteTransaction: (id) => apiCall(`/finance/transactions/${id}`, "DELETE"),
 
@@ -172,20 +173,21 @@ export const letterAPI = {
 };
 
 export const userAPI = {
+  // Endpoint benar: /users (bukan /auth/users)
   getAllUsers: (skip = 0, limit = 100) =>
-    apiCall(`/auth/users?skip=${skip}&limit=${limit}`, "GET"),
+    apiCall(`/users?skip=${skip}&limit=${limit}`, "GET"),
 
   createUser: (email, password, fullName, role) =>
-    apiCall("/auth/users", "POST", {
+    apiCall("/users", "POST", {
       email,
       password,
       full_name: fullName,
       role,
     }),
 
-  updateUser: (id, data) => apiCall(`/auth/users/${id}`, "PUT", data),
+  updateUser: (id, data) => apiCall(`/users/${id}`, "PUT", data),
 
-  deleteUser: (id) => apiCall(`/auth/users/${id}`, "DELETE"),
+  deleteUser: (id) => apiCall(`/users/${id}`, "DELETE"),
 };
 
 export const checkAPIConnection = async () => {

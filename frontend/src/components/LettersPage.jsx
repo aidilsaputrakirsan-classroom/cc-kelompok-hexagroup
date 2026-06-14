@@ -145,11 +145,11 @@ export default function LettersPage({ user, showToast }) {
     
     addBtn: { 
       padding: "12px 24px", borderRadius: "12px", 
-      backgroundColor: isSekretaris ? "#3b82f6" : "#64748b", 
-      color: "#ffffff", border: "none", fontWeight: "700", fontSize: "14px", 
-      cursor: isSekretaris ? "pointer" : "not-allowed", 
-      boxShadow: isSekretaris ? "0 4px 12px rgba(59, 130, 246, 0.25)" : "none",
-      opacity: isSekretaris ? 1 : 0.6
+      backgroundColor: "#2563eb", 
+      color: "#ffffff", border: "2px solid #1d4ed8", fontWeight: "700", fontSize: "14px", 
+      cursor: "pointer", 
+      boxShadow: "0 4px 14px rgba(37, 99, 235, 0.45)",
+      transition: "all 0.2s ease"
     },
     
     filterWrapper: { display: "flex", gap: "15px", marginBottom: "25px", flexWrap: "wrap", alignItems: "center" },
@@ -172,8 +172,8 @@ export default function LettersPage({ user, showToast }) {
       return { padding: "5px 12px", borderRadius: "10px", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", backgroundColor: bg, color, display: "inline-block" };
     },
 
-    actionBtn: { background: "none", border: "none", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "12px", fontSize: "13px" },
-    deleteActionBtn: { background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px" },
+    actionBtn: { padding: "6px 14px", borderRadius: "8px", border: "2px solid #3b82f6", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", fontWeight: "700", cursor: "pointer", marginRight: "10px", fontSize: "13px", transition: "all 0.2s ease" },
+    deleteActionBtn: { padding: "6px 14px", borderRadius: "8px", border: "2px solid #ef4444", backgroundColor: "rgba(239, 68, 68, 0.10)", color: "#ef4444", fontWeight: "700", cursor: "pointer", fontSize: "13px", transition: "all 0.2s ease" },
     
     emptyStateInitial: { padding: "80px 20px", textAlign: "center", color: "var(--text-main)", fontSize: "16px", fontWeight: "600" },
     emptyStateSearch: { padding: "60px 20px", textAlign: "center", color: "#ef4444", fontSize: "15px", fontWeight: "600" },
@@ -209,14 +209,14 @@ export default function LettersPage({ user, showToast }) {
       <div style={styles.wrapper}>
         <div style={styles.headerRow}>
           <h1 style={styles.title}>Arsip & Pengajuan Surat</h1>
-          <button 
-            style={styles.addBtn} 
-            onClick={() => isSekretaris && openModal(null)}
-            disabled={!isSekretaris}
-            title={!isSekretaris ? "Hanya Sekretaris yang bisa menambah surat" : ""}
-          >
-            ➕ Buat Surat Baru
-          </button>
+          {isSekretaris && (
+            <button 
+              style={styles.addBtn} 
+              onClick={() => openModal(null)}
+            >
+              ➕ Buat Surat Baru
+            </button>
+          )}
         </div>
 
         <div style={styles.filterWrapper}>
@@ -263,8 +263,9 @@ export default function LettersPage({ user, showToast }) {
                   <tr>
                     <th style={styles.th}>Informasi Surat</th>
                     <th style={styles.th}>Kategori Jenis</th>
-                    {}
-                    <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    {isSekretaris && (
+                      <th style={{ ...styles.th, textAlign: "right", paddingRight: "20px" }}>Aksi</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -281,19 +282,12 @@ export default function LettersPage({ user, showToast }) {
                           {letter.letter_type}
                         </span>
                       </td>
-                      {}
-                      <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
-                        {isSekretaris ? (
-                          <>
-                            <button style={styles.actionBtn} onClick={() => openModal(letter)}>Edit</button>
-                            <button style={styles.deleteActionBtn} onClick={() => handleDeleteLetter(letter)}>Hapus</button>
-                          </>
-                        ) : (
-                          <span style={{ fontSize: "11px", color: "var(--text-main)", fontWeight: "800", opacity: 0.5, textTransform: "uppercase" }}>
-                            👁️ Viewer Only
-                          </span>
-                        )}
-                      </td>
+                      {isSekretaris && (
+                        <td style={{ ...styles.td, textAlign: "right", paddingRight: "20px", whiteSpace: "nowrap" }}>
+                          <button style={styles.actionBtn} onClick={() => openModal(letter)}>Edit</button>
+                          <button style={styles.deleteActionBtn} onClick={() => handleDeleteLetter(letter)}>Hapus</button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

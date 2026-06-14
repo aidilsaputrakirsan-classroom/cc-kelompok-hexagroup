@@ -12,9 +12,9 @@ Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, 
 ## 🌐 Live Demo
 | Service | URL |
 |---------|-----|
-| Frontend | [https://sikasi-frontend-production-5f57.up.railway.app](https://sikasi-frontend-production-5f57.up.railway.app) |
-| Backend API | [https://sikasi-backend-production-a11c.up.railway.app](https://sikasi-backend-production-a11c.up.railway.app) |
-| API Docs (Swagger) | [https://sikasi-backend-production.up.railway.app/docs](https://sikasi-backend-production.up.railway.app/docs) |
+| Frontend | [https://sikasi-frontend-production-10be.up.railway.app](https://sikasi-frontend-production-10be.up.railway.app) |
+| Backend API | [https://sikasi-backend-production-7407.up.railway.app](https://sikasi-backend-production-7407.up.railway.app) |
+| API Docs (Swagger) | [https://sikasi-backend-production-7407.up.railway.app/docs](https://sikasi-backend-production-7407.up.railway.app/docs) |
 
 ---
 
@@ -39,26 +39,27 @@ Aplikasi ini ditujukan bagi seluruh pengurus HMSI untuk mendukung transparansi, 
 | PostgreSQL | Database | Menyimpan, mengelola, dan mengambil data aplikasi secara terstruktur |
 | Docker    | Containerization | Menjalankan aplikasi dalam container agar environment development dan production tetap konsisten |
 | GitHub Actions | CI/CD | Melakukan otomatisasi proses pembangunan aplikasi, pengujian, serta penerapan sistem setiap kali terjadi perubahan pada kode |
-| Railway/Render | Cloud Deployment | Layanan cloud untuk mendistribusikan dan menjalankan aplikasi pada server secara online |
+| Railway | Cloud Deployment | Layanan cloud untuk mendistribusikan dan menjalankan aplikasi pada server secara online |
 
 ---
 
 ## 🏗️ Architecture
 
 ```mermaid
-flowchart TD
-    A[Frontend React / Vue :5173] -->|HTTP JSON| B[FastAPI — main.py CORS · JWT Middleware]
+graph TD
+    User([🌐 Web Browser / Client]) --> Gateway[⚡ Nginx API Gateway]
 
-    B --> C[Auth Login · Register · JWT]
-    B --> D[Finance Income · Expense]
-    B --> E[Letter Draft · Status]
+    Gateway --> Auth[🔒 Auth Service : 8001]
+    Gateway --> Finance[💰 Finance Service : 8002]
+    Gateway --> Letters[📄 Letters Service : 8003]
+    Gateway --> Frontend[🖥️ Frontend : 80]
+ 
+    Finance -. Retry + Circuit Breaker .-> Auth
+    Letters -. Retry + Circuit Breaker .-> Auth
 
-    C --> F[crud.py + auth.py ORM Operations · JWT Encode/Decode]
-    D --> F
-    E --> F
-
-    F --> G[SQLAlchemy ORM User · Transaction · Letter]
-    G --> H[(PostgreSQL sikasi_app)]
+    Auth --> DBAuth[(🗄️ Auth DB)]
+    Finance --> DBFinance[(🗄️ Finance DB)]
+    Letters --> DBLetters[(🗄️ Letters DB)]
 ```
 
 ---
@@ -109,8 +110,8 @@ Berikut adalah roadmap untuk menunjukkan progres dan milestone proyek kami:
 | 5-7 | Docker & Docker Compose: Containerisasi aplikasi dengan Docker dan setup Docker Compose untuk mengelola backend, frontend, dan database secara terpisah. | ✅ |
 | 8 | UTS: Persiapan dan presentasi demo untuk UTS, menampilkan implementasi awal sistem.| ✅ |
 | 9-11 | CI/CD Pipeline: Pengaturan CI/CD pipeline untuk otomatisasi testing, build, dan deployment menggunakan GitHub Actions. | ✅ |
-| 12-14 | Microservices Architecture: Mengimplementasikan arsitektur microservices untuk meningkatkan skalabilitas dan modularitas aplikasi. | ⬜ |
-| 15-16 | Final Deployment & UAS Demo: Finalisasi aplikasi, deployment ke cloud, dan persiapan untuk presentasi demo UAS. | ⬜ |
+| 12-14 | Microservices Architecture: Mengimplementasikan arsitektur microservices untuk meningkatkan skalabilitas dan modularitas aplikasi. | ✅ |
+| 15-16 | Final Deployment & UAS Demo: Finalisasi aplikasi, deployment ke cloud, dan persiapan untuk presentasi demo UAS. | ✅ |
 
 ---
 
@@ -499,9 +500,44 @@ Semua layanan ini nantinya akan dideploy secara terintegrasi di cloud.
 
 ---
 
-## 🔄 CI/CD
-Pipeline otomatis berjalan saat push ke main:
-1. ✅ Test backend (pytest).
-2. ✅ Test frontend (Vitest).
-3. ✅ Build Docker images.
-4. ✅ Deploy ke Railway.
+## 📱 Mockup Sistem
+### Registrasi
+<img src='docs/image/Mockup/registrasi.png'>
+Halaman Daftar Akun merupakan tahap pendaftaran pengguna baru dalam sistem SIKASI. Pengguna diminta mengisi tiga kolom meliputi Nama Lengkap (dengan ketentuan minimal 3 karakter), Alamat Email (dengan format nama@domain.com), serta Kata Sandi (dengan ketentuan minimal 8 karakter, kombinasi huruf & angka) yang dilengkapi fitur sembunyikan/tampilkan. Di bawah formulir, tersedia tombol "DAFTAR SEBAGAI ANGGOTA" untuk memproses pembuatan akun baru. Bagi yang sudah memiliki akun, dapat mengklik tombol "Sudah punya akun? Masuk di sini" yang mengarahkan kembali ke halaman login.
+
+### Login
+<img src='docs/image/Mockup/login.png'>
+Halaman Login ini merupakan tahap autentikasi pengguna untuk mengelola SIKASI. Pengguna diminta mengisi dua kolom utama yaitu Alamat Email (dengan format nama@domain.com) dan Kata Sandi yang dilengkapi fitur untuk menampilkan atau menyembunyikan karakter. Di bawah formulir, tersedia tombol Masuk ke Sistem untuk memproses akses ke dalam sistem. Bagi pengguna baru yang belum memiliki akun, disediakan tautan "Daftar di sini" yang mengarahkan ke halaman Registrasi.
+
+### Dashboard
+<img src='docs/image/Mockup/Dashboard_Ketua.png'>
+<img src='docs/image/Mockup/Dashboard_Sekre.png'>
+<img src='docs/image/Mockup/Dashboard_Bendahara.png'>
+<img src='docs/image/Mockup/Dashboard_Anggota.png'>
+Halaman Dashboard Utama pada SIKASI mengimplementasikan sistem kontrol akses berbasis peran (*Role-Based Access Control*) yang membagi hak manajemen organisasi HMSI ITK ke dalam empat tingkatan berbeda sesuai fungsi struktural masing-masing pengguna. Pada tingkat tertinggi, Ketua Organisasi "KETUA ACCESS" dengan kontrol mutlak, termasuk hak navigasi ke menu Admin Panel untuk manajemen user dan kontrol penuh hak akses sistem. Sementara itu, Sekretaris Org memiliki "SEKRETARIS ACCESS" yang berfokus pada manajemen dan pengelolaan surat menyurat secara mendalam pada kartu Letters, dan Bendahara Org memegang "BENDAHARA ACCESS" yang diberikan otoritas khusus untuk manajemen dan pengelolaan data keuangan organisasi melalui kartu Finance. Adapun tingkat terakhir adalah Anggota Organisasi "ANGGOTA ACCESS", di mana mereka hanya diberikan hak akses terbatas untuk sebatas melihat laporan keuangan dan melihat arsip surat menyurat tanpa kemampuan melakukan modifikasi data struktural di dalamnya.
+
+### Ketua Access
+<img src='docs/image/Mockup/Ketua.png'>
+Pada Hak Akses Ketua Organisasi hanya berfokus pada kontrol manajemen pengguna. Ketua dapat mengakses operasi CRUD (Create, Read, Update, Delete) pada data pengguna. Tetapi dibatasi pada menu Finance dan Letters, di mana peran Ketua dikonfigurasi secara *read-only* atau hanya bisa melihat seluruh rangkuman laporan tanpa kemampuan untuk menambah, mengubah, ataupun menghapus data di luar ruang lingkup administrasi utama tersebut.
+
+### Sekretaris Access
+<img src='docs/image/Mockup/Sekretaris.png'>
+Pada Hak Akses Sekretaris Organisasi hanya berfokus pada manajemen persuratan organisasi. Sekretaris dapat mengakses operasi CRUD (Create, Read, Update, Delete) pada data dokumen dan arsip surat. Tetapi dibatasi pada menu Finance, di mana peran Sekretaris dikonfigurasi secara read-only atau hanya bisa melihat seluruh rangkuman laporan tanpa kemampuan untuk menambah, mengubah, ataupun menghapus data di luar ruang lingkup administrasi utama tersebut.
+
+### Bendahara Access
+<img src='docs/image/Mockup/Dashboard_Bendahara.png'>
+Pada Hak Akses Bendahara Organisasi hanya berfokus pada manajemen keuangan organisasi. Bendahara dapat mengakses operasi CRUD (Create, Read, Update, Delete) pada data finansial dan arus kas. Tetapi dibatasi pada menu Letters, di mana peran Bendahara dikonfigurasi secara read-only atau hanya bisa melihat seluruh arsip dokumen tanpa kemampuan untuk menambah, mengubah, ataupun menghapus data di luar ruang lingkup administrasi utama tersebut.
+
+---
+
+## 📄 Documentation
+- [Architecture](docs/architecture.md)
+- [Deployment Guide](docs/deployment-guide.md)
+- [Operations Guide](docs/operations-guide.md)
+- [Api Contract](docs/api-contract.md)
+- [Release Notes](docs/release-notes-m3.md)
+- [Reflection_Paper Backend](docs/reflection-paper/10231001_LeadBackend.md)
+- [Reflection Paper Frontend](docs/reflection-paper/10231044-LeadFrontend.md)
+- [Reflection Paper DevOps](docs/reflection-paper/10231010-LeadDevops.md)
+- [Reflection_Paper CI/CD & Deploy](docs/reflection-paper/10231092_LeadCICD&Deploy.md)
+- [Reflection Paper QA & Docs](docs/reflection-paper/10231070-LeadQA&Docs.md)

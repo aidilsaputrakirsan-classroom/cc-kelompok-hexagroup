@@ -4,7 +4,9 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
+    // Baca dari localStorage saat inisialisasi agar konsisten setelah refresh
+    const saved = localStorage.getItem("theme");
+    return saved === "dark";
   });
 
   const toggleDarkMode = () => {
@@ -12,7 +14,9 @@ export function ThemeProvider({ children }) {
   };
 
   useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
+    // Sinkronkan data-theme pada documentElement (html) agar CSS variables bekerja
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+    // Simpan ke localStorage
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
