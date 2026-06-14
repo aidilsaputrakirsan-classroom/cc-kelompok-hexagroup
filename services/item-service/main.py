@@ -1,5 +1,6 @@
 """Item Service — CRUD items, verifikasi token via Auth Service."""
 import os
+import logging
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -7,10 +8,17 @@ from database import engine, get_db, Base
 from models import Item
 from schemas import ItemCreate, ItemUpdate, ItemResponse, ItemListResponse
 from auth_client import verify_token_with_auth_service
+from logging_config import setup_logging
+from logging_middleware import RequestLoggingMiddleware
 
-Base.metadata.create_all(bind=engine)
+# Setup structured logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Item Service", version="2.0.0")
+
+# Create DB tables
+Base.metadata.create_all(bind=engine)
 
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
@@ -20,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Logging middleware (setelah CORS)
+app.add_middleware(RequestLoggingMiddleware)
 
 @app.get("/health")
 def health_check():

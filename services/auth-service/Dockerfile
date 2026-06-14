@@ -9,8 +9,8 @@ COPY . .
 
 # Copy entrypoint script
 COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
+RUN apt-get update && apt-get install -y dos2unix && dos2unix entrypoint.sh && chmod +x entrypoint.sh
 
 EXPOSE 8001
 
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["bash", "entrypoint.sh"]

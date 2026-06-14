@@ -32,7 +32,7 @@ services:
     networks:
       - sikasinet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d auth_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,7 +59,7 @@ services:
     networks:
       - sikasinet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d finance_db"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d finance_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -86,7 +86,7 @@ services:
     networks:
       - sikasinet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d letter_db"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d letter_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -145,7 +145,7 @@ services:
         max-size: "10m"               # Rotate setiap 10MB
         max-file: "3"                 # Simpan 3 file lama
         tag: "auth-service"
-
+    
   finance-service:
     build:
       context: ./services/finance-service
@@ -239,6 +239,51 @@ services:
         max-size: "10m"
         max-file: "3"
         tag: "letters-service"
+
+  item-service:
+    build: ./services/item-service
+    container_name: sikasiapp-item-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@auth-db:5432/auth_db
+      AUTH_SERVICE_URL: http://auth-service:8001
+      SERVICE_NAME: item-service
+      LOG_LEVEL: INFO
+    networks:
+      - sikasinet
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "item-service"
 
   # ==================== GATEWAY ====================
 

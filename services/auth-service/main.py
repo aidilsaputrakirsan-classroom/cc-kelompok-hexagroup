@@ -2,6 +2,14 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
+import logging
+
+from logging_config import setup_logging
+from logging_middleware import RequestLoggingMiddleware
+
+# Setup structured logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 from database import get_db, Base, engine
 from schemas import (
@@ -52,6 +60,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Logging middleware (setelah CORS)
+app.add_middleware(RequestLoggingMiddleware)
 
 security = HTTPBearer()
 
