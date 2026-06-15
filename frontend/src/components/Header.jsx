@@ -224,7 +224,7 @@ export default function Header({ user, setUser, darkMode, setDarkMode }) {
             }}
             onClick={() => navigate("/dashboard")}
           >
-            SIKASI
+            SIKASIII
           </h1>
 
           {user && (
